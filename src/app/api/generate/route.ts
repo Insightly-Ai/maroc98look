@@ -1,18 +1,7 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { fal } from "@fal-ai/client";
 import { NextRequest, NextResponse } from "next/server";
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
-const SYSTEM_PROMPT = `Je bent een creatieve AI die mensen omschrijft alsof ze een iconische Marokkaanse voetballer zijn uit het WK 1998 tijdperk.
-Geef een leuke, enthousiaste beschrijving in het Nederlands.
-Beschrijf:
-1. Welke Marokkaanse speler ze het meest lijken (bv. Mustapha Hadji, Rachid Rokbi, Noureddine Naybet, Abdeljalil Hadda, etc.)
-2. Hun positie op het veld
-3. Hun speelstijl op basis van hun uiterlijk
-4. Een grappige bijnaam die past bij de WK 1998 Marokko sfeer
-5. Een motiverende kreet in het Arabisch/Berbers/Frans die past bij Marokko 1998
-
-Houd het kort, energiek en feestelijk. Max 150 woorden. Gebruik emoji's 🟢⭐🦁🇲🇦`;
+fal.config({ credentials: process.env.FAL_KEY });
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,21 +11,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Geen afbeelding ontvangen" }, { status: 400 });
     }
 
-    const message = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1000,
-      system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
-      messages: [{
-        role: "user",
-        content: [
-          { type: "image", source: { type: "base64", media_type: imageMime || "image/jpeg", data: imageBase64 } },
-          { type: "text", text: "Transformeer deze persoon naar een Marokkaanse voetballer van WK 1998 stijl! Beschrijf wie ze zijn in het Marokko elftal." },
-        ],
-      }],
+    const dataUrl = `data:${imageMime || "image/jpeg"};base64,${imageBase64}`;
+
+    const result = await fal.subscribe("fal-ai/pulid", {
+      input: {
+        face_image_url: dataUrl,
+        prompt: "a photo of a professional Moroccan football player wearing the iconic Morocco 1998 World Cup jersey, green shirt with red details, white shorts, 1990s style, stadium background, photorealistic, high quality",
+        negative_prompt: "cartoon, anime, painting, blurry, deformed, ugly, low quality",
+        num_inference_steps: 28,
+        guidance_scale: 7,
+      },
     });
 
-    const text = message.content.filter((b) => b.type === "text").map((b) => (b as { type: "text"; text: string }).text).join("\n");
-    return NextResponse.json({ text });
+    const imageUrl = (result.data as { images?: { url: string }[] })?.images?.[0]?.url;
+
+    if (!imageUrl) {
+      throw new Error("Geen afbeelding gegenereerd");
+    }
+
+    return NextResponse.json({ imageUrl });
   } catch (error) {
     console.error("Fout:", error);
     return NextResponse.json({ error: "Generatie mislukt. Probeer opnieuw." }, { status: 500 });
