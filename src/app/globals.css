@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@source "../**/*.{js,ts,jsx,tsx,mdx}";
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -8,6 +10,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-maroc-red: #C1272D;
+  --color-maroc-green: #006233;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
