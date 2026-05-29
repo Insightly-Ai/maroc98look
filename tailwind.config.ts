@@ -1,0 +1,1 @@
+﻿import type { Config } from "tailwindcss"; const config: Config = { content: ["./app/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"], theme: { extend: { colors: { "maroc-red": "#C1272D", "maroc-green": "#006233" } } }, plugins: [] }; export default config;
