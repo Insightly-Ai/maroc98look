@@ -1,9 +1,9 @@
-import Replicate from "replicate";
+import { fal } from "@fal-ai/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export const maxDuration = 300;
 
-const replicate = new Replicate({ auth: process.env.REPLICATE_API_TOKEN });
+fal.config({ credentials: process.env.FAL_KEY });
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,23 +13,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Geen afbeelding ontvangen" }, { status: 400 });
     }
 
-    const dataUrl = `data:${imageMime || "image/jpeg"};base64,${imageBase64}`;
+    const buffer = Buffer.from(imageBase64, "base64");
+    const blob = new Blob([buffer], { type: imageMime || "image/jpeg" });
+    const file = new File([blob], "photo.jpg", { type: imageMime || "image/jpeg" });
+    const uploadedUrl = await fal.storage.upload(file);
 
-    const output = await replicate.run(
-      "tencentarc/photomaker:ddfc2135c1daada0ea054d3be2a2c2de91a4523bb14d5ba7dd8cf7a0a6c76e19",
-      {
-        input: {
-          input_image_urls: [dataUrl],
-          prompt: "portrait photo img of a person from face to chest, wearing Morocco 1998 FIFA World Cup Puma jersey, dark green shirt with red horizontal stripe and FRMF crest badge, vintage 1990s football photo style, football stadium with cheering crowd background, photorealistic",
-          negative_prompt: "full body, legs, blurry, cartoon, anime, deformed, ugly, low quality, watermark",
-          style_strength_ratio: 20,
-          num_steps: 50,
-          guidance_scale: 5,
-        },
-      }
-    );
+    const result = await fal.subscribe("fal-ai/pulid", {
+      input: {
+        reference_images: [{ image_url: uploadedUrl }],
+        prompt: "portrait photo from face to chest of a person wearing Morocco 1998 FIFA World Cup Puma jersey, dark green shirt with red horizontal stripe and FRMF crest badge, vintage 1990s football photo style, football stadium with cheering crowd background, photorealistic, high quality",
+        negative_prompt: "full body, legs, blurry, cartoon, anime, deformed, ugly, low quality, watermark",
+        num_inference_steps: 30,
+        guidance_scale: 1.5,
+        id_scale: 0.8,
+        image_size: "portrait_4_3",
+      },
+    });
 
-    const imageUrl = Array.isArray(output) ? output[0] : output;
+    const imageUrl = result.data?.images?.[0]?.url;
 
     if (!imageUrl) {
       throw new Error("Geen afbeelding gegenereerd");
