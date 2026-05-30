@@ -11,11 +11,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Geen afbeelding ontvangen" }, { status: 400 });
     }
 
-    const dataUrl = `data:${imageMime || "image/jpeg"};base64,${imageBase64}`;
+    const buffer = Buffer.from(imageBase64, "base64");
+    const blob = new Blob([buffer], { type: imageMime || "image/jpeg" });
+    const file = new File([blob], "photo.jpg", { type: imageMime || "image/jpeg" });
+
+    const uploadedUrl = await fal.storage.upload(file);
 
     const result = await fal.subscribe("fal-ai/pulid", {
       input: {
-        reference_images: [{ image_url: dataUrl }],
+        reference_images: [{ image_url: uploadedUrl }],
         prompt: "a photo of a professional Moroccan football player wearing the iconic Morocco 1998 World Cup jersey, green shirt with red details, white shorts, 1990s style, stadium background, photorealistic, high quality",
         negative_prompt: "cartoon, anime, painting, blurry, deformed, ugly, low quality",
         num_inference_steps: 28,
