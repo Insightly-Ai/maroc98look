@@ -5,8 +5,6 @@ export const maxDuration = 120;
 
 fal.config({ credentials: process.env.FAL_KEY });
 
-const SHIRT_URL = "https://futbolclubvintage.com/cdn/shop/files/8_67eb2f9a-32ac-4149-b87a-7105a7c5cda6.jpg";
-
 export async function POST(request: NextRequest) {
   try {
     const { imageBase64, imageMime } = await request.json();
@@ -20,11 +18,14 @@ export async function POST(request: NextRequest) {
     const file = new File([blob], "photo.jpg", { type: imageMime || "image/jpeg" });
     const personUrl = await fal.storage.upload(file);
 
-    const result = await fal.subscribe("fal-ai/flux-2-lora-gallery/virtual-tryon", {
+    const result = await fal.subscribe("fal-ai/flux/dev/image-to-image", {
       input: {
-        image_urls: [personUrl, SHIRT_URL],
-        image_size: "portrait_4_3",
-        guidance_scale: 2.5,
+        image_url: personUrl,
+        prompt: "portrait headshot of the same person from face to chest, wearing dark green Morocco 1998 FIFA World Cup Puma football jersey with wide red horizontal stripe across chest and FRMF gold crest badge on left chest, white collar, 1990s football portrait photography, packed football stadium crowd background, vintage photo quality",
+        strength: 0.75,
+        num_inference_steps: 35,
+        guidance_scale: 3.5,
+        seed: 12345,
       },
     });
 
