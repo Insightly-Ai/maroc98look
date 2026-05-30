@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const imageUrl = result.data?.images?.[0]?.url;
+    const imageUrl = result.data?.image?.url;
     if (!imageUrl) throw new Error("Geen afbeelding gegenereerd");
 
     return NextResponse.json({ imageUrl, variant: isSurpriseTeam ? "team" : "solo" });
