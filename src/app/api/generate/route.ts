@@ -20,21 +20,21 @@ export async function POST(request: NextRequest) {
     const uploadedUrl = await fal.storage.upload(file);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const result = await (fal as any).subscribe("fal-ai/flux/dev/image-to-image", {
+    const result = await (fal as any).subscribe("fal-ai/instant-id", {
       input: {
-        image_url: uploadedUrl,
-        prompt: "professional Moroccan football player wearing Morocco 1998 World Cup jersey, green shirt with red star emblem, white shorts, 1990s football photo, stadium crowd background, photorealistic",
-        negative_prompt: "cartoon, anime, blurry, deformed, ugly, low quality",
-        strength: 0.75,
-        num_inference_steps: 28,
-        guidance_scale: 3.5,
+        face_image_url: uploadedUrl,
+        prompt: "portrait photo from face to chest, person wearing Morocco 1998 FIFA World Cup Puma jersey, dark green shirt with red horizontal stripe, FRMF badge, vintage 1990s football photo style, stadium background with cheering crowd, natural stadium lighting, photorealistic, high quality",
+        negative_prompt: "full body, legs, blurry, cartoon, anime, deformed, ugly, bad anatomy, extra fingers, low quality, watermark",
+        guidance_scale: 5,
+        num_inference_steps: 30,
+        image_size: "portrait_4_3",
       },
     });
 
-    const imageUrl = result?.data?.images?.[0]?.url;
+    const imageUrl = result?.data?.images?.[0]?.url ?? result?.data?.image?.url;
 
     if (!imageUrl) {
-      throw new Error("Geen afbeelding gegenereerd");
+      throw new Error(`Geen afbeelding: ${JSON.stringify(result?.data)}`);
     }
 
     return NextResponse.json({ imageUrl });
