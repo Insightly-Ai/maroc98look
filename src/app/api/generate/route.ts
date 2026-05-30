@@ -35,7 +35,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ imageUrl });
   } catch (error) {
-    console.error("Fout:", error);
-    return NextResponse.json({ error: "Generatie mislukt. Probeer opnieuw." }, { status: 500 });
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error("Fout:", msg);
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
