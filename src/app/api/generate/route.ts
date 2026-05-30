@@ -14,13 +14,14 @@ export async function POST(request: NextRequest) {
     const dataUrl = `data:${imageMime || "image/jpeg"};base64,${imageBase64}`;
 
     const result = await fal.subscribe("fal-ai/pulid", {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       input: {
-        face_image_url: dataUrl,
+        reference_images: [{ url: dataUrl }],
         prompt: "a photo of a professional Moroccan football player wearing the iconic Morocco 1998 World Cup jersey, green shirt with red details, white shorts, 1990s style, stadium background, photorealistic, high quality",
         negative_prompt: "cartoon, anime, painting, blurry, deformed, ugly, low quality",
         num_inference_steps: 28,
         guidance_scale: 7,
-      },
+      } as Record<string, unknown>,
     });
 
     const imageUrl = (result.data as { images?: { url: string }[] })?.images?.[0]?.url;
