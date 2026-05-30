@@ -25,7 +25,6 @@ export async function POST(request: NextRequest) {
         negative_prompt: "full body, legs, ugly, deformed, blurry, cartoon, low quality, watermark, text",
         guidance_scale: 7.5,
         num_inference_steps: 30,
-        face_id_strength: 0.8,
       },
     });
 
