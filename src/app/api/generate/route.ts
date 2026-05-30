@@ -5,11 +5,15 @@ export const maxDuration = 120;
 
 fal.config({ credentials: process.env.FAL_KEY });
 
+// Raw GitHub URL — publicly accessible for fal.ai to fetch
+const SHIRT_URL =
+  "https://raw.githubusercontent.com/Insightly-Ai/maroc98look/main/marokko-thuisshirt-retro-1998-voetbaltenue-600x600.webp";
+
 const SOLO_PROMPT =
-  "portrait headshot from face to chest, person wearing dark green Morocco 1998 FIFA World Cup Puma football jersey, wide red horizontal stripe across chest, FRMF gold crest badge on left chest, white v-collar, packed football stadium crowd in background, 1990s vintage football portrait photography, photorealistic, high quality, sharp focus";
+  "The person from the first image is wearing the exact football jersey shown in the second image: dark green Morocco 1998 Puma shirt with wide red horizontal stripe across the chest, FRMF gold crest badge on the left chest, white v-collar. Portrait from face to chest. Packed football stadium crowd in the background. 1990s vintage football portrait photography. Keep the person's face, skin tone and features identical to the first image. Photorealistic, high quality, sharp focus.";
 
 const TEAM_PROMPT =
-  "official team photo of Morocco 1998 FIFA World Cup squad, eleven players standing in two rows wearing dark green Puma Morocco football jerseys with wide red horizontal stripe across chest and FRMF gold crest badge, the person with this exact face is prominently featured standing in the middle of the back row, stadium background, 1990s vintage football team photograph, photorealistic, high quality";
+  "The person from the first image stands in the middle of the back row in an official Morocco 1998 FIFA World Cup team photo. All eleven players wear the exact football jersey shown in the second image: dark green Puma shirt with wide red horizontal stripe and FRMF gold crest. Stadium background. 1990s vintage team photograph style. Keep the person's face identical to the first image. Photorealistic, high quality.";
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,15 +31,15 @@ export async function POST(request: NextRequest) {
     const isSurpriseTeam = Math.random() < 0.4;
     const prompt = isSurpriseTeam ? TEAM_PROMPT : SOLO_PROMPT;
 
-    const result = await fal.subscribe("fal-ai/pulid", {
+    // Pass both the face photo and the actual shirt image so the model
+    // sees the exact Puma Morocco 98 design to reproduce
+    const result = await fal.subscribe("fal-ai/flux-2-flex/edit", {
       input: {
-        reference_images: [{ image_url: faceUrl }],
+        image_urls: [faceUrl, SHIRT_URL],
         prompt,
-        negative_prompt: "ugly, deformed, blurry, cartoon, low quality, watermark, text, distorted face, wrong person",
-        mode: "fidelity",
-        id_scale: 0.9,
-        guidance_scale: 4,
-        num_inference_steps: 4,
+        num_inference_steps: 28,
+        guidance_scale: 3.5,
+        safety_tolerance: "5",
         image_size: "portrait_4_3",
       },
     });
