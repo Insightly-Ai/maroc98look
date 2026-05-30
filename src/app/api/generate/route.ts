@@ -5,6 +5,8 @@ export const maxDuration = 300;
 
 const replicate = new Replicate({ auth: process.env.REPLICATE_API_TOKEN });
 
+const SHIRT_URL = "http://futbolclubvintage.com/cdn/shop/files/8_67eb2f9a-32ac-4149-b87a-7105a7c5cda6.jpg";
+
 export async function POST(request: NextRequest) {
   try {
     const { imageBase64, imageMime } = await request.json();
@@ -20,7 +22,8 @@ export async function POST(request: NextRequest) {
       {
         input: {
           image: dataUrl,
-          prompt: "portrait photo from face to chest, wearing Morocco 1998 FIFA World Cup Puma jersey, dark green shirt with red horizontal stripe, FRMF crest, vintage 1990s football photo style, football stadium with cheering crowd background, photorealistic",
+          style_image: SHIRT_URL,
+        prompt: "portrait photo from face to chest, wearing this exact Morocco 1998 FIFA World Cup Puma jersey, dark green shirt with red horizontal stripe and FRMF crest badge, vintage 1990s football photo style, football stadium with cheering crowd background, photorealistic, high quality",
           negative_prompt: "full body, legs, blurry, cartoon, anime, deformed, ugly, bad anatomy, low quality, watermark",
           guidance_scale: 5,
           ip_adapter_scale: 0.8,
