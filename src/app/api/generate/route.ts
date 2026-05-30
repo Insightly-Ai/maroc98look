@@ -20,20 +20,32 @@ export async function POST(request: NextRequest) {
     const blob = new Blob([buffer], { type: imageMime || "image/jpeg" });
     const file = new File([blob], "photo.jpg", { type: imageMime || "image/jpeg" });
 
-    // Upload both images to fal.ai storage so the model can access them
-    const shirtResp = await fetch(SHIRT_URL);
-    const shirtBlob = await shirtResp.blob();
-    const shirtFile = new File([shirtBlob], "shirt.webp", { type: "image/webp" });
-
-    const [faceUrl, shirtFalUrl] = await Promise.all([
+    const [faceUrl, shirtBlob] = await Promise.all([
       fal.storage.upload(file),
-      fal.storage.upload(shirtFile),
+      fetch(SHIRT_URL).then(r => r.blob()),
     ]);
+    const shirtFalUrl = await fal.storage.upload(
+      new File([shirtBlob], "shirt.webp", { type: "image/webp" })
+    );
 
-    // Virtual try-on: place the exact Morocco 98 shirt on the person
-    const result = await fal.subscribe("fal-ai/fashn/tryon/v1.6", {
+    // Step 1: PuLID generates the person with upper body visible
+    const pulidResult = await fal.subscribe("fal-ai/pulid", {
       input: {
-        model_image: faceUrl,
+        reference_images: [{ image_url: faceUrl }],
+        prompt: "photo of this person, upper body portrait, standing, neutral plain background, wearing a plain green t-shirt, photorealistic",
+        negative_prompt: "ugly, deformed, blurry, cartoon, low quality",
+        mode: "fidelity",
+        num_inference_steps: 4,
+      },
+    });
+
+    const personUrl = pulidResult.data?.images?.[0]?.url;
+    if (!personUrl) throw new Error("Stap 1 mislukt");
+
+    // Step 2: fashn try-on applies the exact Morocco 98 shirt
+    const tryonResult = await fal.subscribe("fal-ai/fashn/tryon/v1.6", {
+      input: {
+        model_image: personUrl,
         garment_image: shirtFalUrl,
         category: "tops",
         garment_photo_type: "flat-lay",
@@ -41,7 +53,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const imageUrl = result.data?.images?.[0]?.url;
+    const imageUrl = tryonResult.data?.images?.[0]?.url;
     if (!imageUrl) throw new Error("Geen afbeelding gegenereerd");
 
     return NextResponse.json({ imageUrl, variant: "solo" });
