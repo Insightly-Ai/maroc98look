@@ -1,10 +1,11 @@
 import { fal } from "@fal-ai/client";
 import { NextRequest, NextResponse } from "next/server";
-import JSZip from "jszip";
 
 export const maxDuration = 120;
 
 fal.config({ credentials: process.env.FAL_KEY });
+
+const SHIRT_URL = "https://futbolclubvintage.com/cdn/shop/files/8_67eb2f9a-32ac-4149-b87a-7105a7c5cda6.jpg";
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,22 +16,15 @@ export async function POST(request: NextRequest) {
     }
 
     const buffer = Buffer.from(imageBase64, "base64");
+    const blob = new Blob([buffer], { type: imageMime || "image/jpeg" });
+    const file = new File([blob], "photo.jpg", { type: imageMime || "image/jpeg" });
+    const personUrl = await fal.storage.upload(file);
 
-    const zip = new JSZip();
-    zip.file("face.jpg", buffer);
-    const zipBuffer = await zip.generateAsync({ type: "nodebuffer" });
-    const zipBlob = new Blob([zipBuffer], { type: "application/zip" });
-    const zipFile = new File([zipBlob], "faces.zip", { type: "application/zip" });
-    const archiveUrl = await fal.storage.upload(zipFile);
-
-    const result = await fal.subscribe("fal-ai/photomaker", {
+    const result = await fal.subscribe("fal-ai/flux-2-lora-gallery/virtual-tryon", {
       input: {
-        image_archive_url: archiveUrl,
-        prompt: "portrait photo img of a person from face to chest, wearing Morocco 1998 FIFA World Cup Puma jersey, dark green football shirt with red horizontal stripe and FRMF crest badge, stadium with cheering crowd in background, 1990s photography style, photorealistic",
-        negative_prompt: "full body, legs, blurry, cartoon, anime, deformed, ugly, low quality, watermark",
-        guidance_scale: 5,
-        num_inference_steps: 50,
-        style_strength_ratio: 20,
+        image_urls: [personUrl, SHIRT_URL],
+        image_size: "portrait_4_3",
+        guidance_scale: 2.5,
       },
     });
 
