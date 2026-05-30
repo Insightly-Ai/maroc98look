@@ -19,16 +19,25 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(imageBase64, "base64");
     const blob = new Blob([buffer], { type: imageMime || "image/jpeg" });
     const file = new File([blob], "photo.jpg", { type: imageMime || "image/jpeg" });
-    const faceUrl = await fal.storage.upload(file);
+
+    // Upload both images to fal.ai storage so the model can access them
+    const shirtResp = await fetch(SHIRT_URL);
+    const shirtBlob = await shirtResp.blob();
+    const shirtFile = new File([shirtBlob], "shirt.webp", { type: "image/webp" });
+
+    const [faceUrl, shirtFalUrl] = await Promise.all([
+      fal.storage.upload(file),
+      fal.storage.upload(shirtFile),
+    ]);
 
     // Virtual try-on: place the exact Morocco 98 shirt on the person
     const result = await fal.subscribe("fal-ai/fashn/tryon/v1.6", {
       input: {
         model_image: faceUrl,
-        garment_image: SHIRT_URL,
+        garment_image: shirtFalUrl,
         category: "tops",
         garment_photo_type: "flat-lay",
-        mode: "quality",
+        mode: "balanced",
       },
     });
 
