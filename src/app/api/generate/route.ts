@@ -20,43 +20,28 @@ export async function POST(request: NextRequest) {
     const blob = new Blob([buffer], { type: imageMime || "image/jpeg" });
     const file = new File([blob], "photo.jpg", { type: imageMime || "image/jpeg" });
 
-    const [faceUrl, shirtBlob] = await Promise.all([
-      fal.storage.upload(file),
-      fetch(SHIRT_URL).then(r => r.blob()),
-    ]);
-    const shirtFalUrl = await fal.storage.upload(
-      new File([shirtBlob], "shirt.webp", { type: "image/webp" })
-    );
+    const faceUrl = await fal.storage.upload(file);
 
-    // Step 1: PuLID generates the person with upper body visible
-    const pulidResult = await fal.subscribe("fal-ai/pulid", {
+    const isSurpriseTeam = Math.random() < 0.4;
+
+    const prompt = isSurpriseTeam
+      ? "official Morocco 1998 FIFA World Cup squad team photo, eleven players in two rows, this exact person prominently in the middle of the back row, all wearing dark forest green Puma football jerseys with a bold red horizontal stripe across the chest and white V-neck collar, FRMF gold crest badge on left chest, stadium background, 1990s vintage team photograph, photorealistic"
+      : "portrait of this exact person from face to chest wearing a dark forest green Morocco 1998 FIFA World Cup Puma football jersey, bold red horizontal stripe across the chest, white V-neck collar, FRMF gold crest badge on left chest, packed stadium crowd in background, 1990s football portrait photography, photorealistic, sharp";
+
+    const result = await fal.subscribe("fal-ai/pulid", {
       input: {
         reference_images: [{ image_url: faceUrl }],
-        prompt: "photo of this person, upper body portrait, standing, neutral plain background, wearing a plain green t-shirt, photorealistic",
-        negative_prompt: "ugly, deformed, blurry, cartoon, low quality",
+        prompt,
+        negative_prompt: "ugly, deformed, blurry, cartoon, low quality, watermark, wrong shirt, adidas, nike, orange, blue, white shirt",
         mode: "fidelity",
         num_inference_steps: 4,
       },
     });
 
-    const personUrl = pulidResult.data?.images?.[0]?.url;
-    if (!personUrl) throw new Error("Stap 1 mislukt");
-
-    // Step 2: fashn try-on applies the exact Morocco 98 shirt
-    const tryonResult = await fal.subscribe("fal-ai/fashn/tryon/v1.6", {
-      input: {
-        model_image: personUrl,
-        garment_image: shirtFalUrl,
-        category: "tops",
-        garment_photo_type: "flat-lay",
-        mode: "balanced",
-      },
-    });
-
-    const imageUrl = tryonResult.data?.images?.[0]?.url;
+    const imageUrl = result.data?.images?.[0]?.url;
     if (!imageUrl) throw new Error("Geen afbeelding gegenereerd");
 
-    return NextResponse.json({ imageUrl, variant: "solo" });
+    return NextResponse.json({ imageUrl, variant: isSurpriseTeam ? "team" : "solo" });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     console.error("Fout:", msg);
