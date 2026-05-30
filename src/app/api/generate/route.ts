@@ -1,9 +1,9 @@
-import { fal } from "@fal-ai/client";
+import Replicate from "replicate";
 import { NextRequest, NextResponse } from "next/server";
 
 export const maxDuration = 300;
 
-fal.config({ credentials: process.env.FAL_KEY });
+const replicate = new Replicate({ auth: process.env.REPLICATE_API_TOKEN });
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,28 +13,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Geen afbeelding ontvangen" }, { status: 400 });
     }
 
-    const buffer = Buffer.from(imageBase64, "base64");
-    const blob = new Blob([buffer], { type: imageMime || "image/jpeg" });
-    const file = new File([blob], "photo.jpg", { type: imageMime || "image/jpeg" });
+    const dataUrl = `data:${imageMime || "image/jpeg"};base64,${imageBase64}`;
 
-    const uploadedUrl = await fal.storage.upload(file);
+    const output = await replicate.run(
+      "zsxkib/instant-id:491ddf5be6b827f8931f088ef10c6d8d0222d41fa12903e01a8bda2e3b5af3f7",
+      {
+        input: {
+          image: dataUrl,
+          prompt: "portrait photo from face to chest, wearing Morocco 1998 FIFA World Cup Puma jersey, dark green shirt with red horizontal stripe, FRMF crest, vintage 1990s football photo style, football stadium with cheering crowd background, photorealistic",
+          negative_prompt: "full body, legs, blurry, cartoon, anime, deformed, ugly, bad anatomy, low quality, watermark",
+          guidance_scale: 5,
+          ip_adapter_scale: 0.8,
+          num_inference_steps: 30,
+        },
+      }
+    );
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const result = await (fal as any).subscribe("fal-ai/flux/dev/image-to-image", {
-      input: {
-        image_url: uploadedUrl,
-        prompt: "portrait photo from face to chest of the same person wearing Morocco 1998 FIFA World Cup Puma jersey, dark green shirt with red horizontal stripe, FRMF crest badge, vintage 1990s football photography style, football stadium with cheering crowd in background, natural stadium lighting, photorealistic, keep face identical",
-        negative_prompt: "full body, legs, different face, blurry, cartoon, anime, deformed, ugly, low quality",
-        strength: 0.55,
-        num_inference_steps: 35,
-        guidance_scale: 3.5,
-      },
-    });
-
-    const imageUrl = result?.data?.images?.[0]?.url;
+    const imageUrl = Array.isArray(output) ? output[0] : output;
 
     if (!imageUrl) {
-      throw new Error(`Geen afbeelding: ${JSON.stringify(result?.data)}`);
+      throw new Error("Geen afbeelding gegenereerd");
     }
 
     return NextResponse.json({ imageUrl });
