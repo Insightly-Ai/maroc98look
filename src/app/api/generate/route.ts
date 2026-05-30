@@ -5,8 +5,6 @@ export const maxDuration = 300;
 
 const replicate = new Replicate({ auth: process.env.REPLICATE_API_TOKEN });
 
-const SHIRT_URL = "http://futbolclubvintage.com/cdn/shop/files/8_67eb2f9a-32ac-4149-b87a-7105a7c5cda6.jpg";
-
 export async function POST(request: NextRequest) {
   try {
     const { imageBase64, imageMime } = await request.json();
@@ -18,16 +16,15 @@ export async function POST(request: NextRequest) {
     const dataUrl = `data:${imageMime || "image/jpeg"};base64,${imageBase64}`;
 
     const output = await replicate.run(
-      "zsxkib/instant-id:491ddf5be6b827f8931f088ef10c6d8d0222d41fa12903e01a8bda2e3b5af3f7",
+      "tencentarc/photomaker:ddfc2135c1daada0ea054d3be2a2c2de91a4523bb14d5ba7dd8cf7a0a6c76e19",
       {
         input: {
-          image: dataUrl,
-          style_image: SHIRT_URL,
-        prompt: "portrait photo from face to chest, wearing this exact Morocco 1998 FIFA World Cup Puma jersey, dark green shirt with red horizontal stripe and FRMF crest badge, vintage 1990s football photo style, football stadium with cheering crowd background, photorealistic, high quality",
-          negative_prompt: "full body, legs, blurry, cartoon, anime, deformed, ugly, bad anatomy, low quality, watermark",
+          input_image_urls: [dataUrl],
+          prompt: "portrait photo img of a person from face to chest, wearing Morocco 1998 FIFA World Cup Puma jersey, dark green shirt with red horizontal stripe and FRMF crest badge, vintage 1990s football photo style, football stadium with cheering crowd background, photorealistic",
+          negative_prompt: "full body, legs, blurry, cartoon, anime, deformed, ugly, low quality, watermark",
+          style_strength_ratio: 20,
+          num_steps: 50,
           guidance_scale: 5,
-          ip_adapter_scale: 0.8,
-          num_inference_steps: 30,
         },
       }
     );
