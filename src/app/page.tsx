@@ -141,6 +141,12 @@ export default function Marokko98Look() {
           <p style={{ fontWeight: 300, fontSize: "15px", color: "rgba(232,245,224,0.7)", maxWidth: "440px", margin: "0 auto", lineHeight: 1.7 }}>
             Upload je foto en zie jezelf als een legendarische Marokkaanse voetballer uit het iconische WK 1998 tijdperk. 🇲🇦⭐
           </p>
+          <div style={{ display: "flex", justifyContent: "center", gap: "12px", marginTop: "16px", alignItems: "center" }}>
+            <img src="/maroc98-shirt.webp" alt="Marokko 98 shirt" style={{ height: "64px", borderRadius: "6px", border: `1px solid rgba(184,134,11,0.3)`, opacity: 0.85 }} />
+            <div style={{ fontSize: "12px", color: "rgba(232,245,224,0.45)", letterSpacing: "1px" }}>
+              Het iconische Puma shirt
+            </div>
+          </div>
         </div>
 
         <div className="upload-zone" onClick={() => fileRef.current?.click()}
