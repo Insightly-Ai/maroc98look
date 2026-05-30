@@ -36,10 +36,7 @@ export async function POST(request: NextRequest) {
         prompt,
         negative_prompt: "ugly, deformed, blurry, cartoon, low quality, watermark, text, wrong shirt, adidas, nike, orange, blue",
         mode: "fidelity",
-        id_scale: 0.9,
-        guidance_scale: 4,
         num_inference_steps: 4,
-        image_size: "portrait_4_3",
       },
     });
 
