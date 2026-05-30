@@ -27,17 +27,20 @@ export async function POST(request: NextRequest) {
     const isSurpriseTeam = Math.random() < 0.4;
     const prompt = isSurpriseTeam ? TEAM_PROMPT : SOLO_PROMPT;
 
-    const result = await fal.subscribe("fal-ai/ip-adapter-face-id", {
+    const result = await fal.subscribe("fal-ai/pulid", {
       input: {
-        face_image_url: faceUrl,
+        reference_images: [{ image_url: faceUrl }],
         prompt,
-        negative_prompt: "ugly, deformed, blurry, cartoon, low quality, watermark, text, distorted face",
-        guidance_scale: 7.5,
-        num_inference_steps: 30,
+        negative_prompt: "ugly, deformed, blurry, cartoon, low quality, watermark, text, distorted face, wrong person",
+        mode: "fidelity",
+        id_scale: 0.9,
+        guidance_scale: 4,
+        num_inference_steps: 4,
+        image_size: "portrait_4_3",
       },
     });
 
-    const imageUrl = result.data?.image?.url;
+    const imageUrl = result.data?.images?.[0]?.url;
     if (!imageUrl) throw new Error("Geen afbeelding gegenereerd");
 
     return NextResponse.json({ imageUrl, variant: isSurpriseTeam ? "team" : "solo" });
