@@ -16,16 +16,16 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(imageBase64, "base64");
     const blob = new Blob([buffer], { type: imageMime || "image/jpeg" });
     const file = new File([blob], "photo.jpg", { type: imageMime || "image/jpeg" });
-    const personUrl = await fal.storage.upload(file);
+    const faceUrl = await fal.storage.upload(file);
 
-    const result = await fal.subscribe("fal-ai/flux/dev/image-to-image", {
+    const result = await fal.subscribe("fal-ai/ip-adapter-face-id", {
       input: {
-        image_url: personUrl,
-        prompt: "portrait headshot of the same person from face to chest, wearing dark green Morocco 1998 FIFA World Cup Puma football jersey with wide red horizontal stripe across chest and FRMF gold crest badge on left chest, white collar, 1990s football portrait photography, packed football stadium crowd background, vintage photo quality",
-        strength: 0.75,
-        num_inference_steps: 35,
-        guidance_scale: 3.5,
-        seed: 12345,
+        face_image_url: faceUrl,
+        prompt: "portrait headshot from face to chest, person wearing dark green Morocco 1998 FIFA World Cup Puma football jersey, wide red horizontal stripe across chest, FRMF gold crest badge on left chest, white v-collar, packed football stadium crowd in background, 1990s vintage football portrait photography, photorealistic, high quality",
+        negative_prompt: "full body, legs, ugly, deformed, blurry, cartoon, low quality, watermark, text",
+        guidance_scale: 7.5,
+        num_inference_steps: 30,
+        face_id_strength: 0.8,
       },
     });
 
