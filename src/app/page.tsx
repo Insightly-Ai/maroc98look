@@ -33,11 +33,13 @@ function MoroccanStar({ size = 80, style }: { size?: number; style?: React.CSSPr
 function CheckoutForm({
   imageBase64,
   imageMime,
+  clientSecret,
   onSuccess,
   onCancel,
 }: {
   imageBase64: string;
   imageMime: string;
+  clientSecret: string;
   onSuccess: (url: string) => void;
   onCancel: () => void;
 }) {
@@ -58,10 +60,6 @@ function CheckoutForm({
     // Save photo to sessionStorage before potential iDEAL redirect
     sessionStorage.setItem("pendingImageBase64", imageBase64);
     sessionStorage.setItem("pendingImageMime", imageMime);
-
-    // Confirm payment
-    const res = await fetch("/api/payment", { method: "POST" });
-    const { clientSecret } = await res.json();
 
     const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
       elements,
@@ -368,6 +366,7 @@ export default function Marokko98Look() {
           <CheckoutForm
             imageBase64={imageBase64}
             imageMime={imageMime}
+            clientSecret={clientSecret}
             onSuccess={handlePaymentSuccess}
             onCancel={() => setShowPayment(false)}
           />
