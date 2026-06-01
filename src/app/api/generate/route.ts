@@ -47,7 +47,9 @@ SCENE: The person stands on the pitch in a packed stadium at night, holding the 
 
 PERSON: Keep the person's face, skin tone, hair and facial features EXACTLY identical to the uploaded photo — same face, same expression of pure joy. Show them from head to waist.
 
-SHIRT: The person wears the classic Morocco national football team home jersey — dark green base color with a bold red horizontal band across the chest, white trim details, short sleeves, standard football jersey fit. NO brand logo. NO federation badge. NO text on the shirt.
+SHIRT: The person wears a classic dark green football jersey with a bold red horizontal band across the chest, white trim details, short sleeves, standard football jersey fit. The shirt has two logos exactly like a real match jersey:
+1. TOP-LEFT CHEST: the word "BUMA" in the same font and style as a sportswear brand, with a small leaping lion silhouette above it (instead of a puma cat) — same size and position as a typical kit manufacturer logo.
+2. TOP-RIGHT CHEST: a round federation badge — same size, shape and green/red/gold color scheme as the Moroccan football badge, but with the text "ATLAS LIONS" around the edge and a stylized lion head crest in the center instead of the FRMF crown emblem.
 
 STYLE: Photorealistic, professional sports photography, dramatic stadium lighting, ultra high quality, 4K. So epic and emotional that people immediately want to share it on WhatsApp and Instagram.`,
             },
