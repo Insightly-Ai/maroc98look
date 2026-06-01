@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -54,6 +54,10 @@ function CheckoutForm({
 
     const { error: submitError } = await elements.submit();
     if (submitError) { setError(submitError.message ?? "Fout"); setPaying(false); return; }
+
+    // Save photo to sessionStorage before potential iDEAL redirect
+    sessionStorage.setItem("pendingImageBase64", imageBase64);
+    sessionStorage.setItem("pendingImageMime", imageMime);
 
     // Confirm payment
     const res = await fetch("/api/payment", { method: "POST" });
@@ -146,6 +150,7 @@ export default function Marokko98Look() {
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [showPayment, setShowPayment] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [generating, setGenerating] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -167,10 +172,42 @@ export default function Marokko98Look() {
     handleFile(e.dataTransfer.files[0]);
   }, [handleFile]);
 
+  // On page load: check if Stripe redirected back after iDEAL payment
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const paymentIntentId = params.get("payment_intent");
+    const redirectStatus = params.get("redirect_status");
+
+    if (paymentIntentId && redirectStatus === "succeeded") {
+      // Clean URL
+      window.history.replaceState({}, "", window.location.pathname);
+
+      const savedBase64 = sessionStorage.getItem("pendingImageBase64");
+      const savedMime = sessionStorage.getItem("pendingImageMime");
+      sessionStorage.removeItem("pendingImageBase64");
+      sessionStorage.removeItem("pendingImageMime");
+
+      if (savedBase64) {
+        setImageBase64(savedBase64);
+        setImageMime(savedMime || "image/jpeg");
+        setImage("data:" + (savedMime || "image/jpeg") + ";base64," + savedBase64);
+        setGenerating(true);
+
+        fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageBase64: savedBase64, imageMime: savedMime || "image/jpeg", paymentIntentId }),
+        })
+          .then((r) => r.json())
+          .then((data) => { setResultUrl(data.imageUrl); setGenerating(false); })
+          .catch(() => { setError("Generatie mislukt, probeer opnieuw."); setGenerating(false); });
+      }
+    }
+  }, []);
+
   const handleGenerateClick = async () => {
     if (!imageBase64) return;
     setError(null);
-    // Create payment intent and show checkout
     const res = await fetch("/api/payment", { method: "POST" });
     const { clientSecret: cs } = await res.json();
     setClientSecret(cs);
@@ -268,15 +305,17 @@ export default function Marokko98Look() {
 
         {/* Generate button */}
         {image && !resultUrl && (
-          <button className="btn-main" onClick={handleGenerateClick} style={{
+          <button className="btn-main" onClick={handleGenerateClick} disabled={generating} style={{
             width: "100%", padding: "18px",
-            background: `linear-gradient(135deg, ${FLAG_COLORS.green} 0%, #008a45 50%, ${FLAG_COLORS.green} 100%)`,
+            background: generating ? "rgba(0,98,51,0.4)" : `linear-gradient(135deg, ${FLAG_COLORS.green} 0%, #008a45 50%, ${FLAG_COLORS.green} 100%)`,
             border: `1px solid ${FLAG_COLORS.green}`, borderRadius: "12px", color: "#fff",
-            fontSize: "18px", fontWeight: 700, cursor: "pointer", transition: "all 0.3s ease",
-            letterSpacing: "1px", animation: "pulse-gold 3s ease-in-out infinite",
+            fontSize: "18px", fontWeight: 700, cursor: generating ? "not-allowed" : "pointer", transition: "all 0.3s ease",
+            letterSpacing: "1px", animation: generating ? "none" : "pulse-gold 3s ease-in-out infinite",
             marginBottom: "16px", display: "flex", alignItems: "center", justifyContent: "center", gap: "12px",
           }}>
-            🏆 Genereer mijn winnaarsfoto — €1,49
+            {generating
+              ? <><span style={{ width: "20px", height: "20px", border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} /> Foto wordt gegenereerd...</>
+              : "🏆 Genereer mijn winnaarsfoto — €1,49"}
           </button>
         )}
 
