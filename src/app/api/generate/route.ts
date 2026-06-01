@@ -1,5 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
+import { readFileSync } from "fs";
+import { join } from "path";
 import Stripe from "stripe";
 
 export const maxDuration = 120;
@@ -11,17 +13,27 @@ let genAI: GoogleGenerativeAI | null = null;
 let stripeClient: Stripe | null = null;
 let shirtCache: { data: string; mimeType: string } | null = null;
 
-async function fetchShirt() {
+async function getShirt(): Promise<{ data: string; mimeType: string } | null> {
   if (shirtCache) return shirtCache;
-  const res = await fetch(SHIRT_URL);
-  if (!res.ok) throw new Error(`Shirt ophalen mislukt: ${res.status}`);
-  const buffer = await res.arrayBuffer();
-  const contentType = res.headers.get("content-type") || "image/png";
-  shirtCache = {
-    data: Buffer.from(buffer).toString("base64"),
-    mimeType: contentType.split(";")[0],
-  };
-  return shirtCache;
+  try {
+    // Try remote CDN first
+    const res = await fetch(SHIRT_URL, { signal: AbortSignal.timeout(8000) });
+    if (res.ok) {
+      const buffer = await res.arrayBuffer();
+      const mimeType = (res.headers.get("content-type") || "image/png").split(";")[0];
+      shirtCache = { data: Buffer.from(buffer).toString("base64"), mimeType };
+      return shirtCache;
+    }
+  } catch {
+    // CDN blocked or timeout — fall back to local file
+  }
+  try {
+    const data = readFileSync(join(process.cwd(), "public/maroc98-shirt.webp")).toString("base64");
+    shirtCache = { data, mimeType: "image/webp" };
+    return shirtCache;
+  } catch {
+    return null;
+  }
 }
 
 function getClients() {
@@ -49,24 +61,37 @@ export async function POST(request: NextRequest) {
     }
 
     const model = ai.getGenerativeModel({ model: "gemini-3.1-flash-image" });
-    const shirt = await fetchShirt();
+    const shirt = await getShirt();
+
+    const shirtParts = shirt
+      ? [
+          { text: "Image 1: the person. Image 2: the football jersey reference." } as const,
+          { inlineData: { mimeType: imageMime || "image/jpeg", data: imageBase64 } } as const,
+          { inlineData: { mimeType: shirt.mimeType, data: shirt.data } } as const,
+        ]
+      : [
+          { text: "Here is a photo of a person." } as const,
+          { inlineData: { mimeType: imageMime || "image/jpeg", data: imageBase64 } } as const,
+        ];
+
+    const shirtInstruction = shirt
+      ? `SHIRT: Dress the person in the exact football jersey shown in Image 2 — same white fabric, same gold zellige geometric pattern, same red-green-white V-neck collar, same short sleeves. Remove ONLY the Puma logo and the FRMF federation badge. Everything else about the shirt stays identical.`
+      : `SHIRT: They are wearing a short-sleeve white football jersey. The shirt has broad vertical panels of gold/yellow zellige geometric patterns (interlocking diamonds and crosses) covering most of the front. V-neck collar with red outer stripe, green middle, white inner. No logos, no badges.`;
 
     const result = await model.generateContent({
       contents: [
         {
           role: "user",
           parts: [
-            { text: "Image 1: the person. Image 2: the football jersey reference." },
-            { inlineData: { mimeType: imageMime || "image/jpeg", data: imageBase64 } },
-            { inlineData: { mimeType: shirt.mimeType, data: shirt.data } },
+            ...shirtParts,
             {
               text: `Create an epic, cinematic photo of this exact person celebrating on the football pitch after winning the FIFA World Cup final.
 
 SCENE: The person is standing on the pitch in a packed stadium at night, holding the golden FIFA World Cup trophy high above their head with both arms raised in triumph. Golden confetti is raining down everywhere. Tens of thousands of jubilant supporters fill the stadium stands behind them, waving Moroccan flags (red with green star). Dramatic stadium floodlights illuminate the scene. Smoke, ticker tape and confetti fill the air. Pitch grass visible at their feet.
 
-PERSON: Keep the person's face, skin tone, hair and facial features EXACTLY identical to Image 1. Show them from head to waist.
+PERSON: Keep the person's face, skin tone, hair and facial features EXACTLY identical to the person's photo. Show them from head to waist.
 
-SHIRT: Dress the person in the exact football jersey shown in Image 2 — same white fabric, same gold zellige geometric pattern, same red-green-white V-neck collar, same short sleeves. Remove ONLY the Puma logo (top-left chest) and the FRMF federation badge (top-right chest). Everything else about the shirt stays identical.
+${shirtInstruction}
 
 STYLE: Photorealistic, professional sports photography, dramatic lighting, ultra high quality. So epic and joyful that people want to share it on WhatsApp, Instagram Stories and social media.`,
             },

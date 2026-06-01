@@ -70,14 +70,25 @@ function CheckoutForm({
 
     if (confirmError) { setError(confirmError.message ?? "Betaling mislukt"); setPaying(false); return; }
 
+    if (!paymentIntent?.id) {
+      setError("Betaling geslaagd maar ID ontbreekt. Ververs de pagina.");
+      setPaying(false);
+      return;
+    }
+
     // Payment succeeded — generate image
     const genRes = await fetch("/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ imageBase64, imageMime, paymentIntentId: paymentIntent?.id }),
+      body: JSON.stringify({ imageBase64, imageMime, paymentIntentId: paymentIntent.id }),
     });
     const data = await genRes.json();
-    if (!genRes.ok) { setError(data.error ?? "Generatie mislukt"); setPaying(false); return; }
+    if (!genRes.ok) {
+      console.error("Generate fout:", data);
+      setError(data.error ?? "Generatie mislukt — probeer opnieuw");
+      setPaying(false);
+      return;
+    }
 
     onSuccess(data.imageUrl);
   };
