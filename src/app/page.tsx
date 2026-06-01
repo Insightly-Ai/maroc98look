@@ -34,6 +34,7 @@ function CheckoutForm({
   imageBase64,
   imageMime,
   productType,
+  playerName,
   clientSecret,
   onSuccess,
   onCancel,
@@ -41,6 +42,7 @@ function CheckoutForm({
   imageBase64: string;
   imageMime: string;
   productType: "winner" | "panini";
+  playerName: string;
   clientSecret: string;
   onSuccess: (url: string) => void;
   onCancel: () => void;
@@ -63,6 +65,7 @@ function CheckoutForm({
     sessionStorage.setItem("pendingImageBase64", imageBase64);
     sessionStorage.setItem("pendingImageMime", imageMime);
     sessionStorage.setItem("pendingProductType", productType);
+    sessionStorage.setItem("pendingPlayerName", playerName);
 
     const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
       elements,
@@ -83,7 +86,7 @@ function CheckoutForm({
     const genRes = await fetch("/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ imageBase64, imageMime, paymentIntentId: paymentIntent.id, type: productType }),
+      body: JSON.stringify({ imageBase64, imageMime, paymentIntentId: paymentIntent.id, type: productType, playerName }),
     });
     const data = await genRes.json();
     if (!genRes.ok) {
@@ -160,6 +163,7 @@ export default function Marokko98Look() {
   const [imageBase64, setImageBase64] = useState<string | null>(null);
   const [imageMime, setImageMime] = useState<string>("image/jpeg");
   const [productType, setProductType] = useState<"winner" | "panini">("winner");
+  const [playerName, setPlayerName] = useState("");
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [showPayment, setShowPayment] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
@@ -198,21 +202,24 @@ export default function Marokko98Look() {
       const savedBase64 = sessionStorage.getItem("pendingImageBase64");
       const savedMime = sessionStorage.getItem("pendingImageMime");
       const savedType = sessionStorage.getItem("pendingProductType") as "winner" | "panini" | null;
+      const savedName = sessionStorage.getItem("pendingPlayerName") || "";
       sessionStorage.removeItem("pendingImageBase64");
       sessionStorage.removeItem("pendingImageMime");
       sessionStorage.removeItem("pendingProductType");
+      sessionStorage.removeItem("pendingPlayerName");
 
       if (savedBase64) {
         setImageBase64(savedBase64);
         setImageMime(savedMime || "image/jpeg");
         setImage("data:" + (savedMime || "image/jpeg") + ";base64," + savedBase64);
         if (savedType) setProductType(savedType);
+        if (savedName) setPlayerName(savedName);
         setGenerating(true);
 
         fetch("/api/generate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ imageBase64: savedBase64, imageMime: savedMime || "image/jpeg", paymentIntentId, type: savedType || "winner" }),
+          body: JSON.stringify({ imageBase64: savedBase64, imageMime: savedMime || "image/jpeg", paymentIntentId, type: savedType || "winner", playerName: savedName }),
         })
           .then((r) => r.json())
           .then((data) => { setResultUrl(data.imageUrl); setGenerating(false); })
@@ -350,6 +357,26 @@ export default function Marokko98Look() {
           </div>
         )}
 
+        {/* Name input — only for Panini sticker */}
+        {image && !resultUrl && productType === "panini" && (
+          <div style={{ marginBottom: "16px" }}>
+            <input
+              type="text"
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+              placeholder="Jouw naam op de sticker (bijv. Karim)"
+              maxLength={20}
+              style={{
+                width: "100%", padding: "14px 16px", boxSizing: "border-box",
+                background: "rgba(0,50,20,0.5)", border: `1px solid ${playerName ? FLAG_COLORS.gold : "rgba(0,98,51,0.5)"}`,
+                borderRadius: "10px", color: "#fff", fontSize: "15px",
+                outline: "none", fontFamily: "Georgia, serif",
+                transition: "border-color 0.2s ease",
+              }}
+            />
+          </div>
+        )}
+
         {/* Generate button */}
         {image && !resultUrl && (
           <button className="btn-main" onClick={handleGenerateClick} disabled={generating} style={{
@@ -418,6 +445,7 @@ export default function Marokko98Look() {
             imageBase64={imageBase64}
             imageMime={imageMime}
             productType={productType}
+            playerName={playerName}
             clientSecret={clientSecret}
             onSuccess={handlePaymentSuccess}
             onCancel={() => setShowPayment(false)}

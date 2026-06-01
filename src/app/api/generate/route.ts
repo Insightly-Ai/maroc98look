@@ -15,7 +15,7 @@ function getClients() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { imageBase64, imageMime, paymentIntentId, type } = await request.json();
+    const { imageBase64, imageMime, paymentIntentId, type, playerName } = await request.json();
 
     if (!imageBase64) {
       return NextResponse.json({ error: "Geen afbeelding ontvangen" }, { status: 400 });
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     const promptText = type === "panini"
       ? `Create a photorealistic Panini World Cup 2026 football sticker featuring this exact person.
 
-STICKER DESIGN: Classic Panini collector sticker format — white/cream card background with a thin colored border. At the top, "MAROC 2026" in bold red text on a green banner. The person's photo fills the center of the sticker in portrait format, showing head and shoulders, wearing a dark green Morocco football jersey with red band. At the bottom of the sticker, a name plate with "ATLAS LIONS" in small text and a large bold fictional player name like "EL ATLAS" below it. A small sticker number (e.g. "247") in the bottom corner. Classic Panini shiny/glossy texture feel.
+STICKER DESIGN: Classic Panini collector sticker format — white/cream card background with a thin colored border. At the top, "MAROC 2026" in bold red text on a green banner. The person's photo fills the center of the sticker in portrait format, showing head and shoulders, wearing a dark green Morocco football jersey with red band. At the bottom of the sticker, a name plate with "ATLAS LIONS" in small text and the player name "${playerName || "ATLAS"}" in large bold uppercase letters below it. A small sticker number (e.g. "247") in the bottom corner. Classic Panini shiny/glossy texture feel.
 
 PERSON: The face, skin tone, hair and facial features must be EXACTLY identical to the uploaded photo.
 
