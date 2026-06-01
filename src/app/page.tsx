@@ -209,7 +209,7 @@ export default function Marokko98Look() {
             <MoroccanStar size={30} style={{ position: "absolute", top: 12, left: 12, opacity: 0.4 }} />
             <MoroccanStar size={30} style={{ position: "absolute", top: 12, right: 12, opacity: 0.4 }} />
             <div style={{ textAlign: "center", fontSize: "13px", color: FLAG_COLORS.gold, letterSpacing: "4px", textTransform: "uppercase", marginBottom: "16px", opacity: 0.8 }}>
-              {resultVariant === "team" ? "🎉 Surprise! Jouw Teamfoto ⭐" : "Jouw Maroc 98 Look ⭐"}
+              Jouw Maroc 98 Look ⭐
             </div>
             <img src={resultUrl} alt="Jouw Maroc 98 look" style={{ width: "100%", borderRadius: "12px", border: `2px solid ${FLAG_COLORS.green}`, boxShadow: "0 8px 32px rgba(0,0,0,0.5)", display: "block" }} />
             <div style={{ marginTop: "20px", display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
