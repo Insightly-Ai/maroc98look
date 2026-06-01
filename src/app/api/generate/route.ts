@@ -22,13 +22,19 @@ export async function POST(request: NextRequest) {
 
     const faceUrl = await fal.storage.upload(file);
 
-    const result = await fal.subscribe("fal-ai/pulid", {
+    const result = await fal.subscribe("fal-ai/fooocus/image-prompt", {
       input: {
-        reference_images: [{ image_url: faceUrl }],
-        prompt: "portrait of this exact person from face to chest, wearing a dark forest green Morocco 1998 FIFA World Cup Puma football jersey with bold red horizontal stripe across the chest and white V-neck collar, FRMF gold crest badge on left chest, packed stadium crowd in background, 1990s football portrait photography, photorealistic, sharp, high quality",
-        negative_prompt: "ugly, deformed, blurry, cartoon, low quality, watermark, different person, wrong face",
-        mode: "fidelity",
-        num_inference_steps: 20,
+        prompt: "portrait of a person from face to chest, wearing a dark forest green Morocco 1998 FIFA World Cup Puma football jersey, bold red horizontal stripe across the chest, white V-neck collar, FRMF gold crest badge on left chest, packed football stadium crowd in background, 1990s vintage football portrait, photorealistic, sharp, high quality",
+        negative_prompt: "ugly, deformed, blurry, cartoon, low quality, watermark, adidas, nike, wrong shirt",
+        image_prompt_1: {
+          image_url: faceUrl,
+          type: "FaceSwap",
+          weight: 1,
+          stop_at: 1,
+        },
+        performance: "Lightning",
+        aspect_ratio: "768x1024",
+        styles: ["SAI Photographic"],
       },
     });
 
