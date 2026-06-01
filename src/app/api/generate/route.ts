@@ -1,12 +1,9 @@
-import { fal } from "@fal-ai/client";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
 
 export const maxDuration = 120;
 
-fal.config({ credentials: process.env.FAL_KEY });
-
-const SHIRT_URL =
-  "https://raw.githubusercontent.com/Insightly-Ai/maroc98look/main/marokko-thuisshirt-retro-1998-voetbaltenue-600x600.webp";
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,30 +13,43 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Geen afbeelding ontvangen" }, { status: 400 });
     }
 
-    const buffer = Buffer.from(imageBase64, "base64");
-    const blob = new Blob([buffer], { type: imageMime || "image/jpeg" });
-    const file = new File([blob], "photo.jpg", { type: imageMime || "image/jpeg" });
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.0-flash-preview-image-generation",
+    });
 
-    const faceUrl = await fal.storage.upload(file);
-
-    const result = await fal.subscribe("fal-ai/fooocus/image-prompt", {
-      input: {
-        prompt: "portrait of a person from face to chest, wearing a dark forest green Morocco 1998 FIFA World Cup Puma football jersey, bold red horizontal stripe across the chest, white V-neck collar, FRMF gold crest badge on left chest, packed football stadium crowd in background, 1990s vintage football portrait, photorealistic, sharp, high quality",
-        negative_prompt: "ugly, deformed, blurry, cartoon, low quality, watermark, adidas, nike, wrong shirt",
-        image_prompt_1: {
-          image_url: faceUrl,
-          type: "FaceSwap",
-          weight: 1,
-          stop_at: 1,
+    const result = await model.generateContent({
+      contents: [
+        {
+          role: "user",
+          parts: [
+            {
+              inlineData: {
+                mimeType: imageMime || "image/jpeg",
+                data: imageBase64,
+              },
+            },
+            {
+              text: "Edit this photo: keep the person's face, skin tone, hair and features exactly the same. Change only their clothing to the Morocco 1998 FIFA World Cup Puma football jersey: dark forest green with a bold red horizontal stripe across the chest, white V-neck collar, FRMF gold lion crest badge on the left chest, short sleeves. Add a packed football stadium crowd in the background. Portrait from face to chest. Photorealistic, 1990s football photography style.",
+            },
+          ],
         },
-        performance: "Lightning",
-        aspect_ratio: "768x1024",
-        styles: ["SAI Photographic"],
+      ],
+      generationConfig: {
+        // @ts-expect-error responseModalities not yet in type defs
+        responseModalities: ["IMAGE", "TEXT"],
       },
     });
 
-    const imageUrl = result.data?.images?.[0]?.url;
-    if (!imageUrl) throw new Error("Geen afbeelding gegenereerd");
+    const parts = result.response.candidates?.[0]?.content?.parts ?? [];
+    const imagePart = parts.find(
+      (p: { inlineData?: { mimeType: string; data: string } }) =>
+        p.inlineData?.mimeType?.startsWith("image/")
+    );
+
+    if (!imagePart?.inlineData) throw new Error("Geen afbeelding gegenereerd");
+
+    const { mimeType, data } = imagePart.inlineData;
+    const imageUrl = `data:${mimeType};base64,${data}`;
 
     return NextResponse.json({ imageUrl, variant: "solo" });
   } catch (error) {
