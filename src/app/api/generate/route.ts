@@ -54,7 +54,7 @@ SCENE: The person is standing on the pitch in a packed stadium at night, holding
 
 PERSON: Keep the person's face, skin tone, hair and facial features EXACTLY identical to the first image. Show them from head to waist.
 
-SHIRT: They are wearing the Moroccan football shirt shown in the second image. IMPORTANT: remove all brand logos, remove any PUMA logo, remove any FRMF badge or federation crest. Keep only the shirt's design, colors and patterns.
+SHIRT: They are wearing the official Morocco 2026 FIFA World Cup away jersey. Design details: WHITE base color. Vertical golden/yellow zellige geometric diamond-pattern bands running down the center front of the shirt. Red-green-white V-neck collar (red outer stripe, green middle stripe, white inner). Short white sleeves. The shirt is clean — NO Puma logo, NO FRMF federation badge or crest, NO brand marks, NO sponsors whatsoever. The reference shirt in the second image shows the exact pattern and colors to replicate.
 
 STYLE: Photorealistic, professional sports photography, dramatic lighting, ultra high quality. So epic and joyful that people want to share it on WhatsApp, Instagram Stories and social media.`,
             },
