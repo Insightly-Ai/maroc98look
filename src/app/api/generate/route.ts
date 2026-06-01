@@ -1,21 +1,16 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
-import { readFileSync } from "fs";
-import { join } from "path";
 import Stripe from "stripe";
 
 export const maxDuration = 120;
 
-// Lazy singletons — initialized on first request, not at build time
 let genAI: GoogleGenerativeAI | null = null;
 let stripeClient: Stripe | null = null;
-let shirtBase64: string | null = null;
 
 function getClients() {
   if (!genAI) genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
   if (!stripeClient) stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!);
-  if (!shirtBase64) shirtBase64 = readFileSync(join(process.cwd(), "public/maroc98-shirt.webp")).toString("base64");
-  return { genAI, stripe: stripeClient, shirtBase64 };
+  return { genAI, stripe: stripeClient };
 }
 
 export async function POST(request: NextRequest) {
@@ -26,9 +21,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Geen afbeelding ontvangen" }, { status: 400 });
     }
 
-    const { genAI: ai, stripe, shirtBase64: shirt } = getClients();
+    const { genAI: ai, stripe } = getClients();
 
-    // Verify payment
     if (!paymentIntentId) {
       return NextResponse.json({ error: "Geen betaling gevonden" }, { status: 402 });
     }
@@ -44,17 +38,16 @@ export async function POST(request: NextRequest) {
         {
           role: "user",
           parts: [
-            { text: "Here is a person's photo (first image) and a reference football jersey (second image)." },
+            { text: "Here is a photo of a person." },
             { inlineData: { mimeType: imageMime || "image/jpeg", data: imageBase64 } },
-            { inlineData: { mimeType: "image/webp", data: shirt } },
             {
               text: `Create an epic, cinematic photo of this exact person celebrating on the football pitch after winning the FIFA World Cup final.
 
 SCENE: The person is standing on the pitch in a packed stadium at night, holding the golden FIFA World Cup trophy high above their head with both arms raised in triumph. Golden confetti is raining down everywhere. Tens of thousands of jubilant supporters fill the stadium stands behind them, waving Moroccan flags (red with green star). Dramatic stadium floodlights illuminate the scene. Smoke, ticker tape and confetti fill the air. Pitch grass visible at their feet.
 
-PERSON: Keep the person's face, skin tone, hair and facial features EXACTLY identical to the first image. Show them from head to waist.
+PERSON: Keep the person's face, skin tone, hair and facial features EXACTLY identical to the uploaded photo. Show them from head to waist.
 
-SHIRT: They are wearing the official Morocco 2026 FIFA World Cup away jersey. Design details: WHITE base color. Vertical golden/yellow zellige geometric diamond-pattern bands running down the center front of the shirt. Red-green-white V-neck collar (red outer stripe, green middle stripe, white inner). Short white sleeves. The shirt is clean — NO Puma logo, NO FRMF federation badge or crest, NO brand marks, NO sponsors whatsoever. The reference shirt in the second image shows the exact pattern and colors to replicate.
+SHIRT: They are wearing the official Morocco 2026 FIFA World Cup away jersey. Exact design: WHITE base fabric. The center-front of the shirt has vertical bands of gold/yellow zellige geometric patterns — intricate diamond and cross shapes inspired by traditional Moroccan tile work. Red-green-white V-neck collar: red outer stripe, green middle stripe, white inner edge. Short white sleeves. NO Puma logo anywhere. NO FRMF badge or federation crest. NO brand marks. NO sponsor logos. Clean shirt with only the white fabric and gold zellige pattern visible.
 
 STYLE: Photorealistic, professional sports photography, dramatic lighting, ultra high quality. So epic and joyful that people want to share it on WhatsApp, Instagram Stories and social media.`,
             },
