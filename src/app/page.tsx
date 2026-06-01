@@ -1,30 +1,16 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Elements,
+  PaymentElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
 
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 const FLAG_COLORS = { green: "#006233", red: "#C1272D", gold: "#B8860B" };
-
-function StarField() {
-  const stars = Array.from({ length: 12 }, (_, i) => {
-    const angle = (i / 12) * 360;
-    const r = 38;
-    const x = 50 + r * Math.cos((angle - 90) * (Math.PI / 180));
-    const y = 50 + r * Math.sin((angle - 90) * (Math.PI / 180));
-    return { x, y, delay: i * 0.08 };
-  });
-  return (
-    <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
-      {stars.map((s, i) => (
-        <div key={i} style={{
-          position: "absolute", left: `${s.x}%`, top: `${s.y}%`,
-          transform: "translate(-50%,-50%)", color: FLAG_COLORS.gold,
-          fontSize: "11px", opacity: 0.18,
-          animation: `twinkle 2s ${s.delay}s ease-in-out infinite alternate`,
-        }}>✦</div>
-      ))}
-    </div>
-  );
-}
 
 function MoroccanStar({ size = 80, style }: { size?: number; style?: React.CSSProperties }) {
   return (
@@ -44,29 +30,134 @@ function MoroccanStar({ size = 80, style }: { size?: number; style?: React.CSSPr
   );
 }
 
+function CheckoutForm({
+  imageBase64,
+  imageMime,
+  onSuccess,
+  onCancel,
+}: {
+  imageBase64: string;
+  imageMime: string;
+  onSuccess: (url: string) => void;
+  onCancel: () => void;
+}) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [paying, setPaying] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+    setPaying(true);
+    setError(null);
+
+    const { error: submitError } = await elements.submit();
+    if (submitError) { setError(submitError.message ?? "Fout"); setPaying(false); return; }
+
+    // Confirm payment
+    const res = await fetch("/api/payment", { method: "POST" });
+    const { clientSecret } = await res.json();
+
+    const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
+      elements,
+      clientSecret,
+      confirmParams: { return_url: window.location.href },
+      redirect: "if_required",
+    });
+
+    if (confirmError) { setError(confirmError.message ?? "Betaling mislukt"); setPaying(false); return; }
+
+    // Payment succeeded — generate image
+    const genRes = await fetch("/api/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ imageBase64, imageMime, paymentIntentId: paymentIntent?.id }),
+    });
+    const data = await genRes.json();
+    if (!genRes.ok) { setError(data.error ?? "Generatie mislukt"); setPaying(false); return; }
+
+    onSuccess(data.imageUrl);
+  };
+
+  return (
+    <div style={{
+      position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      zIndex: 1000, padding: "20px",
+    }}>
+      <div style={{
+        background: "linear-gradient(135deg, #001a0a, #003d1a)",
+        border: `1px solid ${FLAG_COLORS.gold}`,
+        borderRadius: "16px", padding: "32px", width: "100%", maxWidth: "420px",
+        boxShadow: "0 20px 60px rgba(0,0,0,0.8)",
+      }}>
+        <div style={{ textAlign: "center", marginBottom: "24px" }}>
+          <MoroccanStar size={36} style={{ display: "inline-block" }} />
+          <div style={{ color: "#fff", fontSize: "20px", fontWeight: 700, marginTop: "8px" }}>
+            Jouw WK-winnaarsfoto
+          </div>
+          <div style={{ color: FLAG_COLORS.gold, fontSize: "14px", marginTop: "4px" }}>
+            Eenmalig €1,49 — direct downloaden
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <PaymentElement options={{ layout: "accordion" }} />
+
+          {error && (
+            <div style={{ color: "#ff8a8a", fontSize: "13px", marginTop: "12px", textAlign: "center" }}>
+              {error}
+            </div>
+          )}
+
+          <button type="submit" disabled={paying || !stripe} style={{
+            width: "100%", marginTop: "20px", padding: "16px",
+            background: paying ? "rgba(0,98,51,0.5)" : `linear-gradient(135deg, ${FLAG_COLORS.green}, #008a45)`,
+            border: "none", borderRadius: "10px", color: "#fff",
+            fontSize: "16px", fontWeight: 700, cursor: paying ? "not-allowed" : "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center", gap: "10px",
+          }}>
+            {paying ? (
+              <>
+                <span style={{ width: "18px", height: "18px", border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} />
+                {paying ? "Betalen & genereren..." : ""}
+              </>
+            ) : "🏆 Betaal €1,49 & genereer"}
+          </button>
+
+          <button type="button" onClick={onCancel} style={{
+            width: "100%", marginTop: "10px", padding: "10px",
+            background: "transparent", border: `1px solid rgba(255,255,255,0.15)`,
+            borderRadius: "8px", color: "rgba(255,255,255,0.5)", fontSize: "13px", cursor: "pointer",
+          }}>
+            Annuleren
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 export default function Marokko98Look() {
   const [image, setImage] = useState<string | null>(null);
   const [imageBase64, setImageBase64] = useState<string | null>(null);
   const [imageMime, setImageMime] = useState<string>("image/jpeg");
   const [resultUrl, setResultUrl] = useState<string | null>(null);
-  const [resultVariant, setResultVariant] = useState<"solo" | "team" | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [showPayment, setShowPayment] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleFile = useCallback((file: File) => {
     if (!file || !file.type.startsWith("image/")) return;
-    const url = URL.createObjectURL(file);
-    setImage(url);
+    setImage(URL.createObjectURL(file));
     setResultUrl(null);
     setError(null);
     setImageMime(file.type || "image/jpeg");
     const reader = new FileReader();
-    reader.onload = (e) => {
-      const base64 = (e.target?.result as string).split(",")[1];
-      setImageBase64(base64);
-    };
+    reader.onload = (e) => setImageBase64((e.target?.result as string).split(",")[1]);
     reader.readAsDataURL(file);
   }, []);
 
@@ -76,162 +167,175 @@ export default function Marokko98Look() {
     handleFile(e.dataTransfer.files[0]);
   }, [handleFile]);
 
-  const transform = async () => {
+  const handleGenerateClick = async () => {
     if (!imageBase64) return;
-    setLoading(true);
     setError(null);
-    setResultUrl(null);
-    setResultVariant(null);
-    try {
-      const res = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageBase64, imageMime }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Fout");
-      setResultUrl(data.imageUrl);
-      setResultVariant(data.variant || "solo");
-    } catch {
-      setError("Er ging iets mis. Probeer opnieuw! 🇲🇦");
-    } finally {
-      setLoading(false);
-    }
+    // Create payment intent and show checkout
+    const res = await fetch("/api/payment", { method: "POST" });
+    const { clientSecret: cs } = await res.json();
+    setClientSecret(cs);
+    setShowPayment(true);
+  };
+
+  const handlePaymentSuccess = (url: string) => {
+    setShowPayment(false);
+    setResultUrl(url);
   };
 
   return (
     <div style={{
       minHeight: "100vh",
       background: "linear-gradient(160deg, #00200f 0%, #003d1a 40%, #001a0a 100%)",
-      fontFamily: "Georgia, serif",
-      color: "#e8f5e0",
-      position: "relative",
-      overflow: "hidden",
+      fontFamily: "Georgia, serif", color: "#e8f5e0",
+      position: "relative", overflow: "hidden",
     }}>
       <style>{`
-        @keyframes twinkle { from { opacity: 0.1; transform: translate(-50%,-50%) scale(0.8); } to { opacity: 0.4; transform: translate(-50%,-50%) scale(1.2); } }
-        @keyframes pulse-gold { 0%,100% { box-shadow: 0 0 0 0 rgba(184,134,11,0.4); } 50% { box-shadow: 0 0 30px 8px rgba(184,134,11,0.15); } }
-        @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse-gold { 0%,100% { box-shadow: 0 0 0 0 rgba(184,134,11,0.4); } 50% { box-shadow: 0 0 30px 8px rgba(184,134,11,0.15); } }
         .upload-zone:hover { border-color: ${FLAG_COLORS.gold} !important; background: rgba(0,98,51,0.3) !important; }
         .btn-main:hover { transform: translateY(-2px) !important; box-shadow: 0 12px 40px rgba(0,98,51,0.6) !important; }
         .result-card { animation: fadeInUp 0.6s ease forwards; }
       `}</style>
 
-      <StarField />
-      <div style={{ position: "absolute", inset: 0, opacity: 0.04, backgroundImage: `repeating-linear-gradient(45deg, ${FLAG_COLORS.gold} 0, ${FLAG_COLORS.gold} 1px, transparent 0, transparent 50%)`, backgroundSize: "30px 30px", pointerEvents: "none" }} />
       <div style={{ height: "5px", background: `linear-gradient(90deg, ${FLAG_COLORS.red}, #e63946, ${FLAG_COLORS.red})` }} />
 
-      <div style={{ maxWidth: "700px", margin: "0 auto", padding: "40px 20px 60px" }}>
-        <div style={{ textAlign: "center", marginBottom: "48px" }}>
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "16px", marginBottom: "16px" }}>
-            <MoroccanStar size={40} />
+      <div style={{ maxWidth: "680px", margin: "0 auto", padding: "40px 20px 60px" }}>
+
+        {/* Header */}
+        <div style={{ textAlign: "center", marginBottom: "40px" }}>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "16px", marginBottom: "12px" }}>
+            <MoroccanStar size={36} />
             <div style={{
-              fontSize: "clamp(28px, 6vw, 52px)", fontWeight: 900,
+              fontSize: "clamp(26px, 6vw, 48px)", fontWeight: 900,
               background: `linear-gradient(135deg, #fff 0%, ${FLAG_COLORS.gold} 50%, #fff 100%)`,
               backgroundSize: "200% auto", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
               backgroundClip: "text", animation: "shimmer 4s linear infinite", letterSpacing: "-1px",
-            }}>MAROC 98</div>
-            <MoroccanStar size={40} />
+            }}>MAROC 2026</div>
+            <MoroccanStar size={36} />
           </div>
-          <div style={{ fontSize: "clamp(13px, 2.5vw, 17px)", color: FLAG_COLORS.gold, letterSpacing: "4px", textTransform: "uppercase", marginBottom: "12px", opacity: 0.9 }}>
-            Look Generator
+          <div style={{ fontSize: "clamp(13px, 2.5vw, 16px)", color: FLAG_COLORS.gold, letterSpacing: "4px", textTransform: "uppercase", marginBottom: "12px" }}>
+            WK Kampioen Generator
           </div>
-          <p style={{ fontWeight: 300, fontSize: "15px", color: "rgba(232,245,224,0.7)", maxWidth: "440px", margin: "0 auto", lineHeight: 1.7 }}>
-            Upload je foto en zie jezelf als een legendarische Marokkaanse voetballer uit het iconische WK 1998 tijdperk. 🇲🇦⭐
+          <p style={{ fontSize: "15px", color: "rgba(232,245,224,0.7)", maxWidth: "440px", margin: "0 auto", lineHeight: 1.7 }}>
+            Upload jouw foto en zie jezelf de wereldbeker omhooghouden op het veld — omringd door confetti en duizenden supporters. 🏆🇲🇦
           </p>
-          <div style={{ display: "flex", justifyContent: "center", gap: "12px", marginTop: "16px", alignItems: "center" }}>
-            <img src="/maroc98-shirt.webp" alt="Marokko 98 shirt" style={{ height: "64px", borderRadius: "6px", border: `1px solid rgba(184,134,11,0.3)`, opacity: 0.85 }} />
-            <div style={{ fontSize: "12px", color: "rgba(232,245,224,0.45)", letterSpacing: "1px" }}>
-              Het iconische Puma shirt
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "16px", marginTop: "20px" }}>
+            <div style={{ background: "rgba(0,98,51,0.3)", border: `1px solid rgba(0,98,51,0.5)`, borderRadius: "20px", padding: "6px 16px", fontSize: "13px", color: FLAG_COLORS.gold }}>
+              🏆 WK-finale foto
+            </div>
+            <div style={{ background: "rgba(193,39,45,0.2)", border: `1px solid rgba(193,39,45,0.4)`, borderRadius: "20px", padding: "6px 16px", fontSize: "13px", color: "#ff8a8a" }}>
+              Slechts €1,49
             </div>
           </div>
         </div>
 
+        {/* Upload zone */}
         <div className="upload-zone" onClick={() => fileRef.current?.click()}
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
           onDragLeave={() => setDragOver(false)}
           onDrop={handleDrop}
           style={{
             border: `2px dashed ${dragOver ? FLAG_COLORS.gold : "rgba(0,98,51,0.6)"}`,
-            borderRadius: "16px", padding: image ? "20px" : "60px 20px",
+            borderRadius: "16px", padding: image ? "20px" : "56px 20px",
             textAlign: "center", cursor: "pointer",
             background: dragOver ? "rgba(0,98,51,0.3)" : "rgba(0,50,20,0.4)",
-            backdropFilter: "blur(10px)", transition: "all 0.3s ease",
-            marginBottom: "24px", position: "relative", overflow: "hidden",
+            backdropFilter: "blur(10px)", transition: "all 0.3s ease", marginBottom: "20px",
           }}>
           <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }}
             onChange={(e) => e.target.files && handleFile(e.target.files[0])} />
           {image ? (
             <div>
-              <img src={image} alt="Geüpload" style={{ maxHeight: "280px", maxWidth: "100%", borderRadius: "10px", border: `2px solid ${FLAG_COLORS.green}`, boxShadow: "0 8px 32px rgba(0,0,0,0.5)", display: "block", margin: "0 auto 12px" }} />
+              <img src={image} alt="Geüpload" style={{ maxHeight: "260px", maxWidth: "100%", borderRadius: "10px", border: `2px solid ${FLAG_COLORS.green}`, boxShadow: "0 8px 32px rgba(0,0,0,0.5)", display: "block", margin: "0 auto 10px" }} />
               <p style={{ color: FLAG_COLORS.gold, fontSize: "13px", margin: 0 }}>Klik om een andere foto te kiezen</p>
             </div>
           ) : (
             <>
-              <div style={{ fontSize: "52px", marginBottom: "16px" }}>🦁</div>
-              <p style={{ fontSize: "18px", color: "#c8e6c0", marginBottom: "8px" }}>Sleep je foto hierheen</p>
+              <div style={{ fontSize: "48px", marginBottom: "14px" }}>🤳</div>
+              <p style={{ fontSize: "17px", color: "#c8e6c0", marginBottom: "6px" }}>Sleep je selfie hierheen</p>
               <p style={{ fontSize: "13px", color: "rgba(232,245,224,0.5)", margin: 0 }}>of klik om te uploaden • JPG, PNG, WEBP</p>
             </>
           )}
         </div>
 
+        {/* Tip */}
+        {!image && (
+          <div style={{ background: "rgba(184,134,11,0.1)", border: `1px solid rgba(184,134,11,0.3)`, borderRadius: "10px", padding: "12px 16px", marginBottom: "20px", fontSize: "13px", color: "rgba(232,245,224,0.7)", textAlign: "center" }}>
+            💡 Beste resultaat: een duidelijke foto van je gezicht, goed verlicht, rechtop
+          </div>
+        )}
+
+        {/* Generate button */}
         {image && !resultUrl && (
-          <button className="btn-main" onClick={transform} disabled={loading} style={{
+          <button className="btn-main" onClick={handleGenerateClick} style={{
             width: "100%", padding: "18px",
-            background: loading ? "rgba(0,98,51,0.4)" : `linear-gradient(135deg, ${FLAG_COLORS.green} 0%, #008a45 50%, ${FLAG_COLORS.green} 100%)`,
-            border: `1px solid ${loading ? "rgba(0,98,51,0.3)" : FLAG_COLORS.green}`,
-            borderRadius: "12px", color: "#fff", fontSize: "18px", fontWeight: 700,
-            cursor: loading ? "not-allowed" : "pointer", transition: "all 0.3s ease",
-            letterSpacing: "1px", animation: !loading ? "pulse-gold 3s ease-in-out infinite" : "none",
-            marginBottom: "32px", display: "flex", alignItems: "center", justifyContent: "center", gap: "12px",
+            background: `linear-gradient(135deg, ${FLAG_COLORS.green} 0%, #008a45 50%, ${FLAG_COLORS.green} 100%)`,
+            border: `1px solid ${FLAG_COLORS.green}`, borderRadius: "12px", color: "#fff",
+            fontSize: "18px", fontWeight: 700, cursor: "pointer", transition: "all 0.3s ease",
+            letterSpacing: "1px", animation: "pulse-gold 3s ease-in-out infinite",
+            marginBottom: "16px", display: "flex", alignItems: "center", justifyContent: "center", gap: "12px",
           }}>
-            {loading
-              ? <><span style={{ display: "inline-block", width: "20px", height: "20px", border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin-slow 0.8s linear infinite" }} />Even geduld — jouw Maroc 98 look wordt gegenereerd...</>
-              : <>🇲🇦 Transformeer naar Maroc 98 speler!</>}
+            🏆 Genereer mijn winnaarsfoto — €1,49
           </button>
         )}
 
         {error && (
-          <div style={{ background: "rgba(193,39,45,0.15)", border: "1px solid rgba(193,39,45,0.4)", borderRadius: "12px", padding: "16px 20px", color: "#ff8a8a", fontSize: "15px", marginBottom: "24px", textAlign: "center" }}>
+          <div style={{ background: "rgba(193,39,45,0.15)", border: "1px solid rgba(193,39,45,0.4)", borderRadius: "12px", padding: "14px 18px", color: "#ff8a8a", fontSize: "14px", marginBottom: "20px", textAlign: "center" }}>
             {error}
           </div>
         )}
 
+        {/* Result */}
         {resultUrl && (
           <div className="result-card" style={{
-            background: "linear-gradient(135deg, rgba(0,50,20,0.8) 0%, rgba(0,30,12,0.9) 100%)",
+            background: "linear-gradient(135deg, rgba(0,50,20,0.8), rgba(0,30,12,0.9))",
             border: `1px solid ${FLAG_COLORS.gold}`, borderRadius: "16px", padding: "24px",
-            position: "relative", overflow: "hidden", backdropFilter: "blur(20px)",
-            boxShadow: `0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(184,134,11,0.2)`,
+            backdropFilter: "blur(20px)", boxShadow: `0 20px 60px rgba(0,0,0,0.5)`,
           }}>
-            <MoroccanStar size={30} style={{ position: "absolute", top: 12, left: 12, opacity: 0.4 }} />
-            <MoroccanStar size={30} style={{ position: "absolute", top: 12, right: 12, opacity: 0.4 }} />
-            <div style={{ textAlign: "center", fontSize: "13px", color: FLAG_COLORS.gold, letterSpacing: "4px", textTransform: "uppercase", marginBottom: "16px", opacity: 0.8 }}>
-              Jouw Maroc 98 Look ⭐
+            <MoroccanStar size={28} style={{ position: "absolute" as const, top: 12, left: 12, opacity: 0.4 }} />
+            <div style={{ textAlign: "center", fontSize: "12px", color: FLAG_COLORS.gold, letterSpacing: "4px", textTransform: "uppercase", marginBottom: "16px" }}>
+              🏆 Jij bent wereldkampioen! 🏆
             </div>
-            <img src={resultUrl} alt="Jouw Maroc 98 look" style={{ width: "100%", borderRadius: "12px", border: `2px solid ${FLAG_COLORS.green}`, boxShadow: "0 8px 32px rgba(0,0,0,0.5)", display: "block" }} />
-            <div style={{ marginTop: "20px", display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
-              <a href={resultUrl} download="maroc98look.jpg" style={{ background: FLAG_COLORS.green, border: "none", borderRadius: "8px", color: "#fff", padding: "10px 24px", fontSize: "13px", cursor: "pointer", letterSpacing: "1px", textDecoration: "none", display: "inline-block" }}>
-                ⬇ Download
+            <img src={resultUrl} alt="Jouw WK winnaarsfoto" style={{ width: "100%", borderRadius: "12px", border: `2px solid ${FLAG_COLORS.green}`, boxShadow: "0 8px 32px rgba(0,0,0,0.5)", display: "block" }} />
+            <div style={{ marginTop: "16px", display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
+              <a href={resultUrl} download="maroc2026-kampioen.jpg" style={{
+                background: FLAG_COLORS.green, border: "none", borderRadius: "8px",
+                color: "#fff", padding: "12px 28px", fontSize: "14px", cursor: "pointer",
+                letterSpacing: "1px", textDecoration: "none", display: "inline-block", fontWeight: 700,
+              }}>
+                ⬇ Download & deel
               </a>
-              <button onClick={() => { setImage(null); setImageBase64(null); setResultUrl(null); setResultVariant(null); }}
-                style={{ background: "transparent", border: `1px solid rgba(184,134,11,0.4)`, borderRadius: "8px", color: FLAG_COLORS.gold, padding: "10px 24px", fontSize: "13px", cursor: "pointer", letterSpacing: "1px" }}>
-                Probeer opnieuw
+              <button onClick={() => { setImage(null); setImageBase64(null); setResultUrl(null); }} style={{
+                background: "transparent", border: `1px solid rgba(184,134,11,0.4)`,
+                borderRadius: "8px", color: FLAG_COLORS.gold, padding: "12px 24px", fontSize: "13px", cursor: "pointer",
+              }}>
+                Nieuwe foto
               </button>
             </div>
           </div>
         )}
 
-        <div style={{ textAlign: "center", marginTop: "60px", color: "rgba(232,245,224,0.25)", fontSize: "12px", letterSpacing: "2px" }}>
-          <MoroccanStar size={16} style={{ display: "inline-block", verticalAlign: "middle", margin: "0 8px", opacity: 0.4 }} />
-          MAROC 98 · WK FRANKRIJK · LES LIONS DE L&apos;ATLAS
-          <MoroccanStar size={16} style={{ display: "inline-block", verticalAlign: "middle", margin: "0 8px", opacity: 0.4 }} />
+        <div style={{ textAlign: "center", marginTop: "48px", color: "rgba(232,245,224,0.2)", fontSize: "11px", letterSpacing: "2px" }}>
+          <MoroccanStar size={14} style={{ display: "inline-block", verticalAlign: "middle", margin: "0 6px", opacity: 0.4 }} />
+          MAROC 2026 · FIFA WORLD CUP · LES LIONS DE L&apos;ATLAS
+          <MoroccanStar size={14} style={{ display: "inline-block", verticalAlign: "middle", margin: "0 6px", opacity: 0.4 }} />
         </div>
       </div>
 
-      <div style={{ height: "5px", background: `linear-gradient(90deg, ${FLAG_COLORS.red}, #e63946, ${FLAG_COLORS.red})`, position: "absolute", bottom: 0, left: 0, right: 0 }} />
+      {/* Stripe payment modal */}
+      {showPayment && clientSecret && imageBase64 && (
+        <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: "night", variables: { colorPrimary: FLAG_COLORS.green } } }}>
+          <CheckoutForm
+            imageBase64={imageBase64}
+            imageMime={imageMime}
+            onSuccess={handlePaymentSuccess}
+            onCancel={() => setShowPayment(false)}
+          />
+        </Elements>
+      )}
+
+      <div style={{ height: "5px", background: `linear-gradient(90deg, ${FLAG_COLORS.red}, #e63946, ${FLAG_COLORS.red})`, position: "fixed" as const, bottom: 0, left: 0, right: 0 }} />
     </div>
   );
 }

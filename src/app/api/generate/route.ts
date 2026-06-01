@@ -2,33 +2,62 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
 import { readFileSync } from "fs";
 import { join } from "path";
+import Stripe from "stripe";
 
 export const maxDuration = 120;
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+// Lazy singletons — initialized on first request, not at build time
+let genAI: GoogleGenerativeAI | null = null;
+let stripeClient: Stripe | null = null;
+let shirtBase64: string | null = null;
 
-// Load once at module init — avoids HTTP fetch on every request
-const shirtBase64 = readFileSync(join(process.cwd(), "public/maroc98-shirt.webp")).toString("base64");
+function getClients() {
+  if (!genAI) genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+  if (!stripeClient) stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!);
+  if (!shirtBase64) shirtBase64 = readFileSync(join(process.cwd(), "public/maroc98-shirt.webp")).toString("base64");
+  return { genAI, stripe: stripeClient, shirtBase64 };
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const { imageBase64, imageMime } = await request.json();
+    const { imageBase64, imageMime, paymentIntentId } = await request.json();
 
     if (!imageBase64) {
       return NextResponse.json({ error: "Geen afbeelding ontvangen" }, { status: 400 });
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-image" });
+    const { genAI: ai, stripe, shirtBase64: shirt } = getClients();
+
+    // Verify payment
+    if (!paymentIntentId) {
+      return NextResponse.json({ error: "Geen betaling gevonden" }, { status: 402 });
+    }
+    const intent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    if (intent.status !== "succeeded") {
+      return NextResponse.json({ error: "Betaling niet geslaagd" }, { status: 402 });
+    }
+
+    const model = ai.getGenerativeModel({ model: "gemini-3.1-flash-image" });
 
     const result = await model.generateContent({
       contents: [
         {
           role: "user",
           parts: [
-            { text: "Here is a person's photo (first image) and the exact football jersey they should wear (second image)." },
+            { text: "Here is a person's photo (first image) and a reference football jersey (second image)." },
             { inlineData: { mimeType: imageMime || "image/jpeg", data: imageBase64 } },
-            { inlineData: { mimeType: "image/webp", data: shirtBase64 } },
-            { text: "Generate a new photo of this exact person wearing this exact jersey from the second image. Keep their face, skin tone, hair and features perfectly identical. Use the jersey exactly as shown: same colors, same stripe, same badge, same collar. Add a packed 1998 football stadium crowd in the background. Portrait from face to chest. Photorealistic, 1990s football photography style." },
+            { inlineData: { mimeType: "image/webp", data: shirt } },
+            {
+              text: `Create an epic, cinematic photo of this exact person celebrating on the football pitch after winning the FIFA World Cup final.
+
+SCENE: The person is standing on the pitch in a packed stadium at night, holding the golden FIFA World Cup trophy high above their head with both arms raised in triumph. Golden confetti is raining down everywhere. Tens of thousands of jubilant supporters fill the stadium stands behind them, waving Moroccan flags (red with green star). Dramatic stadium floodlights illuminate the scene. Smoke, ticker tape and confetti fill the air. Pitch grass visible at their feet.
+
+PERSON: Keep the person's face, skin tone, hair and facial features EXACTLY identical to the first image. Show them from head to waist.
+
+SHIRT: They are wearing the Moroccan football shirt shown in the second image. IMPORTANT: remove all brand logos, remove any PUMA logo, remove any FRMF badge or federation crest. Keep only the shirt's design, colors and patterns.
+
+STYLE: Photorealistic, professional sports photography, dramatic lighting, ultra high quality. So epic and joyful that people want to share it on WhatsApp, Instagram Stories and social media.`,
+            },
           ],
         },
       ],
@@ -47,7 +76,7 @@ export async function POST(request: NextRequest) {
     if (!imagePart?.inlineData) throw new Error("Geen afbeelding gegenereerd");
 
     const { mimeType, data } = imagePart.inlineData;
-    return NextResponse.json({ imageUrl: `data:${mimeType};base64,${data}`, variant: "solo" });
+    return NextResponse.json({ imageUrl: `data:${mimeType};base64,${data}` });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     console.error("Fout:", msg);
