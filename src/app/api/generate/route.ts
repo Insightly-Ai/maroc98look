@@ -47,7 +47,7 @@ SCENE: The person is standing on the pitch in a packed stadium at night, holding
 
 PERSON: Keep the person's face, skin tone, hair and facial features EXACTLY identical to the uploaded photo. Show them from head to waist.
 
-SHIRT: They are wearing the official Morocco 2026 FIFA World Cup away jersey. Exact design: WHITE base fabric. The center-front of the shirt has vertical bands of gold/yellow zellige geometric patterns — intricate diamond and cross shapes inspired by traditional Moroccan tile work. Red-green-white V-neck collar: red outer stripe, green middle stripe, white inner edge. Short white sleeves. NO Puma logo anywhere. NO FRMF badge or federation crest. NO brand marks. NO sponsor logos. Clean shirt with only the white fabric and gold zellige pattern visible.
+SHIRT: They are wearing a white Moroccan-inspired football jersey. Exact design: WHITE base fabric. The center-front of the shirt has vertical bands of gold/yellow zellige geometric patterns — intricate diamond and cross shapes inspired by traditional Moroccan tile art and architecture. Red-green-white V-neck collar: red outer stripe, green middle stripe, white inner edge. Short white sleeves. This is a CUSTOM FAN JERSEY inspired by Moroccan culture — it has NO brand logos, NO manufacturer marks, NO federation crest or badge, NO PUMA cat, NO FRMF emblem, NO text or symbols on the chest. The shirt is completely clean except for the white fabric and gold zellige pattern.
 
 STYLE: Photorealistic, professional sports photography, dramatic lighting, ultra high quality. So epic and joyful that people want to share it on WhatsApp, Instagram Stories and social media.`,
             },
