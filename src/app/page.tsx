@@ -33,12 +33,14 @@ function MoroccanStar({ size = 80, style }: { size?: number; style?: React.CSSPr
 function CheckoutForm({
   imageBase64,
   imageMime,
+  productType,
   clientSecret,
   onSuccess,
   onCancel,
 }: {
   imageBase64: string;
   imageMime: string;
+  productType: "winner" | "panini";
   clientSecret: string;
   onSuccess: (url: string) => void;
   onCancel: () => void;
@@ -60,6 +62,7 @@ function CheckoutForm({
     // Save photo to sessionStorage before potential iDEAL redirect
     sessionStorage.setItem("pendingImageBase64", imageBase64);
     sessionStorage.setItem("pendingImageMime", imageMime);
+    sessionStorage.setItem("pendingProductType", productType);
 
     const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
       elements,
@@ -80,7 +83,7 @@ function CheckoutForm({
     const genRes = await fetch("/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ imageBase64, imageMime, paymentIntentId: paymentIntent.id }),
+      body: JSON.stringify({ imageBase64, imageMime, paymentIntentId: paymentIntent.id, type: productType }),
     });
     const data = await genRes.json();
     if (!genRes.ok) {
@@ -108,7 +111,7 @@ function CheckoutForm({
         <div style={{ textAlign: "center", marginBottom: "24px" }}>
           <MoroccanStar size={36} style={{ display: "inline-block" }} />
           <div style={{ color: "#fff", fontSize: "20px", fontWeight: 700, marginTop: "8px" }}>
-            Jouw WK-winnaarsfoto
+            {productType === "panini" ? "Jouw Panini Sticker" : "Jouw WK-winnaarsfoto"}
           </div>
           <div style={{ color: FLAG_COLORS.gold, fontSize: "14px", marginTop: "4px" }}>
             Eenmalig €1,49 — direct downloaden
@@ -156,6 +159,7 @@ export default function Marokko98Look() {
   const [image, setImage] = useState<string | null>(null);
   const [imageBase64, setImageBase64] = useState<string | null>(null);
   const [imageMime, setImageMime] = useState<string>("image/jpeg");
+  const [productType, setProductType] = useState<"winner" | "panini">("winner");
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [showPayment, setShowPayment] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
@@ -193,19 +197,22 @@ export default function Marokko98Look() {
 
       const savedBase64 = sessionStorage.getItem("pendingImageBase64");
       const savedMime = sessionStorage.getItem("pendingImageMime");
+      const savedType = sessionStorage.getItem("pendingProductType") as "winner" | "panini" | null;
       sessionStorage.removeItem("pendingImageBase64");
       sessionStorage.removeItem("pendingImageMime");
+      sessionStorage.removeItem("pendingProductType");
 
       if (savedBase64) {
         setImageBase64(savedBase64);
         setImageMime(savedMime || "image/jpeg");
         setImage("data:" + (savedMime || "image/jpeg") + ";base64," + savedBase64);
+        if (savedType) setProductType(savedType);
         setGenerating(true);
 
         fetch("/api/generate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ imageBase64: savedBase64, imageMime: savedMime || "image/jpeg", paymentIntentId }),
+          body: JSON.stringify({ imageBase64: savedBase64, imageMime: savedMime || "image/jpeg", paymentIntentId, type: savedType || "winner" }),
         })
           .then((r) => r.json())
           .then((data) => { setResultUrl(data.imageUrl); setGenerating(false); })
@@ -312,6 +319,37 @@ export default function Marokko98Look() {
           </div>
         )}
 
+        {/* Product type selector — shown after image upload */}
+        {image && !resultUrl && (
+          <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
+            {/* Card 1: WK Winnaarsfoto */}
+            <div onClick={() => setProductType("winner")} style={{
+              flex: 1, padding: "16px", borderRadius: "12px", cursor: "pointer",
+              border: `2px solid ${productType === "winner" ? FLAG_COLORS.gold : "rgba(0,98,51,0.4)"}`,
+              background: productType === "winner" ? "rgba(184,134,11,0.1)" : "rgba(0,50,20,0.3)",
+              transition: "all 0.2s ease", textAlign: "center",
+            }}>
+              <div style={{ fontSize: "28px", marginBottom: "6px" }}>🏆</div>
+              <div style={{ fontSize: "13px", fontWeight: 700, color: productType === "winner" ? FLAG_COLORS.gold : "#c8e6c0", marginBottom: "4px" }}>WK Winnaarsfoto</div>
+              <div style={{ fontSize: "11px", color: "rgba(232,245,224,0.6)", marginBottom: "6px" }}>Jij op het veld met de wereldbeker</div>
+              <div style={{ fontSize: "13px", fontWeight: 700, color: FLAG_COLORS.gold }}>€1,49</div>
+            </div>
+
+            {/* Card 2: Panini Sticker */}
+            <div onClick={() => setProductType("panini")} style={{
+              flex: 1, padding: "16px", borderRadius: "12px", cursor: "pointer",
+              border: `2px solid ${productType === "panini" ? FLAG_COLORS.gold : "rgba(0,98,51,0.4)"}`,
+              background: productType === "panini" ? "rgba(184,134,11,0.1)" : "rgba(0,50,20,0.3)",
+              transition: "all 0.2s ease", textAlign: "center",
+            }}>
+              <div style={{ fontSize: "28px", marginBottom: "6px" }}>⚽</div>
+              <div style={{ fontSize: "13px", fontWeight: 700, color: productType === "panini" ? FLAG_COLORS.gold : "#c8e6c0", marginBottom: "4px" }}>Panini Sticker</div>
+              <div style={{ fontSize: "11px", color: "rgba(232,245,224,0.6)", marginBottom: "6px" }}>Jouw eigen WK voetbalplaatje</div>
+              <div style={{ fontSize: "13px", fontWeight: 700, color: FLAG_COLORS.gold }}>€1,49</div>
+            </div>
+          </div>
+        )}
+
         {/* Generate button */}
         {image && !resultUrl && (
           <button className="btn-main" onClick={handleGenerateClick} disabled={generating} style={{
@@ -324,7 +362,9 @@ export default function Marokko98Look() {
           }}>
             {generating
               ? <><span style={{ width: "20px", height: "20px", border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} /> Foto wordt gegenereerd...</>
-              : "🏆 Genereer mijn winnaarsfoto — €1,49"}
+              : productType === "panini"
+                ? "⚽ Genereer Panini sticker — €1,49"
+                : "🏆 Genereer winnaarsfoto — €1,49"}
           </button>
         )}
 
@@ -377,6 +417,7 @@ export default function Marokko98Look() {
           <CheckoutForm
             imageBase64={imageBase64}
             imageMime={imageMime}
+            productType={productType}
             clientSecret={clientSecret}
             onSuccess={handlePaymentSuccess}
             onCancel={() => setShowPayment(false)}

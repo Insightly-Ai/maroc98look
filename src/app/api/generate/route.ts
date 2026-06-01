@@ -15,7 +15,7 @@ function getClients() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { imageBase64, imageMime, paymentIntentId } = await request.json();
+    const { imageBase64, imageMime, paymentIntentId, type } = await request.json();
 
     if (!imageBase64) {
       return NextResponse.json({ error: "Geen afbeelding ontvangen" }, { status: 400 });
@@ -33,15 +33,15 @@ export async function POST(request: NextRequest) {
 
     const model = ai.getGenerativeModel({ model: "gemini-3.1-flash-image" });
 
-    const result = await model.generateContent({
-      contents: [
-        {
-          role: "user",
-          parts: [
-            { text: "Here is a photo of a person." },
-            { inlineData: { mimeType: imageMime || "image/jpeg", data: imageBase64 } },
-            {
-              text: `Create an epic, cinematic photo of this exact person celebrating on the football pitch after winning the FIFA World Cup final.
+    const promptText = type === "panini"
+      ? `Create a photorealistic Panini World Cup 2026 football sticker featuring this exact person.
+
+STICKER DESIGN: Classic Panini collector sticker format — white/cream card background with a thin colored border. At the top, "MAROC 2026" in bold red text on a green banner. The person's photo fills the center of the sticker in portrait format, showing head and shoulders, wearing a dark green Morocco football jersey with red band. At the bottom of the sticker, a name plate with "ATLAS LIONS" in small text and a large bold fictional player name like "EL ATLAS" below it. A small sticker number (e.g. "247") in the bottom corner. Classic Panini shiny/glossy texture feel.
+
+PERSON: The face, skin tone, hair and facial features must be EXACTLY identical to the uploaded photo.
+
+STYLE: Photorealistic sticker, slightly glossy finish, looks exactly like an official Panini World Cup sticker from the album. Square format, clean white border around the sticker.`
+      : `Create an epic, cinematic photo of this exact person celebrating on the football pitch after winning the FIFA World Cup final.
 
 SCENE: The person stands on the pitch in a packed stadium at night, holding the golden FIFA World Cup trophy high above their head with both arms raised in triumph. Golden and green confetti rains down. Tens of thousands of jubilant supporters fill the stands waving Moroccan flags (red with green star). Dramatic stadium floodlights, smoke and ticker tape fill the air. Pitch grass visible at their feet.
 
@@ -51,8 +51,16 @@ SHIRT: The person wears a classic dark green football jersey with a bold red hor
 1. TOP-LEFT CHEST: the word "BUMA" in the same font and style as a sportswear brand, with a small leaping lion silhouette above it (instead of a puma cat) — same size and position as a typical kit manufacturer logo.
 2. TOP-RIGHT CHEST: a round federation badge — same size, shape and green/red/gold color scheme as the Moroccan football badge, but with the text "ATLAS LIONS" around the edge and a stylized lion head crest in the center instead of the FRMF crown emblem.
 
-STYLE: Photorealistic, professional sports photography, dramatic stadium lighting, ultra high quality, 4K. So epic and emotional that people immediately want to share it on WhatsApp and Instagram.`,
-            },
+STYLE: Photorealistic, professional sports photography, dramatic stadium lighting, ultra high quality, 4K. So epic and emotional that people immediately want to share it on WhatsApp and Instagram.`;
+
+    const result = await model.generateContent({
+      contents: [
+        {
+          role: "user",
+          parts: [
+            { text: "Here is a photo of a person." },
+            { inlineData: { mimeType: imageMime || "image/jpeg", data: imageBase64 } },
+            { text: promptText },
           ],
         },
       ],
