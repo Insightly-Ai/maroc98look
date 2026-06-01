@@ -13,6 +13,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Geen afbeelding ontvangen" }, { status: 400 });
     }
 
+    // Fetch the exact Morocco 98 shirt image to pass as reference
+    const shirtResp = await fetch(
+      "https://www.fanshopvoetbal.com/image/cache/marokko-thuisshirt-retro-1998-voetbaltenue-600x600.webp"
+    );
+    const shirtBuffer = Buffer.from(await shirtResp.arrayBuffer());
+    const shirtBase64 = shirtBuffer.toString("base64");
+    const shirtMime = shirtResp.headers.get("content-type") || "image/webp";
+
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash-image",
     });
@@ -23,13 +31,22 @@ export async function POST(request: NextRequest) {
           role: "user",
           parts: [
             {
+              text: "Here is a person's photo (first image) and the exact football jersey they should wear (second image).",
+            },
+            {
               inlineData: {
                 mimeType: imageMime || "image/jpeg",
                 data: imageBase64,
               },
             },
             {
-              text: "Edit this photo: keep the person's face, skin tone, hair and features exactly the same. Change only their clothing to the Morocco 1998 FIFA World Cup Puma football jersey: dark forest green with a bold red horizontal stripe across the chest, white V-neck collar, FRMF gold lion crest badge on the left chest, short sleeves. Add a packed football stadium crowd in the background. Portrait from face to chest. Photorealistic, 1990s football photography style.",
+              inlineData: {
+                mimeType: shirtMime,
+                data: shirtBase64,
+              },
+            },
+            {
+              text: "Generate a new photo of this exact person wearing this exact jersey from the second image. Keep their face, skin tone, hair and features perfectly identical. Use the jersey exactly as shown: same colors, same stripe, same badge, same collar. Add a packed 1998 football stadium crowd in the background. Portrait from face to chest. Photorealistic, 1990s football photography style.",
             },
           ],
         },
