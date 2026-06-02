@@ -278,11 +278,29 @@ export default function Marokko98Look() {
 
   const handleFile = useCallback((file: File) => {
     if (!file || !file.type.startsWith("image/")) return;
-    setImage(URL.createObjectURL(file));
     setResultUrl(null); setError(null);
-    setImageMime(file.type || "image/jpeg");
+
     const reader = new FileReader();
-    reader.onload = (e) => setImageBase64((e.target?.result as string).split(",")[1]);
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width, height = img.height;
+        // Scale down if too large (max 1200px width)
+        if (width > 1200) {
+          height = (height * 1200) / width;
+          width = 1200;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d")?.drawImage(img, 0, 0, width, height);
+        const compressed = canvas.toDataURL(file.type || "image/jpeg", 0.85);
+        setImage(compressed);
+        setImageMime(file.type || "image/jpeg");
+        setImageBase64(compressed.split(",")[1]);
+      };
+      img.src = e.target?.result as string;
+    };
     reader.readAsDataURL(file);
   }, []);
 
