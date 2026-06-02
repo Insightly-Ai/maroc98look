@@ -55,8 +55,9 @@ export async function POST(request: NextRequest) {
     const model = ai.getGenerativeModel({ model: "gemini-3.1-flash-image" });
     const shirt = await getShirtFront();
 
-    // Build parts: always person photo, optionally shirt reference
-    const baseParts: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }> = [
+    type Part = { text: string } | { inlineData: { mimeType: string; data: string } };
+
+    const baseParts: Part[] = [
       { text: shirt ? "Image 1: person photo. Image 2: shirt reference." : "Here is a photo of a person." },
       { inlineData: { mimeType: imageMime || "image/jpeg", data: imageBase64 } },
     ];
@@ -122,9 +123,7 @@ STYLE: Photorealistic, professional sports photography, dramatic stadium lightin
     return NextResponse.json({ imageUrl: `data:${mimeType};base64,${data}` });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
-    console.error("Fout:", msg);
+    console.error("Fout bij generatie:", msg);
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
-
-export { SHIRT_BACK_URL };
