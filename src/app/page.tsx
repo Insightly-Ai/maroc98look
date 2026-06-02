@@ -335,9 +335,9 @@ export default function Marokko98Look() {
 
         {/* Left side panel */}
         <div className="side-panel" style={{ width: "160px", flexShrink: 0, flexDirection: "column", alignItems: "center", gap: "20px", paddingTop: "16px" }}>
-          <PaniniCard name="HASSNA" rotate={-4} imgSrc="/examples/panini-hassna.jpg" />
-          <ChampionCard rotate={3} imgSrc="/examples/champion-1.jpg" />
-          <PaniniCard name="YOUNES" rotate={-2} imgSrc="/examples/panini-younes.jpg" />
+          <PaniniCard name="HASSNA" rotate={-4} imgSrc="/examples/panini-hassna.png" />
+          <ChampionCard rotate={3} imgSrc="/examples/champion-1.png" />
+          <PaniniCard name="YOUNES" rotate={-2} imgSrc="/examples/panini-younes.png" />
         </div>
 
         {/* Center */}
@@ -493,9 +493,9 @@ export default function Marokko98Look() {
 
         {/* Right side panel */}
         <div className="side-panel" style={{ width: "160px", flexShrink: 0, flexDirection: "column", alignItems: "center", gap: "20px", paddingTop: "16px" }}>
-          <ChampionCard rotate={-3} imgSrc="/examples/champion-2.jpg" />
-          <PaniniCard name="HICHAM" rotate={4} imgSrc="/examples/panini-hicham.jpg" />
-          <ChampionCard rotate={-2} imgSrc="/examples/champion-1.jpg" />
+          <ChampionCard rotate={-3} imgSrc="/examples/champion-2.png" />
+          <PaniniCard name="HICHAM" rotate={4} imgSrc="/examples/panini-hicham.png" />
+          <ChampionCard rotate={-2} imgSrc="/examples/champion-1.png" />
         </div>
       </div>
 
