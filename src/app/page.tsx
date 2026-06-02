@@ -418,6 +418,7 @@ export default function Marokko98Look() {
         @media (max-width: 1024px) {
           .side-panel { display: none !important; }
           .mobile-examples { display: flex !important; }
+          .mobile-examples img { width: 100px !important; }
         }
         @media (max-width: 480px) {
           .btn-upload { font-size: 14px !important; padding: 12px !important; }
@@ -480,33 +481,19 @@ export default function Marokko98Look() {
         {/* Center */}
         <div style={{ flex: 1, minWidth: 0, maxWidth: "640px", margin: "0 auto" }}>
 
-          {/* Hero Banner - Creative Commercial Section */}
-          <div style={{ background: `linear-gradient(135deg, ${C.red} 0%, #A82D32 50%, ${C.gold} 100%)`, borderRadius: "clamp(12px, 3vw, 16px)", padding: "clamp(20px, 5vw, 36px) clamp(16px, 4vw, 28px)", marginBottom: "clamp(16px, 4vw, 28px)", position: "relative", overflow: "hidden", boxShadow: "0 8px 32px rgba(193,39,45,0.2)" }}>
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundImage: "radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(0,0,0,0.1) 0%, transparent 50%)", pointerEvents: "none" }} />
-            <div style={{ position: "relative", zIndex: 1, textAlign: "center" }}>
-              <div style={{ fontSize: "clamp(24px, 5vw, 42px)", fontWeight: 900, color: "#fff", letterSpacing: "2px", marginBottom: "12px" }}>
-                BE A LEGEND
-              </div>
-              <div style={{ fontSize: "clamp(13px, 2.5vw, 16px)", color: "rgba(255,255,255,0.9)", marginBottom: "20px", fontWeight: 500 }}>
-                Celebrate Morocco's World Cup glory. Create your moment.
-              </div>
-              <div style={{ display: "flex", gap: "12px", justifyContent: "center", marginBottom: "20px", flexWrap: "wrap" }}>
-                <div style={{ background: "rgba(255,255,255,0.25)", borderRadius: "12px", padding: "12px 20px", fontSize: "14px", fontWeight: 700, color: "#fff", display: "flex", alignItems: "center", gap: "8px" } as React.CSSProperties}>
-                  🏆 <span>Champion Photo</span>
-                </div>
-                <div style={{ background: "rgba(255,255,255,0.25)", borderRadius: "12px", padding: "12px 20px", fontSize: "14px", fontWeight: 700, color: "#fff", display: "flex", alignItems: "center", gap: "8px" } as React.CSSProperties}>
-                  ⚽ <span>Panini Card</span>
-                </div>
-              </div>
-              <div style={{ fontSize: "clamp(32px, 8vw, 56px)", fontWeight: 900, color: "#fff", textShadow: "0 4px 12px rgba(0,0,0,0.2)", marginBottom: "4px" }}>
-                €1.49
-              </div>
-              <div style={{ fontSize: "clamp(11px, 2vw, 13px)", color: "rgba(255,255,255,0.9)", fontWeight: 600, marginBottom: "12px", letterSpacing: "0.5px" }}>
-                per photo
-              </div>
-              <div style={{ fontSize: "clamp(12px, 2vw, 13px)", color: "rgba(255,255,255,0.85)", fontWeight: 600, letterSpacing: "1px" }}>
-                Limited Time • Instant Download • Share Your Glory
-              </div>
+          {/* Hero tekst — geen gekleurd vak, puur tekst */}
+          <div style={{ textAlign: "center", marginBottom: "24px" }}>
+            <div style={{ fontSize: "clamp(28px, 7vw, 48px)", fontWeight: 900, color: C.dark, lineHeight: 1.1, marginBottom: "10px", letterSpacing: "-0.5px" }}>
+              BE A <span style={{ color: C.red }}>LEGEND</span> 🇲🇦
+            </div>
+            <div style={{ fontSize: "clamp(14px, 3.5vw, 18px)", fontWeight: 700, color: C.dark, marginBottom: "8px" }}>
+              🏆 Champion Photo &nbsp;·&nbsp; ⚽ Panini Card
+            </div>
+            <div style={{ fontSize: "clamp(32px, 9vw, 52px)", fontWeight: 900, color: C.red, letterSpacing: "-1px", lineHeight: 1 }}>
+              €1.49
+            </div>
+            <div style={{ fontSize: "clamp(11px, 2.5vw, 13px)", color: "rgba(0,0,0,0.45)", fontWeight: 600, marginTop: "4px" }}>
+              per photo · instant download
             </div>
           </div>
 
@@ -573,11 +560,12 @@ export default function Marokko98Look() {
             )}
           </div>
 
-          {/* Mobile examples — 2 cards horizontal, only on small screens */}
+          {/* Mobile examples — 3 cards horizontal, only on small screens */}
           {!image && (
-            <div className="mobile-examples" style={{ gap: "12px", marginBottom: "20px", overflowX: "auto", paddingBottom: "4px" }}>
-              <PaniniCard name="HASSNA" rotate={-2} imgSrc="/examples/panini-hassna.png" />
+            <div className="mobile-examples" style={{ gap: "10px", marginBottom: "24px", justifyContent: "center" }}>
+              <PaniniCard name="HASSNA" rotate={-3} imgSrc="/examples/panini-hassna.png" />
               <ChampionCard rotate={2} imgSrc="/examples/champion-1.png" />
+              <PaniniCard name="YOUNES" rotate={3} imgSrc="/examples/panini-younes.png" />
             </div>
           )}
 
