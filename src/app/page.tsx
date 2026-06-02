@@ -667,7 +667,7 @@ export default function Marokko98Look() {
               <div style={{ marginTop: "16px", display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap" }}>
                 {/* WhatsApp share button */}
                 <button onClick={async () => {
-                  const shareText = "Check out my Legend World Cup Morocco photo. Create yours at: https://maroc98look-production.up.railway.app/";
+                  const shareText = "Check out my Legend World Cup Morocco photo. Create yours at: https://www.maroclegend2026.nl";
                   try {
                     const res = await fetch(resultUrl);
                     const blob = await res.blob();
