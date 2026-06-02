@@ -4,6 +4,23 @@ import Stripe from "stripe";
 
 export const maxDuration = 120;
 
+async function generateWithRetry(model: ReturnType<GoogleGenerativeAI["getGenerativeModel"]>, request: Parameters<typeof model.generateContent>[0], retries = 2): Promise<Awaited<ReturnType<typeof model.generateContent>>> {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await model.generateContent(request);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      const isRateLimit = msg.includes("429") || msg.toLowerCase().includes("quota") || msg.toLowerCase().includes("rate");
+      if (isRateLimit && attempt < retries) {
+        await new Promise((r) => setTimeout(r, 3000 * (attempt + 1)));
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw new Error("Max retries exceeded");
+}
+
 const SHIRT_FRONT_URL = "https://www.sportus.nl/images/thumbs/0042223_morocco-retro-football-shirt-1990.png";
 
 let genAI: GoogleGenerativeAI | null = null;
@@ -108,7 +125,7 @@ export async function POST(request: NextRequest) {
 
     const promptText = type === "panini" ? paniniPrompt : championPrompt;
 
-    const result = await model.generateContent({
+    const result = await generateWithRetry(model, {
       contents: [
         {
           role: "user",
@@ -134,6 +151,10 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     console.error("Generation error:", msg);
-    return NextResponse.json({ error: msg }, { status: 500 });
+    const isRateLimit = msg.includes("429") || msg.toLowerCase().includes("quota") || msg.toLowerCase().includes("rate");
+    const userMsg = isRateLimit
+      ? "The service is very busy right now. Please try again in a moment — your payment is saved."
+      : msg;
+    return NextResponse.json({ error: userMsg }, { status: isRateLimit ? 429 : 500 });
   }
 }
