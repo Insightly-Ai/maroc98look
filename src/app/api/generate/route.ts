@@ -1,6 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import { readFileSync } from "fs";
+import { join } from "path";
 
 export const maxDuration = 120;
 
@@ -21,26 +23,31 @@ async function generateWithRetry(model: ReturnType<GoogleGenerativeAI["getGenera
   throw new Error("Max retries exceeded");
 }
 
-const SHIRT_FRONT_URL = "https://maroc98look-production.up.railway.app/maroc98-shirt.webp";
-
 let genAI: GoogleGenerativeAI | null = null;
 let stripeClient: Stripe | null = null;
-let shirtFrontCache: { data: string; mimeType: string } | null = null;
 
-async function getShirtFront(): Promise<{ data: string; mimeType: string } | null> {
-  if (shirtFrontCache) return shirtFrontCache;
+type ImageRef = { data: string; mimeType: string };
+let shirtRefCache: ImageRef | null = null;
+let emblemRefCache: ImageRef | null = null;
+
+function loadLocalImage(filename: string): ImageRef | null {
   try {
-    const res = await fetch(SHIRT_FRONT_URL, { signal: AbortSignal.timeout(8000) });
-    if (res.ok) {
-      const buffer = await res.arrayBuffer();
-      const mimeType = (res.headers.get("content-type") || "image/png").split(";")[0];
-      shirtFrontCache = { data: Buffer.from(buffer).toString("base64"), mimeType };
-      return shirtFrontCache;
-    }
+    const filePath = join(process.cwd(), "public", "examples", filename);
+    const buffer = readFileSync(filePath);
+    return { data: buffer.toString("base64"), mimeType: "image/jpeg" };
   } catch {
-    // CDN blocked or timeout — proceed without reference image
+    return null;
   }
-  return null;
+}
+
+function getShirtRef(): ImageRef | null {
+  if (!shirtRefCache) shirtRefCache = loadLocalImage("retro shirt marokko.jpg");
+  return shirtRefCache;
+}
+
+function getEmblemRef(): ImageRef | null {
+  if (!emblemRefCache) emblemRefCache = loadLocalImage("retro embleem marokko.jpg");
+  return emblemRefCache;
 }
 
 function getClients() {
@@ -68,18 +75,31 @@ export async function POST(request: NextRequest) {
     }
 
     const model = ai.getGenerativeModel({ model: "gemini-3.1-flash-image" });
-    const shirt = await getShirtFront();
+    const shirt = getShirtRef();
+    const emblem = getEmblemRef();
 
     type Part = { text: string } | { inlineData: { mimeType: string; data: string } };
 
+    // Build image label text and parts
+    const imageLabels: string[] = ["Image 1: person photo"];
     const baseParts: Part[] = [
-      { text: shirt ? "Image 1: person photo. Image 2: shirt reference." : "Here is a photo of a person." },
       { inlineData: { mimeType: imageMime || "image/jpeg", data: imageBase64 } },
     ];
-    if (shirt) baseParts.push({ inlineData: { mimeType: shirt.mimeType, data: shirt.data } });
+    if (shirt) {
+      imageLabels.push("Image 2: retro Morocco shirt reference");
+      baseParts.push({ inlineData: { mimeType: shirt.mimeType, data: shirt.data } });
+    }
+    if (emblem) {
+      imageLabels.push(`Image ${baseParts.length + 1}: retro Morocco shirt emblem/badge reference`);
+      baseParts.push({ inlineData: { mimeType: emblem.mimeType, data: emblem.data } });
+    }
 
-    const shirtDesc = shirt
-      ? "wearing the exact retro Morocco football shirt from Image 2. Copy EXACTLY: red/pink base color, large bold diamond/rhombus geometric shapes arranged in a repeating grid pattern covering the entire shirt, each diamond outlined and filled with a lighter pink/white texture giving a 3D quilted look, green V-neck collar with white inner collar visible, short sleeves. On upper left chest: a shield-shaped badge — cream/beige shield, red border, small golden crown at top, 'MAROC' text in red, large green six-pointed star in center. NO FC ELEVEN logo, NO other brand marks."
+    baseParts.unshift({ text: imageLabels.join(". ") + "." });
+
+    const hasRefs = shirt || emblem;
+
+    const shirtDesc = hasRefs
+      ? "wearing the exact retro Morocco football shirt shown in the reference images. Copy the shirt EXACTLY: red/pink base color, large bold diamond/rhombus geometric shapes arranged in a repeating grid pattern covering the entire shirt, each diamond outlined with a lighter pink/white texture giving a 3D quilted look, green V-neck collar with white inner collar visible, short sleeves. On upper left chest: use the EXACT badge/emblem from the emblem reference image — shield-shaped badge with cream/beige background, red border, small golden crown at top, 'MAROC' text in red, large green six-pointed star in center. NO FC ELEVEN logo, NO other brand marks."
       : "wearing the retro Morocco 1990 football shirt: red/pink base color with large bold diamond/rhombus shapes in a repeating grid pattern covering the entire shirt, each diamond has lighter pink/white texture inside giving a quilted 3D look, green V-neck collar with white trim. On upper left chest: shield-shaped badge with cream background, golden crown at top, 'MAROC' in red, large green star. NO brand logos.";
 
     const name = playerName || "ATLAS";
