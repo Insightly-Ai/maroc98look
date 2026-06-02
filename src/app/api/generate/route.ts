@@ -79,8 +79,8 @@ export async function POST(request: NextRequest) {
     if (shirt) baseParts.push({ inlineData: { mimeType: shirt.mimeType, data: shirt.data } });
 
     const shirtDesc = shirt
-      ? "wearing the exact retro Morocco football shirt shown in Image 2. Replicate EXACTLY: red/pink base with large geometric chevron/triangle pattern covering the entire shirt, green V-neck collar, short sleeves, NO brand logos anywhere. On the upper left chest: a shield-shaped badge with gold border, red background, green five-pointed star in center, 'MAROC' text, Arabic text below. NO PUMA logo, NO other brand marks."
-      : "wearing the retro Morocco 1990 football shirt: red/pink base with large geometric chevron/triangle pattern covering the entire shirt, green V-neck collar, short sleeves. On the upper left chest: a shield-shaped badge with gold border, red background, green five-pointed star, 'MAROC' text. NO brand logos, NO PUMA.";
+      ? "wearing the exact retro Morocco football shirt from Image 2. Copy EXACTLY: red/pink base color, large geometric chevron pattern made of triangles pointing upward covering the entire shirt, light pink/white texture within each triangle, green V-neck collar with white inner collar visible, short sleeves with green trim at top. On upper left chest: a shield-shaped badge — cream/beige shield, red border, small golden crown at top, 'MAROC' text in red, large green six-pointed star (Star of David shape) in center, Arabic text 'المغرب' at bottom. NO FC ELEVEN logo, NO other brand marks."
+      : "wearing the retro Morocco 1990 football shirt: red/pink base with large upward-pointing chevron triangles pattern covering the entire shirt, light texture within triangles, green V-neck collar. On upper left chest: shield badge with cream background, golden crown at top, 'MAROC' in red, large green star, Arabic text 'المغرب' below. NO brand logos.";
 
     const name = playerName || "ATLAS";
 
