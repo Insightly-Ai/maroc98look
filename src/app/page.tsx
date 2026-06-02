@@ -629,7 +629,7 @@ export default function Marokko98Look() {
               {generating
                 ? <><span style={{ width: "20px", height: "20px", border: "2px solid rgba(255,255,255,0.35)", borderTopColor: "#fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} /> Generating...</>
                 : paidIntentId
-                  ? "🔄 Try Again (Free)"
+                  ? "🔄 Try Again"
                   : productType === "panini" ? "⚽ Generate Panini Card — €1.49" : "🏆 Generate Champion Photo — €1.49"}
             </button>
           )}
