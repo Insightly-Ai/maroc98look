@@ -105,22 +105,21 @@ export async function POST(request: NextRequest) {
     const name = playerName || "ATLAS";
 
     const paniniPrompt = [
-      "Create a photorealistic Panini World Cup sticker card of this exact person. Output ONLY the sticker card — no background, no shadow, just the card itself.",
+      "Generate a single photorealistic Panini World Cup football sticker card. Output ONLY the sticker card filling the entire image — no table, no surface, no shadow, no background outside the card.",
       "",
-      "EXACT STICKER FORMAT:",
-      "- Portrait orientation, rectangular, taller than wide",
-      "- Thin stacked border: red outer, white middle, green inner — classic Panini frame",
-      "- Cream/beige portrait background (#E8DFC8)",
+      "CARD DIMENSIONS: Portrait rectangle, roughly 2:3 ratio (width:height). Crisp straight edges.",
       "",
-      "TOP BANNER: Solid green rectangle (#006233). Bold white uppercase text: MOROCCO",
+      "BORDER (outside in): 1. Thin red outer border. 2. Thin white stripe. 3. Thin green inner border. Classic Panini triple-border frame.",
       "",
-      "PORTRAIT: Person face and upper body centered, head and shoulders only. " + shirtDesc,
+      "TOP BANNER: Full-width solid dark green (#006233) rectangle, about 10% of card height. Text centered: 'MOROCCO' in bold white uppercase sans-serif, large.",
       "",
-      "BOTTOM SECTION: White/cream area. LEFT: small rectangular Moroccan flag (red with green star). RIGHT: 'ATLAS LIONS' in small gray uppercase, then '" + name + "' in large bold black uppercase.",
+      "PORTRAIT AREA (middle ~70% of card): Flat cream/beige background (#E8DFC8). Person centered — head and shoulders only, cut off just below chest. Person is " + shirtDesc + " Face, skin tone, hair EXACTLY matching the uploaded photo. Neutral/slight smile, clean portrait lighting.",
       "",
-      "PERSON: Face, skin tone, hair, features EXACTLY identical to the uploaded photo. Neutral/slight smile. Clean portrait lighting.",
+      "BOTTOM STRIP (~20% of card): White/off-white background. Divided into two parts:",
+      "  LEFT: Small rectangular Moroccan flag (red field, green five-pointed star in center). Flag has thin border.",
+      "  RIGHT: Two lines of text — top line 'ATLAS LIONS' in small light gray uppercase; bottom line '" + name + "' in large bold black uppercase.",
       "",
-      "STYLE: Photorealistic physical Panini sticker card, slightly glossy.",
+      "STYLE: Looks like a real physical Panini sticker from 1990-2006 era. Slightly glossy surface. Print-quality sharp text and borders. Photo-realistic person. No gradients on background.",
     ].join("\n");
 
     const championPrompt = [
