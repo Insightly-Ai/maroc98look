@@ -30,7 +30,16 @@ function MoroccanStar({ size = 80, color = C.gold, style }: { size?: number; col
   );
 }
 
-function PaniniCard({ name, rotate = 0 }: { name: string; rotate?: number }) {
+// If real example images exist in public/examples/, they are used automatically.
+// Otherwise falls back to CSS mockup.
+function PaniniCard({ name, rotate = 0, imgSrc }: { name: string; rotate?: number; imgSrc?: string }) {
+  if (imgSrc) {
+    return (
+      <div style={{ transform: `rotate(${rotate}deg)`, transition: "transform 0.3s ease" }}>
+        <img src={imgSrc} alt={name} style={{ width: "130px", borderRadius: "4px", boxShadow: "0 4px 16px rgba(0,0,0,0.2)", display: "block" }} />
+      </div>
+    );
+  }
   return (
     <div style={{ transform: `rotate(${rotate}deg)`, transition: "transform 0.3s ease", cursor: "default" }}>
       <div style={{
@@ -74,7 +83,14 @@ function PaniniCard({ name, rotate = 0 }: { name: string; rotate?: number }) {
   );
 }
 
-function ChampionCard({ rotate = 0 }: { rotate?: number }) {
+function ChampionCard({ rotate = 0, imgSrc }: { rotate?: number; imgSrc?: string }) {
+  if (imgSrc) {
+    return (
+      <div style={{ transform: `rotate(${rotate}deg)`, transition: "transform 0.3s ease" }}>
+        <img src={imgSrc} alt="Kampioenschapsfoto" style={{ width: "130px", borderRadius: "6px", boxShadow: "0 4px 16px rgba(0,0,0,0.2)", display: "block" }} />
+      </div>
+    );
+  }
   return (
     <div style={{ transform: `rotate(${rotate}deg)`, transition: "transform 0.3s ease" }}>
       <div style={{
@@ -319,9 +335,9 @@ export default function Marokko98Look() {
 
         {/* Left side panel */}
         <div className="side-panel" style={{ width: "160px", flexShrink: 0, flexDirection: "column", alignItems: "center", gap: "20px", paddingTop: "16px" }}>
-          <PaniniCard name="HASSNA" rotate={-4} />
-          <ChampionCard rotate={3} />
-          <PaniniCard name="YOUNES" rotate={-2} />
+          <PaniniCard name="HASSNA" rotate={-4} imgSrc="/examples/panini-hassna.jpg" />
+          <ChampionCard rotate={3} imgSrc="/examples/champion-1.jpg" />
+          <PaniniCard name="YOUNES" rotate={-2} imgSrc="/examples/panini-younes.jpg" />
         </div>
 
         {/* Center */}
@@ -477,9 +493,9 @@ export default function Marokko98Look() {
 
         {/* Right side panel */}
         <div className="side-panel" style={{ width: "160px", flexShrink: 0, flexDirection: "column", alignItems: "center", gap: "20px", paddingTop: "16px" }}>
-          <ChampionCard rotate={-3} />
-          <PaniniCard name="HICHAM" rotate={4} />
-          <ChampionCard rotate={-2} />
+          <ChampionCard rotate={-3} imgSrc="/examples/champion-2.jpg" />
+          <PaniniCard name="HICHAM" rotate={4} imgSrc="/examples/panini-hicham.jpg" />
+          <ChampionCard rotate={-2} imgSrc="/examples/champion-1.jpg" />
         </div>
       </div>
 
