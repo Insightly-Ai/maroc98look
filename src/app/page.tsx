@@ -30,6 +30,38 @@ function MoroccanStar({ size = 80, color = C.gold, style }: { size?: number; col
   );
 }
 
+function MoroccanFlag({ delay = 0 }: { delay?: number }) {
+  return (
+    <div style={{ animation: `flagWave 1.6s ease-in-out ${delay}s infinite`, transformOrigin: "left center", display: "inline-block" }}>
+      <svg width="38" height="26" viewBox="0 0 38 26" style={{ display: "block", filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.15))" }}>
+        {/* Flag pole */}
+        <rect x="0" y="0" width="2" height="26" fill="#888" rx="1" />
+        {/* Red background */}
+        <rect x="2" y="2" width="34" height="22" fill={C.red} rx="1" />
+        {/* Green pentagram star centered */}
+        <g transform="translate(19, 13)">
+          {[0,1,2,3,4].map((i) => {
+            const angle = (i * 72 - 90) * Math.PI / 180;
+            const outerR = 6, innerR = 2.5;
+            const x1 = outerR * Math.cos(angle), y1 = outerR * Math.sin(angle);
+            const a2 = angle + 36 * Math.PI / 180;
+            const x2 = innerR * Math.cos(a2), y2 = innerR * Math.sin(a2);
+            return <line key={i} x1={0} y1={0} x2={x1} y2={y1} stroke={C.green} strokeWidth="1.5" />;
+          })}
+          <polygon
+            points={[0,1,2,3,4].map((i) => {
+              const a = (i * 72 - 90) * Math.PI / 180;
+              const ai = a + 36 * Math.PI / 180;
+              return `${6 * Math.cos(a)},${6 * Math.sin(a)} ${2.5 * Math.cos(ai)},${2.5 * Math.sin(ai)}`;
+            }).join(" ")}
+            fill="none" stroke={C.green} strokeWidth="1.4" strokeLinejoin="round"
+          />
+        </g>
+      </svg>
+    </div>
+  );
+}
+
 // If real example images exist in public/examples/, they are used automatically.
 // Otherwise falls back to CSS mockup.
 function PaniniCard({ name, rotate = 0, imgSrc }: { name: string; rotate?: number; imgSrc?: string }) {
@@ -287,6 +319,7 @@ export default function Marokko98Look() {
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes wave { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
+        @keyframes flagWave { 0%, 100% { transform: skewX(0deg) scaleY(1); } 25% { transform: skewX(-6deg) scaleY(0.97); } 50% { transform: skewX(6deg) scaleY(1.03); } 75% { transform: skewX(-4deg) scaleY(0.98); } }
         .btn-generate:hover:not(:disabled) { transform: translateY(-2px) !important; box-shadow: 0 8px 32px rgba(193,39,45,0.35) !important; }
         .btn-upload:hover { opacity: 0.88 !important; transform: translateY(-1px) !important; }
         .product-card:hover { border-color: ${C.gold} !important; transform: translateY(-2px); }
@@ -316,17 +349,34 @@ export default function Marokko98Look() {
       <header style={{ borderBottom: `3px solid ${C.red}`, background: "#fff", boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}>
         {/* Top strip: Moroccan flag colors */}
         <div style={{ height: "4px", background: `linear-gradient(90deg, ${C.red} 0%, ${C.red} 50%, ${C.green} 50%, ${C.green} 100%)` }} />
-        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "12px 24px", display: "flex", alignItems: "center", justifyContent: "center", gap: "16px" }}>
-          <MoroccanStar size={28} color={C.gold} />
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "clamp(16px, 4vw, 24px)", fontWeight: 900, color: C.dark, letterSpacing: "3px", textTransform: "uppercase" as const }}>
-              MOROCCO <span style={{ color: C.red }}>2026</span>
-            </div>
-            <div style={{ fontSize: "9px", color: C.gold, letterSpacing: "2px", textTransform: "uppercase" as const, fontWeight: 700 }}>
-              FIFA WORLD CUP
-            </div>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "12px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
+          {/* Left flags */}
+          <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+            {[0, 1, 2].map((i) => (
+              <MoroccanFlag key={i} delay={i * 0.25} />
+            ))}
           </div>
-          <MoroccanStar size={28} color={C.gold} />
+
+          {/* Center title */}
+          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+            <MoroccanStar size={26} color={C.gold} />
+            <div style={{ textAlign: "center" }}>
+              <div style={{ fontSize: "clamp(16px, 4vw, 24px)", fontWeight: 900, color: C.dark, letterSpacing: "3px", textTransform: "uppercase" as const }}>
+                MOROCCO <span style={{ color: C.red }}>2026</span>
+              </div>
+              <div style={{ fontSize: "9px", color: C.gold, letterSpacing: "2px", textTransform: "uppercase" as const, fontWeight: 700 }}>
+                FIFA WORLD CUP
+              </div>
+            </div>
+            <MoroccanStar size={26} color={C.gold} />
+          </div>
+
+          {/* Right flags */}
+          <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+            {[0, 1, 2].map((i) => (
+              <MoroccanFlag key={i} delay={i * 0.3} />
+            ))}
+          </div>
         </div>
       </header>
 
