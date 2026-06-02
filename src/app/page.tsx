@@ -367,6 +367,33 @@ export default function Marokko98Look() {
         {/* Center */}
         <div style={{ flex: 1, minWidth: 0, maxWidth: "640px", margin: "0 auto" }}>
 
+          {/* Hero Banner - Creative Commercial Section */}
+          <div style={{ background: `linear-gradient(135deg, ${C.red} 0%, #A82D32 50%, ${C.gold} 100%)`, borderRadius: "16px", padding: "36px 28px", marginBottom: "28px", position: "relative", overflow: "hidden", boxShadow: "0 8px 32px rgba(193,39,45,0.2)" }}>
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundImage: "radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(0,0,0,0.1) 0%, transparent 50%)", pointerEvents: "none" }} />
+            <div style={{ position: "relative", zIndex: 1, textAlign: "center" }}>
+              <div style={{ fontSize: "clamp(24px, 5vw, 42px)", fontWeight: 900, color: "#fff", letterSpacing: "2px", marginBottom: "12px" }}>
+                BE A LEGEND
+              </div>
+              <div style={{ fontSize: "clamp(13px, 2.5vw, 16px)", color: "rgba(255,255,255,0.9)", marginBottom: "20px", fontWeight: 500 }}>
+                Celebrate Morocco's World Cup glory. Create your moment.
+              </div>
+              <div style={{ display: "flex", gap: "12px", justifyContent: "center", marginBottom: "20px", flexWrap: "wrap" }}>
+                <div style={{ background: "rgba(255,255,255,0.25)", borderRadius: "12px", padding: "12px 20px", fontSize: "14px", fontWeight: 700, color: "#fff", display: "flex", alignItems: "center", gap: "8px" } as React.CSSProperties}>
+                  🏆 <span>Champion Photo</span>
+                </div>
+                <div style={{ background: "rgba(255,255,255,0.25)", borderRadius: "12px", padding: "12px 20px", fontSize: "14px", fontWeight: 700, color: "#fff", display: "flex", alignItems: "center", gap: "8px" } as React.CSSProperties}>
+                  ⚽ <span>Panini Card</span>
+                </div>
+              </div>
+              <div style={{ fontSize: "clamp(32px, 8vw, 56px)", fontWeight: 900, color: "#fff", textShadow: "0 4px 12px rgba(0,0,0,0.2)", marginBottom: "8px" }}>
+                €1.49
+              </div>
+              <div style={{ fontSize: "13px", color: "rgba(255,255,255,0.85)", fontWeight: 600, letterSpacing: "1px" }}>
+                Limited Time • Instant Download • Share Your Glory
+              </div>
+            </div>
+          </div>
+
           {/* Upload sectie */}
           <div style={{ marginBottom: "16px" }}>
             <div style={{ fontSize: "11px", fontWeight: 700, color: C.gold, letterSpacing: "2px", textTransform: "uppercase" as const, marginBottom: "12px" }}>
