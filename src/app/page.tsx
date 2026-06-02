@@ -282,16 +282,33 @@ export default function Marokko98Look() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#FFFFFF", fontFamily: "'Helvetica Neue', Arial, sans-serif", color: C.dark }}>
+    <div className="zellige-bg" style={{ minHeight: "100vh", background: "#FFFFFF", fontFamily: "'Helvetica Neue', Arial, sans-serif", color: C.dark, position: "relative" }}>
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
-        .upload-zone:hover { border-color: ${C.gold} !important; background: ${C.cream} !important; }
         .btn-generate:hover:not(:disabled) { transform: translateY(-2px) !important; box-shadow: 0 8px 32px rgba(193,39,45,0.35) !important; }
+        .btn-upload:hover { opacity: 0.88 !important; transform: translateY(-1px) !important; }
         .product-card:hover { border-color: ${C.gold} !important; transform: translateY(-2px); }
         .result-card { animation: fadeInUp 0.5s ease forwards; }
         .side-panel { display: flex; }
-        @media (max-width: 960px) { .side-panel { display: none !important; } }
+        .mobile-examples { display: none; }
+        @media (max-width: 960px) {
+          .side-panel { display: none !important; }
+          .mobile-examples { display: flex !important; }
+        }
+        /* Zellige background pattern */
+        .zellige-bg::before {
+          content: '';
+          position: fixed;
+          inset: 0;
+          opacity: 0.04;
+          pointer-events: none;
+          z-index: 0;
+          background-image:
+            repeating-linear-gradient(45deg, ${C.red} 0, ${C.red} 1px, transparent 0, transparent 50%),
+            repeating-linear-gradient(-45deg, ${C.gold} 0, ${C.gold} 1px, transparent 0, transparent 50%);
+          background-size: 28px 28px;
+        }
       `}</style>
 
       {/* Header */}
@@ -343,43 +360,74 @@ export default function Marokko98Look() {
         {/* Center */}
         <div style={{ flex: 1, minWidth: 0, maxWidth: "640px", margin: "0 auto" }}>
 
-          {/* Upload zone */}
-          <div style={{ marginBottom: "12px" }}>
-            <div style={{ fontSize: "11px", fontWeight: 700, color: C.gold, letterSpacing: "2px", textTransform: "uppercase" as const, marginBottom: "8px" }}>
-              Stap 1 — Upload jouw foto
+          {/* Upload sectie */}
+          <div style={{ marginBottom: "16px" }}>
+            <div style={{ fontSize: "11px", fontWeight: 700, color: C.gold, letterSpacing: "2px", textTransform: "uppercase" as const, marginBottom: "12px" }}>
+              ⚡ Stap 1 — Kies jouw foto
             </div>
-            <div className="upload-zone" onClick={() => fileRef.current?.click()}
-              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-              onDragLeave={() => setDragOver(false)}
-              onDrop={handleDrop}
-              style={{
-                border: `2px dashed ${dragOver ? C.gold : "rgba(168,134,44,0.35)"}`,
-                borderRadius: "12px", padding: image ? "20px" : "52px 20px",
-                textAlign: "center", cursor: "pointer",
-                background: dragOver ? C.cream : "#FAFAF8",
-                transition: "all 0.25s ease",
-              }}>
-              <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }}
-                onChange={(e) => e.target.files && handleFile(e.target.files[0])} />
-              {image ? (
-                <div>
-                  <img src={image} alt="Geüpload" style={{ maxHeight: "240px", maxWidth: "100%", borderRadius: "8px", border: `2px solid ${C.green}`, boxShadow: "0 4px 20px rgba(0,0,0,0.1)", display: "block", margin: "0 auto 10px" }} />
-                  <p style={{ color: C.gold, fontSize: "12px", margin: 0, fontWeight: 600 }}>Klik om een andere foto te kiezen</p>
+
+            {/* Hidden file inputs */}
+            <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }}
+              onChange={(e) => e.target.files && handleFile(e.target.files[0])} />
+            <input id="cameraInput" type="file" accept="image/*" capture="user" style={{ display: "none" }}
+              onChange={(e) => e.target.files && handleFile(e.target.files[0])} />
+
+            {image ? (
+              /* Uploaded image preview */
+              <div
+                onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={handleDrop}
+                style={{ background: dragOver ? C.cream : "#FAFAF8", border: `2px dashed ${dragOver ? C.gold : "rgba(168,134,44,0.3)"}`, borderRadius: "12px", padding: "20px", textAlign: "center", transition: "all 0.25s ease" }}>
+                <img src={image} alt="Geüpload" style={{ maxHeight: "240px", maxWidth: "100%", borderRadius: "8px", border: `2px solid ${C.green}`, boxShadow: "0 4px 20px rgba(0,0,0,0.1)", display: "block", margin: "0 auto 12px" }} />
+                <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+                  <button onClick={() => fileRef.current?.click()} className="btn-upload" style={{ padding: "8px 18px", background: C.gold, border: "none", borderRadius: "8px", color: "#fff", fontSize: "13px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s ease" }}>
+                    📤 Andere foto
+                  </button>
                 </div>
-              ) : (
-                <>
-                  <div style={{ fontSize: "44px", marginBottom: "12px" }}>🤳</div>
-                  <p style={{ fontSize: "16px", color: C.dark, marginBottom: "6px", fontWeight: 700 }}>Sleep je selfie hierheen</p>
-                  <p style={{ fontSize: "13px", color: "rgba(0,0,0,0.4)", margin: 0 }}>of klik om te uploaden • JPG, PNG, WEBP</p>
-                </>
-              )}
-            </div>
+              </div>
+            ) : (
+              /* Two-button upload */
+              <div
+                onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={handleDrop}
+                style={{ background: dragOver ? C.cream : `linear-gradient(135deg, ${C.dark} 0%, #2a0808 60%, #0a1a0a 100%)`, borderRadius: "14px", padding: "24px 20px", transition: "all 0.25s ease" }}>
+                <div style={{ fontSize: "11px", fontWeight: 700, color: "rgba(255,255,255,0.5)", letterSpacing: "2px", textTransform: "uppercase" as const, textAlign: "center", marginBottom: "16px" }}>
+                  ⚡ STAP 1: KIES JOUW FOTO
+                </div>
+                <div style={{ display: "flex", gap: "12px" }}>
+                  <button onClick={() => fileRef.current?.click()} className="btn-upload" style={{
+                    flex: 1, padding: "16px", background: C.red, border: "none", borderRadius: "12px",
+                    color: "#fff", fontSize: "16px", fontWeight: 800, cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+                    letterSpacing: "1px", textTransform: "uppercase" as const, transition: "all 0.2s ease",
+                    boxShadow: "0 4px 16px rgba(193,39,45,0.4)",
+                  }}>
+                    ↑ KIES FOTO
+                  </button>
+                  <button onClick={() => document.getElementById("cameraInput")?.click()} className="btn-upload" style={{
+                    flex: 1, padding: "16px", background: C.red, border: "none", borderRadius: "12px",
+                    color: "#fff", fontSize: "16px", fontWeight: 800, cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+                    letterSpacing: "1px", textTransform: "uppercase" as const, transition: "all 0.2s ease",
+                    boxShadow: "0 4px 16px rgba(193,39,45,0.4)",
+                  }}>
+                    📷 MAAK FOTO
+                  </button>
+                </div>
+                <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.3)", textAlign: "center", margin: "12px 0 0", letterSpacing: "0.5px" }}>
+                  💡 Beste resultaat: duidelijk gezicht, goede belichting, rechtop
+                </p>
+              </div>
+            )}
           </div>
 
-          {/* Tip */}
+          {/* Mobile examples — 2 cards horizontal, only on small screens */}
           {!image && (
-            <div style={{ background: C.cream, border: `1px solid rgba(168,134,44,0.25)`, borderRadius: "8px", padding: "10px 14px", marginBottom: "20px", fontSize: "12px", color: "rgba(0,0,0,0.5)", textAlign: "center" }}>
-              💡 Beste resultaat: duidelijk gezicht, goede belichting, rechtop
+            <div className="mobile-examples" style={{ gap: "12px", marginBottom: "20px", overflowX: "auto", paddingBottom: "4px" }}>
+              <PaniniCard name="HASSNA" rotate={-2} imgSrc="/examples/panini-hassna.png" />
+              <ChampionCard rotate={2} imgSrc="/examples/champion-1.png" />
             </div>
           )}
 
