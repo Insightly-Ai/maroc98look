@@ -409,10 +409,13 @@ export default function Marokko98Look() {
                   ⚽ <span>Panini Card</span>
                 </div>
               </div>
-              <div style={{ fontSize: "clamp(32px, 8vw, 56px)", fontWeight: 900, color: "#fff", textShadow: "0 4px 12px rgba(0,0,0,0.2)", marginBottom: "8px" }}>
+              <div style={{ fontSize: "clamp(32px, 8vw, 56px)", fontWeight: 900, color: "#fff", textShadow: "0 4px 12px rgba(0,0,0,0.2)", marginBottom: "4px" }}>
                 €1.49
               </div>
-              <div style={{ fontSize: "13px", color: "rgba(255,255,255,0.85)", fontWeight: 600, letterSpacing: "1px" }}>
+              <div style={{ fontSize: "clamp(11px, 2vw, 13px)", color: "rgba(255,255,255,0.9)", fontWeight: 600, marginBottom: "12px", letterSpacing: "0.5px" }}>
+                per photo
+              </div>
+              <div style={{ fontSize: "clamp(12px, 2vw, 13px)", color: "rgba(255,255,255,0.85)", fontWeight: 600, letterSpacing: "1px" }}>
                 Limited Time • Instant Download • Share Your Glory
               </div>
             </div>
