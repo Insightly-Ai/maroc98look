@@ -484,7 +484,7 @@ export default function Marokko98Look() {
           {/* Hero tekst — geen gekleurd vak, puur tekst */}
           <div style={{ textAlign: "center", marginBottom: "24px" }}>
             <div style={{ fontSize: "clamp(28px, 7vw, 48px)", fontWeight: 900, color: C.dark, lineHeight: 1.1, marginBottom: "10px", letterSpacing: "-0.5px" }}>
-              BE A <span style={{ color: C.red }}>LEGEND</span> 🇲🇦
+              BE A <span style={{ color: C.red }}>LEGEND</span> | كن أسطورة 🇲🇦
             </div>
             <div style={{ fontSize: "clamp(14px, 3.5vw, 18px)", fontWeight: 700, color: C.dark, marginBottom: "8px" }}>
               🏆 Champion Photo &nbsp;·&nbsp; ⚽ Panini Card
