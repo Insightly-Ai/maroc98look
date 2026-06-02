@@ -13,9 +13,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Maroc WK 1998 Look Generator",
-  description:
-    "Genereer jouw perfecte outfit geïnspireerd op Marokko's deelname aan het WK 1998 in Frankrijk.",
+  title: "Morocco 2026 Legend Generator",
+  description: "Turn your photo into a Morocco World Cup 2026 Champion Photo or Panini card. Only €1.49.",
+  openGraph: {
+    title: "Morocco 2026 Legend Generator",
+    description: "Turn your photo into a Morocco World Cup 2026 Champion Photo or Panini card. Only €1.49.",
+    type: "website",
+  },
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
