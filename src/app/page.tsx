@@ -279,12 +279,11 @@ export default function Marokko98Look() {
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [paidIntentId, setPaidIntentId] = useState<string | null>(null);
-  const [fromCamera, setFromCamera] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const handleFile = useCallback((file: File, camera = false) => {
+  const handleFile = useCallback((file: File) => {
     if (!file || !file.type.startsWith("image/")) return;
-    setResultUrl(null); setError(null); setPaidIntentId(null); setFromCamera(camera);
+    setResultUrl(null); setError(null); setPaidIntentId(null);
 
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -492,9 +491,9 @@ export default function Marokko98Look() {
 
             {/* Hidden file inputs */}
             <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }}
-              onChange={(e) => e.target.files && handleFile(e.target.files[0], false)} />
+              onChange={(e) => e.target.files && handleFile(e.target.files[0])} />
             <input id="cameraInput" type="file" accept="image/*" capture="user" style={{ display: "none" }}
-              onChange={(e) => e.target.files && handleFile(e.target.files[0], true)} />
+              onChange={(e) => e.target.files && handleFile(e.target.files[0])} />
 
             {image ? (
               /* Uploaded image preview */
@@ -503,7 +502,7 @@ export default function Marokko98Look() {
                 onDragLeave={() => setDragOver(false)}
                 onDrop={handleDrop}
                 style={{ background: dragOver ? C.cream : "#FAFAF8", border: `2px dashed ${dragOver ? C.gold : "rgba(168,134,44,0.3)"}`, borderRadius: "12px", padding: "20px", textAlign: "center", transition: "all 0.25s ease" }}>
-                <img src={image} alt="Uploaded" style={{ maxHeight: "240px", maxWidth: "100%", borderRadius: "8px", border: `2px solid ${C.green}`, boxShadow: "0 4px 20px rgba(0,0,0,0.1)", display: "block", margin: "0 auto 12px", transform: fromCamera ? "scaleX(-1)" : "none" }} />
+                <img src={image} alt="Uploaded" style={{ maxHeight: "240px", maxWidth: "100%", borderRadius: "8px", border: `2px solid ${C.green}`, boxShadow: "0 4px 20px rgba(0,0,0,0.1)", display: "block", margin: "0 auto 12px" }} />
                 <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
                   <button onClick={() => fileRef.current?.click()} className="btn-upload" style={{ padding: "8px 18px", background: C.gold, border: "none", borderRadius: "8px", color: "#fff", fontSize: "13px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s ease" }}>
                     📤 Different Photo
