@@ -281,7 +281,7 @@ export default function Marokko98Look() {
   const [paidIntentId, setPaidIntentId] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const handleFile = useCallback((file: File) => {
+  const handleFile = useCallback((file: File, fromFrontCamera = false) => {
     if (!file || !file.type.startsWith("image/")) return;
     setResultUrl(null); setError(null); setPaidIntentId(null);
 
@@ -291,14 +291,16 @@ export default function Marokko98Look() {
       img.onload = () => {
         const canvas = document.createElement("canvas");
         let width = img.width, height = img.height;
-        // Scale down if too large (max 1200px width)
-        if (width > 1200) {
-          height = (height * 1200) / width;
-          width = 1200;
-        }
+        if (width > 1200) { height = (height * 1200) / width; width = 1200; }
         canvas.width = width;
         canvas.height = height;
-        canvas.getContext("2d")?.drawImage(img, 0, 0, width, height);
+        const ctx = canvas.getContext("2d")!;
+        if (fromFrontCamera) {
+          // Flip horizontally to correct iOS front camera mirror
+          ctx.translate(width, 0);
+          ctx.scale(-1, 1);
+        }
+        ctx.drawImage(img, 0, 0, width, height);
         const compressed = canvas.toDataURL(file.type || "image/jpeg", 0.85);
         setImage(compressed);
         setImageMime(file.type || "image/jpeg");
@@ -491,9 +493,9 @@ export default function Marokko98Look() {
 
             {/* Hidden file inputs */}
             <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }}
-              onChange={(e) => e.target.files && handleFile(e.target.files[0])} />
+              onChange={(e) => e.target.files && handleFile(e.target.files[0], false)} />
             <input id="cameraInput" type="file" accept="image/*" capture="user" style={{ display: "none" }}
-              onChange={(e) => e.target.files && handleFile(e.target.files[0])} />
+              onChange={(e) => e.target.files && handleFile(e.target.files[0], true)} />
 
             {image ? (
               /* Uploaded image preview */
