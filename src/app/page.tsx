@@ -326,9 +326,13 @@ export default function Marokko98Look() {
         .result-card { animation: fadeInUp 0.5s ease forwards; }
         .side-panel { display: flex; }
         .mobile-examples { display: none; }
-        @media (max-width: 960px) {
+        @media (max-width: 1024px) {
           .side-panel { display: none !important; }
           .mobile-examples { display: flex !important; }
+        }
+        @media (max-width: 480px) {
+          .btn-upload { font-size: 14px !important; padding: 12px !important; }
+          .product-card { padding: 12px 10px !important; }
         }
         /* Zellige background pattern */
         .zellige-bg::before {
@@ -349,66 +353,36 @@ export default function Marokko98Look() {
       <header style={{ borderBottom: `3px solid ${C.red}`, background: "#fff", boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}>
         {/* Top strip: Moroccan flag colors */}
         <div style={{ height: "4px", background: `linear-gradient(90deg, ${C.red} 0%, ${C.red} 50%, ${C.green} 50%, ${C.green} 100%)` }} />
-        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "12px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
-          {/* Left flags */}
-          <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-            {[0, 1, 2].map((i) => (
-              <MoroccanFlag key={i} delay={i * 0.25} />
-            ))}
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "clamp(8px, 2vw, 12px) clamp(12px, 4vw, 24px)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "clamp(8px, 2vw, 16px)" }}>
+          {/* Left flag */}
+          <div style={{ display: "flex", alignItems: "center", width: "clamp(30px, 8vw, 48px)", minWidth: 0 }}>
+            <MoroccanFlag delay={0} />
           </div>
 
           {/* Center title */}
-          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-            <MoroccanStar size={26} color={C.gold} />
+          <div style={{ display: "flex", alignItems: "center", gap: "clamp(8px, 2vw, 14px)", flex: 1, justifyContent: "center", minWidth: 0 }}>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: "clamp(16px, 4vw, 24px)", fontWeight: 900, color: C.dark, letterSpacing: "3px", textTransform: "uppercase" as const }}>
+              <div style={{ fontSize: "clamp(14px, 5vw, 24px)", fontWeight: 900, color: C.dark, letterSpacing: "clamp(1px, 1vw, 3px)", textTransform: "uppercase" as const, whiteSpace: "nowrap" }}>
                 MOROCCO <span style={{ color: C.red }}>2026</span>
               </div>
-              <div style={{ fontSize: "9px", color: C.gold, letterSpacing: "2px", textTransform: "uppercase" as const, fontWeight: 700 }}>
+              <div style={{ fontSize: "clamp(7px, 1.5vw, 9px)", color: C.gold, letterSpacing: "clamp(1px, 0.5vw, 2px)", textTransform: "uppercase" as const, fontWeight: 700, whiteSpace: "nowrap" }}>
                 FIFA WORLD CUP
               </div>
             </div>
-            <MoroccanStar size={26} color={C.gold} />
           </div>
 
-          {/* Right flags */}
-          <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-            {[0, 1, 2].map((i) => (
-              <MoroccanFlag key={i} delay={i * 0.3} />
-            ))}
+          {/* Right flag */}
+          <div style={{ display: "flex", alignItems: "center", width: "clamp(30px, 8vw, 48px)", justifyContent: "flex-end", minWidth: 0 }}>
+            <MoroccanFlag delay={0.2} />
           </div>
         </div>
       </header>
 
-      {/* Moving flags - left side */}
-      <div style={{ position: "fixed", left: "20px", top: "50%", transform: "translateY(-50%)", zIndex: 5, pointerEvents: "none" }}>
-        <div style={{ animation: "wave 2s ease-in-out infinite", width: "40px", height: "60px" }}>
-          <svg viewBox="0 0 40 60" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.1))" }}>
-            <rect x="0" y="0" width="20" height="30" fill={C.red} />
-            <rect x="0" y="30" width="20" height="30" fill={C.green} />
-            <circle cx="30" cy="15" r="8" fill={C.gold} opacity="0.9" />
-            <circle cx="30" cy="45" r="8" fill={C.gold} opacity="0.9" />
-          </svg>
-        </div>
-      </div>
-
-      {/* Moving flags - right side */}
-      <div style={{ position: "fixed", right: "20px", top: "50%", transform: "translateY(-50%)", zIndex: 5, pointerEvents: "none" }}>
-        <div style={{ animation: "wave 2.2s ease-in-out infinite", width: "40px", height: "60px" }}>
-          <svg viewBox="0 0 40 60" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.1))" }}>
-            <rect x="0" y="0" width="20" height="30" fill={C.red} />
-            <rect x="0" y="30" width="20" height="30" fill={C.green} />
-            <circle cx="30" cy="15" r="8" fill={C.gold} opacity="0.9" />
-            <circle cx="30" cy="45" r="8" fill={C.gold} opacity="0.9" />
-          </svg>
-        </div>
-      </div>
-
       {/* Main content: left sidebar | center | right sidebar */}
-      <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", alignItems: "flex-start", gap: "24px", padding: "32px 24px 80px" }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", alignItems: "flex-start", gap: "clamp(12px, 3vw, 24px)", padding: "clamp(20px, 5vw, 32px) clamp(12px, 4vw, 24px) clamp(40px, 10vw, 80px)" }}>
 
         {/* Left side panel */}
-        <div className="side-panel" style={{ width: "160px", flexShrink: 0, flexDirection: "column", alignItems: "center", gap: "20px", paddingTop: "16px" }}>
+        <div className="side-panel" style={{ width: "clamp(100px, 12vw, 160px)", flexShrink: 0, flexDirection: "column", alignItems: "center", gap: "clamp(12px, 2vw, 20px)", paddingTop: "16px" }}>
           <PaniniCard name="HASSNA" rotate={-4} imgSrc="/examples/panini-hassna.png" />
           <ChampionCard rotate={3} imgSrc="/examples/champion-1.png" />
           <PaniniCard name="YOUNES" rotate={-2} imgSrc="/examples/panini-younes.png" />
@@ -418,7 +392,7 @@ export default function Marokko98Look() {
         <div style={{ flex: 1, minWidth: 0, maxWidth: "640px", margin: "0 auto" }}>
 
           {/* Hero Banner - Creative Commercial Section */}
-          <div style={{ background: `linear-gradient(135deg, ${C.red} 0%, #A82D32 50%, ${C.gold} 100%)`, borderRadius: "16px", padding: "36px 28px", marginBottom: "28px", position: "relative", overflow: "hidden", boxShadow: "0 8px 32px rgba(193,39,45,0.2)" }}>
+          <div style={{ background: `linear-gradient(135deg, ${C.red} 0%, #A82D32 50%, ${C.gold} 100%)`, borderRadius: "clamp(12px, 3vw, 16px)", padding: "clamp(20px, 5vw, 36px) clamp(16px, 4vw, 28px)", marginBottom: "clamp(16px, 4vw, 28px)", position: "relative", overflow: "hidden", boxShadow: "0 8px 32px rgba(193,39,45,0.2)" }}>
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundImage: "radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(0,0,0,0.1) 0%, transparent 50%)", pointerEvents: "none" }} />
             <div style={{ position: "relative", zIndex: 1, textAlign: "center" }}>
               <div style={{ fontSize: "clamp(24px, 5vw, 42px)", fontWeight: 900, color: "#fff", letterSpacing: "2px", marginBottom: "12px" }}>
@@ -624,7 +598,7 @@ export default function Marokko98Look() {
         </div>
 
         {/* Right side panel */}
-        <div className="side-panel" style={{ width: "160px", flexShrink: 0, flexDirection: "column", alignItems: "center", gap: "20px", paddingTop: "16px" }}>
+        <div className="side-panel" style={{ width: "clamp(100px, 12vw, 160px)", flexShrink: 0, flexDirection: "column", alignItems: "center", gap: "clamp(12px, 2vw, 20px)", paddingTop: "16px" }}>
           <ChampionCard rotate={-3} imgSrc="/examples/champion-2.png" />
           <PaniniCard name="HICHAM" rotate={4} imgSrc="/examples/panini-hicham.png" />
           <ChampionCard rotate={-2} imgSrc="/examples/champion-3.png" />
