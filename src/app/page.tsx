@@ -208,7 +208,18 @@ function CheckoutForm({
       body: JSON.stringify({ imageBase64, imageMime, paymentIntentId: paymentIntent.id, type: productType, playerName }),
     });
     const data = await genRes.json();
-    if (!genRes.ok) { console.error("Generate error:", data); setError(data.error ?? "Generation failed — try again"); setPaying(false); return; }
+    if (!genRes.ok) {
+      console.error("Generate error:", data);
+      setError(data.error ?? "Generation failed — try again");
+      setPaying(false);
+      return;
+    }
+    if (data.error) {
+      console.error("Generate error:", data.error);
+      setError(data.error);
+      setPaying(false);
+      return;
+    }
     onSuccess(data.imageUrl);
   };
 
@@ -299,8 +310,20 @@ export default function Marokko98Look() {
         setGenerating(true);
         fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageBase64: savedBase64, imageMime: savedMime || "image/jpeg", paymentIntentId, type: savedType || "winner", playerName: savedName }) })
           .then((r) => r.json())
-          .then((data) => { setResultUrl(data.imageUrl); setGenerating(false); })
-          .catch(() => { setError("Generatie mislukt, probeer opnieuw."); setGenerating(false); });
+          .then((data) => {
+            if (data.error) {
+              setError(data.error);
+              setGenerating(false);
+            } else {
+              setResultUrl(data.imageUrl);
+              setGenerating(false);
+            }
+          })
+          .catch((err) => {
+            console.error("Generation error:", err);
+            setError("Generation failed — try again");
+            setGenerating(false);
+          });
       }
     }
   }, []);
