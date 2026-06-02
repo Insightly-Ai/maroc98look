@@ -79,8 +79,8 @@ export async function POST(request: NextRequest) {
     if (shirt) baseParts.push({ inlineData: { mimeType: shirt.mimeType, data: shirt.data } });
 
     const shirtDesc = shirt
-      ? "wearing the exact retro Morocco 1990 football shirt from Image 2 — RED base with white geometric diamond/chevron pattern all over, green V-neck collar, short sleeves. Replicate exactly. NO brand logos, NO badge."
-      : "wearing the classic Morocco 1990 retro shirt: RED base with white geometric diamond/chevron pattern all over, green V-neck collar, short sleeves. NO logos, NO badge.";
+      ? "wearing the exact retro Morocco 1990 football shirt from Image 2 — RED base with white geometric diamond/chevron pattern all over, green V-neck collar, short sleeves. On the left chest: a small circular Morocco football federation emblem (green circle with a golden crown above a red five-pointed star, Arabic text around the border). Replicate the shirt exactly."
+      : "wearing the classic Morocco 1990 retro shirt: RED base with white geometric diamond/chevron pattern all over, green V-neck collar, short sleeves. On the left chest: a small circular Morocco football federation emblem (green circle with a golden crown above a red five-pointed star).";
 
     const name = playerName || "ATLAS";
 
