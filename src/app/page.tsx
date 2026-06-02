@@ -188,14 +188,18 @@ function CheckoutForm({
     const { error: submitError } = await elements.submit();
     if (submitError) { setError(submitError.message ?? "Error"); setPaying(false); return; }
 
-    sessionStorage.setItem("pendingImageBase64", imageBase64);
-    sessionStorage.setItem("pendingImageMime", imageMime);
-    sessionStorage.setItem("pendingProductType", productType);
-    sessionStorage.setItem("pendingPlayerName", playerName);
-    localStorage.setItem("pendingImageBase64", imageBase64);
-    localStorage.setItem("pendingImageMime", imageMime);
-    localStorage.setItem("pendingProductType", productType);
-    localStorage.setItem("pendingPlayerName", playerName);
+    try {
+      sessionStorage.setItem("pendingImageBase64", imageBase64);
+      sessionStorage.setItem("pendingImageMime", imageMime);
+      sessionStorage.setItem("pendingProductType", productType);
+      sessionStorage.setItem("pendingPlayerName", playerName);
+    } catch { /* sessionStorage full */ }
+    try {
+      localStorage.setItem("pendingImageBase64", imageBase64);
+      localStorage.setItem("pendingImageMime", imageMime);
+      localStorage.setItem("pendingProductType", productType);
+      localStorage.setItem("pendingPlayerName", playerName);
+    } catch { /* localStorage full — image too large */ }
 
     const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
       elements, clientSecret,
@@ -291,7 +295,9 @@ export default function Marokko98Look() {
       img.onload = () => {
         const canvas = document.createElement("canvas");
         let width = img.width, height = img.height;
-        if (width > 1200) { height = (height * 1200) / width; width = 1200; }
+        // Max 800px to stay well under localStorage 5MB limit
+        const maxW = 800;
+        if (width > maxW) { height = Math.round((height * maxW) / width); width = maxW; }
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext("2d")!;
@@ -301,7 +307,7 @@ export default function Marokko98Look() {
           ctx.scale(-1, 1);
         }
         ctx.drawImage(img, 0, 0, width, height);
-        const compressed = canvas.toDataURL(file.type || "image/jpeg", 0.85);
+        const compressed = canvas.toDataURL("image/jpeg", 0.80);
         setImage(compressed);
         setImageMime(file.type || "image/jpeg");
         setImageBase64(compressed.split(",")[1]);
@@ -359,7 +365,9 @@ export default function Marokko98Look() {
         if (savedName) setPlayerName(savedName);
         runGeneration(savedBase64, savedMime || "image/jpeg", paymentIntentId, savedType || "winner", savedName);
       } else {
-        setError("Payment succeeded but image data not found. Please try again.");
+        // Image data lost (storage full/cleared) — save intent ID so user can upload again and retry free
+        setPaidIntentId(paymentIntentId);
+        setError("Your payment was successful! Your photo wasn't saved during redirect. Please upload your photo again and tap Generate — no new payment needed.");
       }
     }
   }, [runGeneration]);
