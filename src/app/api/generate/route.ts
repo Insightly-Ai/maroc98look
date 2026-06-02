@@ -21,7 +21,7 @@ async function generateWithRetry(model: ReturnType<GoogleGenerativeAI["getGenera
   throw new Error("Max retries exceeded");
 }
 
-const SHIRT_FRONT_URL = "https://www.sportus.nl/images/thumbs/0042223_morocco-retro-football-shirt-1990.png";
+const SHIRT_FRONT_URL = "https://maroc98look-production.up.railway.app/maroc98-shirt.webp";
 
 let genAI: GoogleGenerativeAI | null = null;
 let stripeClient: Stripe | null = null;
@@ -79,8 +79,8 @@ export async function POST(request: NextRequest) {
     if (shirt) baseParts.push({ inlineData: { mimeType: shirt.mimeType, data: shirt.data } });
 
     const shirtDesc = shirt
-      ? "wearing the exact retro Morocco 1990 football shirt from Image 2 — RED base with white geometric diamond/chevron pattern all over, green V-neck collar, short sleeves. On the left chest: a small circular Morocco football federation emblem (green circle with a golden crown above a red five-pointed star, Arabic text around the border). Replicate the shirt exactly."
-      : "wearing the classic Morocco 1990 retro shirt: RED base with white geometric diamond/chevron pattern all over, green V-neck collar, short sleeves. On the left chest: a small circular Morocco football federation emblem (green circle with a golden crown above a red five-pointed star).";
+      ? "wearing the exact retro Morocco football shirt shown in Image 2. Replicate EXACTLY: red/pink base with large geometric chevron/triangle pattern all over, green V-neck collar, short sleeves. On the upper left chest: a shield-shaped badge with a gold border, red background, green five-pointed star in center, the word 'MAROC' above the star, and Arabic text below."
+      : "wearing the retro Morocco 1990 football shirt: red base with large geometric chevron/triangle pattern, green V-neck collar, short sleeves. On the upper left chest: a shield-shaped badge with gold border, red background, green five-pointed star, 'MAROC' text above the star, Arabic text below.";
 
     const name = playerName || "ATLAS";
 
