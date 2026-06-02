@@ -192,6 +192,10 @@ function CheckoutForm({
     sessionStorage.setItem("pendingImageMime", imageMime);
     sessionStorage.setItem("pendingProductType", productType);
     sessionStorage.setItem("pendingPlayerName", playerName);
+    localStorage.setItem("pendingImageBase64", imageBase64);
+    localStorage.setItem("pendingImageMime", imageMime);
+    localStorage.setItem("pendingProductType", productType);
+    localStorage.setItem("pendingPlayerName", playerName);
 
     const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
       elements, clientSecret,
@@ -316,17 +320,17 @@ export default function Marokko98Look() {
 
     if (paymentIntentId && redirectStatus === "succeeded") {
       window.history.replaceState({}, "", window.location.pathname);
-      const savedBase64 = sessionStorage.getItem("pendingImageBase64");
-      const savedMime = sessionStorage.getItem("pendingImageMime");
-      const savedType = sessionStorage.getItem("pendingProductType") as "winner" | "panini" | null;
-      const savedName = sessionStorage.getItem("pendingPlayerName") || "";
+      const savedBase64 = sessionStorage.getItem("pendingImageBase64") || localStorage.getItem("pendingImageBase64");
+      const savedMime = sessionStorage.getItem("pendingImageMime") || localStorage.getItem("pendingImageMime");
+      const savedType = (sessionStorage.getItem("pendingProductType") || localStorage.getItem("pendingProductType")) as "winner" | "panini" | null;
+      const savedName = sessionStorage.getItem("pendingPlayerName") || localStorage.getItem("pendingPlayerName") || "";
 
       console.log("Payment succeeded, generating image:", { hasSavedBase64: !!savedBase64, savedType, savedName });
 
-      sessionStorage.removeItem("pendingImageBase64");
-      sessionStorage.removeItem("pendingImageMime");
-      sessionStorage.removeItem("pendingProductType");
-      sessionStorage.removeItem("pendingPlayerName");
+      ["pendingImageBase64", "pendingImageMime", "pendingProductType", "pendingPlayerName"].forEach((k) => {
+        sessionStorage.removeItem(k);
+        localStorage.removeItem(k);
+      });
 
       if (savedBase64) {
         setImageBase64(savedBase64);
