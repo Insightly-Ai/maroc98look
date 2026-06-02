@@ -79,8 +79,8 @@ export async function POST(request: NextRequest) {
     if (shirt) baseParts.push({ inlineData: { mimeType: shirt.mimeType, data: shirt.data } });
 
     const shirtDesc = shirt
-      ? "wearing the exact retro Morocco football shirt shown in Image 2. Replicate EXACTLY: red/pink base with large geometric chevron/triangle pattern all over, green V-neck collar, short sleeves. On the upper left chest: a shield-shaped badge with a gold border, red background, green five-pointed star in center, the word 'MAROC' above the star, and Arabic text below."
-      : "wearing the retro Morocco 1990 football shirt: red base with large geometric chevron/triangle pattern, green V-neck collar, short sleeves. On the upper left chest: a shield-shaped badge with gold border, red background, green five-pointed star, 'MAROC' text above the star, Arabic text below.";
+      ? "wearing the exact retro Morocco football shirt shown in Image 2. Replicate EXACTLY: red/pink base with large geometric chevron/triangle pattern covering the entire shirt, green V-neck collar, short sleeves, NO brand logos anywhere. On the upper left chest: a shield-shaped badge with gold border, red background, green five-pointed star in center, 'MAROC' text, Arabic text below. NO PUMA logo, NO other brand marks."
+      : "wearing the retro Morocco 1990 football shirt: red/pink base with large geometric chevron/triangle pattern covering the entire shirt, green V-neck collar, short sleeves. On the upper left chest: a shield-shaped badge with gold border, red background, green five-pointed star, 'MAROC' text. NO brand logos, NO PUMA.";
 
     const name = playerName || "ATLAS";
 
