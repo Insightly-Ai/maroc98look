@@ -37,17 +37,17 @@ export async function POST(request: NextRequest) {
     const { imageBase64, imageMime, paymentIntentId, type, playerName } = await request.json();
 
     if (!imageBase64) {
-      return NextResponse.json({ error: "Geen afbeelding ontvangen" }, { status: 400 });
+      return NextResponse.json({ error: "No image received" }, { status: 400 });
     }
 
     const { genAI: ai, stripe } = getClients();
 
     if (!paymentIntentId) {
-      return NextResponse.json({ error: "Geen betaling gevonden" }, { status: 402 });
+      return NextResponse.json({ error: "No payment found" }, { status: 402 });
     }
     const intent = await stripe.paymentIntents.retrieve(paymentIntentId);
     if (intent.status !== "succeeded") {
-      return NextResponse.json({ error: "Betaling niet geslaagd" }, { status: 402 });
+      return NextResponse.json({ error: "Payment not successful" }, { status: 402 });
     }
 
     const model = ai.getGenerativeModel({ model: "gemini-3.1-flash-image" });
@@ -127,13 +127,13 @@ export async function POST(request: NextRequest) {
         p.inlineData?.mimeType?.startsWith("image/")
     );
 
-    if (!imagePart?.inlineData) throw new Error("Geen afbeelding gegenereerd");
+    if (!imagePart?.inlineData) throw new Error("No image generated");
 
     const { mimeType, data } = imagePart.inlineData;
     return NextResponse.json({ imageUrl: `data:${mimeType};base64,${data}` });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
-    console.error("Fout bij generatie:", msg);
+    console.error("Generation error:", msg);
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

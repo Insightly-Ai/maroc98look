@@ -154,7 +154,7 @@ function CheckoutForm({
     setError(null);
 
     const { error: submitError } = await elements.submit();
-    if (submitError) { setError(submitError.message ?? "Fout"); setPaying(false); return; }
+    if (submitError) { setError(submitError.message ?? "Error"); setPaying(false); return; }
 
     sessionStorage.setItem("pendingImageBase64", imageBase64);
     sessionStorage.setItem("pendingImageMime", imageMime);
@@ -167,8 +167,8 @@ function CheckoutForm({
       redirect: "if_required",
     });
 
-    if (confirmError) { setError(confirmError.message ?? "Betaling mislukt"); setPaying(false); return; }
-    if (!paymentIntent?.id) { setError("Betaling geslaagd maar ID ontbreekt. Ververs de pagina."); setPaying(false); return; }
+    if (confirmError) { setError(confirmError.message ?? "Payment failed"); setPaying(false); return; }
+    if (!paymentIntent?.id) { setError("Payment succeeded but ID missing. Please refresh."); setPaying(false); return; }
 
     const genRes = await fetch("/api/generate", {
       method: "POST",
@@ -176,7 +176,7 @@ function CheckoutForm({
       body: JSON.stringify({ imageBase64, imageMime, paymentIntentId: paymentIntent.id, type: productType, playerName }),
     });
     const data = await genRes.json();
-    if (!genRes.ok) { console.error("Generate fout:", data); setError(data.error ?? "Generatie mislukt — probeer opnieuw"); setPaying(false); return; }
+    if (!genRes.ok) { console.error("Generate error:", data); setError(data.error ?? "Generation failed — try again"); setPaying(false); return; }
     onSuccess(data.imageUrl);
   };
 
@@ -190,10 +190,10 @@ function CheckoutForm({
             <div style={{ width: "32px", height: "3px", background: C.green }} />
           </div>
           <div style={{ color: C.dark, fontSize: "20px", fontWeight: 800, letterSpacing: "1px" }}>
-            {productType === "panini" ? "Jouw Panini Sticker" : "Jouw Kampioenschapsfoto"}
+            {productType === "panini" ? "Your Panini Card" : "Your Champion Photo"}
           </div>
           <div style={{ color: C.gold, fontSize: "14px", marginTop: "4px", fontWeight: 600 }}>
-            Eenmalig €1,49 — direct downloaden
+            Only €1.49 — instant download
           </div>
         </div>
 
@@ -208,10 +208,10 @@ function CheckoutForm({
             display: "flex", alignItems: "center", justifyContent: "center", gap: "10px",
             letterSpacing: "0.5px",
           }}>
-            {paying ? (<><span style={{ width: "18px", height: "18px", border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} /> Betalen & genereren...</>) : "🏆 Betaal €1,49 & genereer"}
+            {paying ? (<><span style={{ width: "18px", height: "18px", border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} /> Paying & generating...</>) : "🏆 Pay €1.49 & Generate"}
           </button>
           <button type="button" onClick={onCancel} style={{ width: "100%", marginTop: "10px", padding: "10px", background: "transparent", border: `1px solid rgba(0,0,0,0.12)`, borderRadius: "8px", color: "rgba(0,0,0,0.4)", fontSize: "13px", cursor: "pointer" }}>
-            Annuleren
+            Cancel
           </button>
         </form>
       </div>
@@ -286,6 +286,7 @@ export default function Marokko98Look() {
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes wave { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
         .btn-generate:hover:not(:disabled) { transform: translateY(-2px) !important; box-shadow: 0 8px 32px rgba(193,39,45,0.35) !important; }
         .btn-upload:hover { opacity: 0.88 !important; transform: translateY(-1px) !important; }
         .product-card:hover { border-color: ${C.gold} !important; transform: translateY(-2px); }
@@ -315,40 +316,46 @@ export default function Marokko98Look() {
       <header style={{ borderBottom: `3px solid ${C.red}`, background: "#fff", boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}>
         {/* Top strip: Moroccan flag colors */}
         <div style={{ height: "4px", background: `linear-gradient(90deg, ${C.red} 0%, ${C.red} 50%, ${C.green} 50%, ${C.green} 100%)` }} />
-        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "16px 24px", display: "flex", alignItems: "center", justifyContent: "center", gap: "16px" }}>
-          <MoroccanStar size={32} color={C.gold} />
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "12px 24px", display: "flex", alignItems: "center", justifyContent: "center", gap: "16px" }}>
+          <MoroccanStar size={28} color={C.gold} />
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "clamp(18px, 4vw, 28px)", fontWeight: 900, color: C.dark, letterSpacing: "4px", textTransform: "uppercase" as const }}>
-              MAROC <span style={{ color: C.red }}>2026</span>
+            <div style={{ fontSize: "clamp(16px, 4vw, 24px)", fontWeight: 900, color: C.dark, letterSpacing: "3px", textTransform: "uppercase" as const }}>
+              MOROCCO <span style={{ color: C.red }}>2026</span>
             </div>
-            <div style={{ fontSize: "10px", color: C.gold, letterSpacing: "3px", textTransform: "uppercase" as const, fontWeight: 700 }}>
-              FIFA WORLD CUP · LES LIONS DE L&apos;ATLAS
+            <div style={{ fontSize: "9px", color: C.gold, letterSpacing: "2px", textTransform: "uppercase" as const, fontWeight: 700 }}>
+              FIFA WORLD CUP
             </div>
           </div>
-          <MoroccanStar size={32} color={C.gold} />
+          <MoroccanStar size={28} color={C.gold} />
         </div>
       </header>
 
-      {/* Hero banner */}
-      <div style={{ background: `linear-gradient(135deg, ${C.dark} 0%, #2C1010 50%, #0A1F0A 100%)`, padding: "48px 24px", textAlign: "center", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, backgroundImage: `radial-gradient(circle at 20% 50%, rgba(168,134,44,0.08) 0%, transparent 60%), radial-gradient(circle at 80% 50%, rgba(0,98,51,0.08) 0%, transparent 60%)` }} />
-        <div style={{ position: "relative", zIndex: 1 }}>
-          <div style={{ fontSize: "clamp(28px, 6vw, 56px)", fontWeight: 900, color: "#fff", letterSpacing: "3px", textTransform: "uppercase" as const, marginBottom: "8px" }}>
-            HOE STAAT <span style={{ color: C.goldLight }}>KAMPIOEN</span> JOU?
-          </div>
-          <p style={{ fontSize: "clamp(14px, 2vw, 17px)", color: "rgba(255,255,255,0.7)", maxWidth: "520px", margin: "0 auto 24px", lineHeight: 1.7, fontWeight: 400 }}>
-            Steun Marokko. Schrijf geschiedenis.<br />Genereer jouw kampioenschapsfoto voor slechts <strong style={{ color: C.goldLight }}>€1,49</strong>.
-          </p>
-          <div style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap" }}>
-            <span style={{ background: "rgba(168,134,44,0.15)", border: `1px solid rgba(168,134,44,0.4)`, borderRadius: "20px", padding: "6px 18px", fontSize: "13px", color: C.goldLight, fontWeight: 700 }}>🏆 Kampioenschapsfoto</span>
-            <span style={{ background: "rgba(0,98,51,0.15)", border: `1px solid rgba(0,98,51,0.4)`, borderRadius: "20px", padding: "6px 18px", fontSize: "13px", color: "#4CAF7D", fontWeight: 700 }}>⚽ Panini Sticker</span>
-            <span style={{ background: "rgba(193,39,45,0.15)", border: `1px solid rgba(193,39,45,0.4)`, borderRadius: "20px", padding: "6px 18px", fontSize: "13px", color: "#FF7A7A", fontWeight: 700 }}>💳 Slechts €1,49</span>
-          </div>
+      {/* Moving flags - left side */}
+      <div style={{ position: "fixed", left: "20px", top: "50%", transform: "translateY(-50%)", zIndex: 5, pointerEvents: "none" }}>
+        <div style={{ animation: "wave 2s ease-in-out infinite", width: "40px", height: "60px" }}>
+          <svg viewBox="0 0 40 60" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.1))" }}>
+            <rect x="0" y="0" width="20" height="30" fill={C.red} />
+            <rect x="0" y="30" width="20" height="30" fill={C.green} />
+            <circle cx="30" cy="15" r="8" fill={C.gold} opacity="0.9" />
+            <circle cx="30" cy="45" r="8" fill={C.gold} opacity="0.9" />
+          </svg>
+        </div>
+      </div>
+
+      {/* Moving flags - right side */}
+      <div style={{ position: "fixed", right: "20px", top: "50%", transform: "translateY(-50%)", zIndex: 5, pointerEvents: "none" }}>
+        <div style={{ animation: "wave 2.2s ease-in-out infinite", width: "40px", height: "60px" }}>
+          <svg viewBox="0 0 40 60" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.1))" }}>
+            <rect x="0" y="0" width="20" height="30" fill={C.red} />
+            <rect x="0" y="30" width="20" height="30" fill={C.green} />
+            <circle cx="30" cy="15" r="8" fill={C.gold} opacity="0.9" />
+            <circle cx="30" cy="45" r="8" fill={C.gold} opacity="0.9" />
+          </svg>
         </div>
       </div>
 
       {/* Main content: left sidebar | center | right sidebar */}
-      <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", alignItems: "flex-start", gap: "24px", padding: "40px 24px 80px" }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", alignItems: "flex-start", gap: "24px", padding: "32px 24px 80px" }}>
 
         {/* Left side panel */}
         <div className="side-panel" style={{ width: "160px", flexShrink: 0, flexDirection: "column", alignItems: "center", gap: "20px", paddingTop: "16px" }}>
@@ -363,7 +370,7 @@ export default function Marokko98Look() {
           {/* Upload sectie */}
           <div style={{ marginBottom: "16px" }}>
             <div style={{ fontSize: "11px", fontWeight: 700, color: C.gold, letterSpacing: "2px", textTransform: "uppercase" as const, marginBottom: "12px" }}>
-              ⚡ Stap 1 — Kies jouw foto
+              ⚡ Step 1 — Choose Your Photo
             </div>
 
             {/* Hidden file inputs */}
@@ -379,10 +386,10 @@ export default function Marokko98Look() {
                 onDragLeave={() => setDragOver(false)}
                 onDrop={handleDrop}
                 style={{ background: dragOver ? C.cream : "#FAFAF8", border: `2px dashed ${dragOver ? C.gold : "rgba(168,134,44,0.3)"}`, borderRadius: "12px", padding: "20px", textAlign: "center", transition: "all 0.25s ease" }}>
-                <img src={image} alt="Geüpload" style={{ maxHeight: "240px", maxWidth: "100%", borderRadius: "8px", border: `2px solid ${C.green}`, boxShadow: "0 4px 20px rgba(0,0,0,0.1)", display: "block", margin: "0 auto 12px" }} />
+                <img src={image} alt="Uploaded" style={{ maxHeight: "240px", maxWidth: "100%", borderRadius: "8px", border: `2px solid ${C.green}`, boxShadow: "0 4px 20px rgba(0,0,0,0.1)", display: "block", margin: "0 auto 12px" }} />
                 <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
                   <button onClick={() => fileRef.current?.click()} className="btn-upload" style={{ padding: "8px 18px", background: C.gold, border: "none", borderRadius: "8px", color: "#fff", fontSize: "13px", fontWeight: 700, cursor: "pointer", transition: "all 0.2s ease" }}>
-                    📤 Andere foto
+                    📤 Different Photo
                   </button>
                 </div>
               </div>
@@ -394,7 +401,7 @@ export default function Marokko98Look() {
                 onDrop={handleDrop}
                 style={{ background: dragOver ? C.cream : `linear-gradient(135deg, ${C.dark} 0%, #2a0808 60%, #0a1a0a 100%)`, borderRadius: "14px", padding: "24px 20px", transition: "all 0.25s ease" }}>
                 <div style={{ fontSize: "11px", fontWeight: 700, color: "rgba(255,255,255,0.5)", letterSpacing: "2px", textTransform: "uppercase" as const, textAlign: "center", marginBottom: "16px" }}>
-                  ⚡ STAP 1: KIES JOUW FOTO
+                  ⚡ STEP 1: CHOOSE YOUR PHOTO
                 </div>
                 <div style={{ display: "flex", gap: "12px" }}>
                   <button onClick={() => fileRef.current?.click()} className="btn-upload" style={{
@@ -404,7 +411,7 @@ export default function Marokko98Look() {
                     letterSpacing: "1px", textTransform: "uppercase" as const, transition: "all 0.2s ease",
                     boxShadow: "0 4px 16px rgba(193,39,45,0.4)",
                   }}>
-                    ↑ KIES FOTO
+                    ↑ CHOOSE PHOTO
                   </button>
                   <button onClick={() => document.getElementById("cameraInput")?.click()} className="btn-upload" style={{
                     flex: 1, padding: "16px", background: C.red, border: "none", borderRadius: "12px",
@@ -413,11 +420,11 @@ export default function Marokko98Look() {
                     letterSpacing: "1px", textTransform: "uppercase" as const, transition: "all 0.2s ease",
                     boxShadow: "0 4px 16px rgba(193,39,45,0.4)",
                   }}>
-                    📷 MAAK FOTO
+                    📷 TAKE PHOTO
                   </button>
                 </div>
                 <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.3)", textAlign: "center", margin: "12px 0 0", letterSpacing: "0.5px" }}>
-                  💡 Beste resultaat: duidelijk gezicht, goede belichting, rechtop
+                  💡 Best result: clear face, good lighting, facing forward
                 </p>
               </div>
             )}
@@ -435,12 +442,12 @@ export default function Marokko98Look() {
           {image && !resultUrl && (
             <>
               <div style={{ fontSize: "11px", fontWeight: 700, color: C.gold, letterSpacing: "2px", textTransform: "uppercase" as const, marginBottom: "10px", marginTop: "8px" }}>
-                Stap 2 — Kies je product
+                Step 2 — Choose Your Product
               </div>
               <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
                 {([
-                  { type: "winner" as const, icon: "🏆", title: "Kampioenschapsfoto", desc: "Jij in het stadion met de WK-beker" },
-                  { type: "panini" as const, icon: "⚽", title: "Panini Sticker", desc: "Jouw eigen WK-voetbalplaatje" },
+                  { type: "winner" as const, icon: "🏆", title: "Champion Photo", desc: "You in the stadium with the World Cup" },
+                  { type: "panini" as const, icon: "⚽", title: "Panini Card", desc: "Your own World Cup card" },
                 ]).map(({ type, icon, title, desc }) => (
                   <div key={type} className="product-card" onClick={() => setProductType(type)} style={{
                     flex: 1, padding: "18px 14px", borderRadius: "12px", cursor: "pointer",
@@ -465,13 +472,13 @@ export default function Marokko98Look() {
           {image && !resultUrl && productType === "panini" && (
             <div style={{ marginBottom: "16px" }}>
               <div style={{ fontSize: "11px", fontWeight: 700, color: C.gold, letterSpacing: "2px", textTransform: "uppercase" as const, marginBottom: "8px" }}>
-                Stap 3 — Jouw naam op de sticker
+                Step 3 — Your Name on the Card
               </div>
               <input
                 type="text"
                 value={playerName}
                 onChange={(e) => setPlayerName(e.target.value)}
-                placeholder="Bijv. KARIM of EL ATLASSI"
+                placeholder="E.g. KARIM or YOUNES"
                 maxLength={20}
                 style={{
                   width: "100%", padding: "13px 16px", boxSizing: "border-box",
@@ -495,8 +502,8 @@ export default function Marokko98Look() {
               boxShadow: generating ? "none" : "0 4px 20px rgba(193,39,45,0.25)",
             }}>
               {generating
-                ? <><span style={{ width: "20px", height: "20px", border: "2px solid rgba(255,255,255,0.35)", borderTopColor: "#fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} /> Foto wordt gegenereerd...</>
-                : productType === "panini" ? "⚽ Genereer Panini sticker — €1,49" : "🏆 Genereer kampioenschapsfoto — €1,49"}
+                ? <><span style={{ width: "20px", height: "20px", border: "2px solid rgba(255,255,255,0.35)", borderTopColor: "#fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} /> Generating...</>
+                : productType === "panini" ? "⚽ Generate Panini Card — €1.49" : "🏆 Generate Champion Photo — €1.49"}
             </button>
           )}
 
@@ -511,20 +518,20 @@ export default function Marokko98Look() {
             <div className="result-card" style={{ background: "#fff", border: `2px solid ${C.gold}`, borderRadius: "16px", padding: "24px", boxShadow: "0 8px 40px rgba(168,134,44,0.15)" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", marginBottom: "16px" }}>
                 <div style={{ width: "40px", height: "2px", background: C.red }} />
-                <div style={{ fontSize: "13px", fontWeight: 800, color: C.gold, letterSpacing: "3px", textTransform: "uppercase" as const }}>JIJ BENT WERELDKAMPIOEN</div>
+                <div style={{ fontSize: "13px", fontWeight: 800, color: C.gold, letterSpacing: "3px", textTransform: "uppercase" as const }}>YOU ARE A WORLD CHAMPION</div>
                 <div style={{ width: "40px", height: "2px", background: C.green }} />
               </div>
-              <img src={resultUrl} alt="Jouw kampioenschapsfoto" style={{ width: "100%", borderRadius: "10px", border: `1px solid rgba(0,0,0,0.08)`, boxShadow: "0 4px 20px rgba(0,0,0,0.12)", display: "block" }} />
+              <img src={resultUrl} alt="Your Champion Photo" style={{ width: "100%", borderRadius: "10px", border: `1px solid rgba(0,0,0,0.08)`, boxShadow: "0 4px 20px rgba(0,0,0,0.12)", display: "block" }} />
               <div style={{ marginTop: "16px", display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap" }}>
-                <a href={resultUrl} download="maroc2026-kampioen.jpg" style={{
+                <a href={resultUrl} download="morocco-2026-champion.jpg" style={{
                   background: C.red, borderRadius: "8px", color: "#fff",
                   padding: "12px 28px", fontSize: "14px", fontWeight: 700,
                   letterSpacing: "1px", textDecoration: "none", display: "inline-block", textTransform: "uppercase" as const,
-                }}>⬇ Download & deel</a>
+                }}>⬇ Download & Share</a>
                 <button onClick={() => { setImage(null); setImageBase64(null); setResultUrl(null); }} style={{
                   background: "#fff", border: `2px solid ${C.gold}`, borderRadius: "8px",
                   color: C.gold, padding: "12px 24px", fontSize: "13px", cursor: "pointer", fontWeight: 700,
-                }}>Nieuwe foto</button>
+                }}>New Photo</button>
               </div>
             </div>
           )}
@@ -533,7 +540,7 @@ export default function Marokko98Look() {
           <div style={{ textAlign: "center", marginTop: "48px", display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
             <div style={{ flex: 1, height: "1px", background: "rgba(168,134,44,0.2)" }} />
             <MoroccanStar size={16} color={C.gold} style={{ opacity: 0.5 }} />
-            <span style={{ fontSize: "10px", color: "rgba(0,0,0,0.25)", letterSpacing: "2px", textTransform: "uppercase" as const }}>MAROC 2026 · FIFA WORLD CUP</span>
+            <span style={{ fontSize: "10px", color: "rgba(0,0,0,0.25)", letterSpacing: "2px", textTransform: "uppercase" as const }}>MOROCCO 2026 · FIFA WORLD CUP</span>
             <MoroccanStar size={16} color={C.gold} style={{ opacity: 0.5 }} />
             <div style={{ flex: 1, height: "1px", background: "rgba(168,134,44,0.2)" }} />
           </div>
