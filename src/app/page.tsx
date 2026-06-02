@@ -495,7 +495,7 @@ export default function Marokko98Look() {
         <div className="side-panel" style={{ width: "160px", flexShrink: 0, flexDirection: "column", alignItems: "center", gap: "20px", paddingTop: "16px" }}>
           <ChampionCard rotate={-3} imgSrc="/examples/champion-2.png" />
           <PaniniCard name="HICHAM" rotate={4} imgSrc="/examples/panini-hicham.png" />
-          <ChampionCard rotate={-2} imgSrc="/examples/champion-1.png" />
+          <ChampionCard rotate={-2} imgSrc="/examples/champion-3.png" />
         </div>
       </div>
 
