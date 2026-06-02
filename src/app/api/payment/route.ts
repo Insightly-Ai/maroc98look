@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export async function POST() {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
   const paymentIntent = await stripe.paymentIntents.create({
-    amount: 149,
+    amount: 1,
     currency: "eur",
     automatic_payment_methods: { enabled: true },
   });
