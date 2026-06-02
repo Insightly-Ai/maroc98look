@@ -188,18 +188,22 @@ function CheckoutForm({
     const { error: submitError } = await elements.submit();
     if (submitError) { setError(submitError.message ?? "Error"); setPaying(false); return; }
 
+    // Upload image to server before redirect — works in private browsing too
+    let tempKey: string | null = null;
     try {
-      sessionStorage.setItem("pendingImageBase64", imageBase64);
-      sessionStorage.setItem("pendingImageMime", imageMime);
-      sessionStorage.setItem("pendingProductType", productType);
-      sessionStorage.setItem("pendingPlayerName", playerName);
-    } catch { /* sessionStorage full */ }
-    try {
-      localStorage.setItem("pendingImageBase64", imageBase64);
-      localStorage.setItem("pendingImageMime", imageMime);
-      localStorage.setItem("pendingProductType", productType);
-      localStorage.setItem("pendingPlayerName", playerName);
-    } catch { /* localStorage full — image too large */ }
+      const storeRes = await fetch("/api/temp-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageBase64, imageMime, productType, playerName }),
+      });
+      const storeData = await storeRes.json();
+      tempKey = storeData.key ?? null;
+    } catch { /* fallback to localStorage */ }
+
+    // Also try localStorage as fallback
+    try { localStorage.setItem("pendingImageBase64", imageBase64); localStorage.setItem("pendingImageMime", imageMime); localStorage.setItem("pendingProductType", productType); localStorage.setItem("pendingPlayerName", playerName); } catch { /* full */ }
+    try { sessionStorage.setItem("pendingImageBase64", imageBase64); sessionStorage.setItem("pendingImageMime", imageMime); sessionStorage.setItem("pendingProductType", productType); sessionStorage.setItem("pendingPlayerName", playerName); } catch { /* full */ }
+    if (tempKey) { try { localStorage.setItem("pendingTempKey", tempKey); sessionStorage.setItem("pendingTempKey", tempKey); } catch { /* full */ } }
 
     const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
       elements, clientSecret,
@@ -348,26 +352,39 @@ export default function Marokko98Look() {
 
     if (paymentIntentId && redirectStatus === "succeeded") {
       window.history.replaceState({}, "", window.location.pathname);
-      const savedBase64 = sessionStorage.getItem("pendingImageBase64") || localStorage.getItem("pendingImageBase64");
-      const savedMime = sessionStorage.getItem("pendingImageMime") || localStorage.getItem("pendingImageMime");
-      const savedType = (sessionStorage.getItem("pendingProductType") || localStorage.getItem("pendingProductType")) as "winner" | "panini" | null;
-      const savedName = sessionStorage.getItem("pendingPlayerName") || localStorage.getItem("pendingPlayerName") || "";
 
-      ["pendingImageBase64", "pendingImageMime", "pendingProductType", "pendingPlayerName"].forEach((k) => {
-        sessionStorage.removeItem(k); localStorage.removeItem(k);
+      const tempKey = sessionStorage.getItem("pendingTempKey") || localStorage.getItem("pendingTempKey");
+      const localBase64 = sessionStorage.getItem("pendingImageBase64") || localStorage.getItem("pendingImageBase64");
+      const localMime = sessionStorage.getItem("pendingImageMime") || localStorage.getItem("pendingImageMime");
+      const localType = (sessionStorage.getItem("pendingProductType") || localStorage.getItem("pendingProductType")) as "winner" | "panini" | null;
+      const localName = sessionStorage.getItem("pendingPlayerName") || localStorage.getItem("pendingPlayerName") || "";
+
+      ["pendingImageBase64", "pendingImageMime", "pendingProductType", "pendingPlayerName", "pendingTempKey"].forEach((k) => {
+        try { sessionStorage.removeItem(k); } catch { /* */ }
+        try { localStorage.removeItem(k); } catch { /* */ }
       });
 
-      if (savedBase64) {
-        setImageBase64(savedBase64);
-        setImageMime(savedMime || "image/jpeg");
-        setImage("data:" + (savedMime || "image/jpeg") + ";base64," + savedBase64);
-        if (savedType) setProductType(savedType);
-        if (savedName) setPlayerName(savedName);
-        runGeneration(savedBase64, savedMime || "image/jpeg", paymentIntentId, savedType || "winner", savedName);
+      const resolve = (base64: string, mime: string, type: "winner" | "panini", name: string) => {
+        setImageBase64(base64); setImageMime(mime);
+        setImage("data:" + mime + ";base64," + base64);
+        setProductType(type); if (name) setPlayerName(name);
+        runGeneration(base64, mime, paymentIntentId, type, name);
+      };
+
+      if (tempKey) {
+        // Retrieve from server — works even in private browsing
+        fetch("/api/temp-image?key=" + tempKey)
+          .then((r) => r.json())
+          .then((d) => {
+            if (d.imageBase64) resolve(d.imageBase64, d.imageMime || "image/jpeg", (d.productType as "winner" | "panini") || "winner", d.playerName || "");
+            else { setPaidIntentId(paymentIntentId); setError("Your payment was successful! Please upload your photo again and tap Generate — no new payment needed."); }
+          })
+          .catch(() => { setPaidIntentId(paymentIntentId); setError("Your payment was successful! Please upload your photo again and tap Generate — no new payment needed."); });
+      } else if (localBase64) {
+        resolve(localBase64, localMime || "image/jpeg", localType || "winner", localName);
       } else {
-        // Image data lost (storage full/cleared) — save intent ID so user can upload again and retry free
         setPaidIntentId(paymentIntentId);
-        setError("Your payment was successful! Your photo wasn't saved during redirect. Please upload your photo again and tap Generate — no new payment needed.");
+        setError("Your payment was successful! Please upload your photo again and tap Generate — no new payment needed.");
       }
     }
   }, [runGeneration]);
