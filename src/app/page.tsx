@@ -172,7 +172,7 @@ function CheckoutForm({
 }: {
   imageBase64: string; imageMime: string; productType: "winner" | "panini";
   playerName: string; clientSecret: string;
-  onSuccess: (url: string) => void; onCancel: () => void;
+  onSuccess: (url: string, intentId: string) => void; onCancel: () => void;
 }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -224,7 +224,7 @@ function CheckoutForm({
       setPaying(false);
       return;
     }
-    onSuccess(data.imageUrl);
+    onSuccess(data.imageUrl, paymentIntent.id);
   };
 
   return (
@@ -278,11 +278,12 @@ export default function Marokko98Look() {
   const [generating, setGenerating] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [paidIntentId, setPaidIntentId] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleFile = useCallback((file: File) => {
     if (!file || !file.type.startsWith("image/")) return;
-    setResultUrl(null); setError(null);
+    setResultUrl(null); setError(null); setPaidIntentId(null);
 
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -312,11 +313,30 @@ export default function Marokko98Look() {
     e.preventDefault(); setDragOver(false); handleFile(e.dataTransfer.files[0]);
   }, [handleFile]);
 
+  const runGeneration = useCallback((base64: string, mime: string, intentId: string, type: "winner" | "panini", name: string) => {
+    setGenerating(true);
+    setError(null);
+    setPaidIntentId(intentId);
+    setTimeout(() => {
+      fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageBase64: base64, imageMime: mime, paymentIntentId: intentId, type, playerName: name }),
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.error) { setError(data.error); setGenerating(false); }
+          else if (data.imageUrl) { setResultUrl(data.imageUrl); setGenerating(false); }
+          else { setError("No image returned — try again"); setGenerating(false); }
+        })
+        .catch((err) => { setError("Generation failed — try again: " + err.message); setGenerating(false); });
+    }, 500);
+  }, []);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const paymentIntentId = params.get("payment_intent");
     const redirectStatus = params.get("redirect_status");
-    console.log("Payment redirect check:", { paymentIntentId, redirectStatus });
 
     if (paymentIntentId && redirectStatus === "succeeded") {
       window.history.replaceState({}, "", window.location.pathname);
@@ -325,11 +345,8 @@ export default function Marokko98Look() {
       const savedType = (sessionStorage.getItem("pendingProductType") || localStorage.getItem("pendingProductType")) as "winner" | "panini" | null;
       const savedName = sessionStorage.getItem("pendingPlayerName") || localStorage.getItem("pendingPlayerName") || "";
 
-      console.log("Payment succeeded, generating image:", { hasSavedBase64: !!savedBase64, savedType, savedName });
-
       ["pendingImageBase64", "pendingImageMime", "pendingProductType", "pendingPlayerName"].forEach((k) => {
-        sessionStorage.removeItem(k);
-        localStorage.removeItem(k);
+        sessionStorage.removeItem(k); localStorage.removeItem(k);
       });
 
       if (savedBase64) {
@@ -338,53 +355,21 @@ export default function Marokko98Look() {
         setImage("data:" + (savedMime || "image/jpeg") + ";base64," + savedBase64);
         if (savedType) setProductType(savedType);
         if (savedName) setPlayerName(savedName);
-        setGenerating(true);
-        setError(null);
-
-        setTimeout(() => {
-          fetch("/api/generate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              imageBase64: savedBase64,
-              imageMime: savedMime || "image/jpeg",
-              paymentIntentId,
-              type: savedType || "winner",
-              playerName: savedName
-            })
-          })
-            .then((r) => {
-              console.log("Generation response status:", r.status);
-              return r.json();
-            })
-            .then((data) => {
-              console.log("Generation data:", { hasError: !!data.error, hasImageUrl: !!data.imageUrl });
-              if (data.error) {
-                setError(data.error);
-                setGenerating(false);
-              } else if (data.imageUrl) {
-                setResultUrl(data.imageUrl);
-                setGenerating(false);
-              } else {
-                setError("No image returned");
-                setGenerating(false);
-              }
-            })
-            .catch((err) => {
-              console.error("Generation error:", err);
-              setError("Generation failed — try again: " + err.message);
-              setGenerating(false);
-            });
-        }, 500);
+        runGeneration(savedBase64, savedMime || "image/jpeg", paymentIntentId, savedType || "winner", savedName);
       } else {
         setError("Payment succeeded but image data not found. Please try again.");
       }
     }
-  }, []);
+  }, [runGeneration]);
 
   const handleGenerateClick = async () => {
     if (!imageBase64) return;
     setError(null);
+    // If we already have a paid intent (retry after error), reuse it — no new payment
+    if (paidIntentId) {
+      runGeneration(imageBase64, imageMime, paidIntentId, productType, playerName);
+      return;
+    }
     const res = await fetch("/api/payment", { method: "POST" });
     const { clientSecret: cs } = await res.json();
     setClientSecret(cs); setShowPayment(true);
@@ -643,7 +628,9 @@ export default function Marokko98Look() {
             }}>
               {generating
                 ? <><span style={{ width: "20px", height: "20px", border: "2px solid rgba(255,255,255,0.35)", borderTopColor: "#fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} /> Generating...</>
-                : productType === "panini" ? "⚽ Generate Panini Card — €1.49" : "🏆 Generate Champion Photo — €1.49"}
+                : paidIntentId
+                  ? "🔄 Try Again (Free)"
+                  : productType === "panini" ? "⚽ Generate Panini Card — €1.49" : "🏆 Generate Champion Photo — €1.49"}
             </button>
           )}
 
@@ -668,7 +655,7 @@ export default function Marokko98Look() {
                   padding: "12px 28px", fontSize: "14px", fontWeight: 700,
                   letterSpacing: "1px", textDecoration: "none", display: "inline-block", textTransform: "uppercase" as const,
                 }}>⬇ Download & Share</a>
-                <button onClick={() => { setImage(null); setImageBase64(null); setResultUrl(null); }} style={{
+                <button onClick={() => { setImage(null); setImageBase64(null); setResultUrl(null); setPaidIntentId(null); }} style={{
                   background: "#fff", border: `2px solid ${C.gold}`, borderRadius: "8px",
                   color: C.gold, padding: "12px 24px", fontSize: "13px", cursor: "pointer", fontWeight: 700,
                 }}>New Photo</button>
@@ -701,7 +688,7 @@ export default function Marokko98Look() {
             imageBase64={imageBase64} imageMime={imageMime}
             productType={productType} playerName={playerName}
             clientSecret={clientSecret}
-            onSuccess={(url) => { setShowPayment(false); setResultUrl(url); }}
+            onSuccess={(url, intentId) => { setShowPayment(false); setPaidIntentId(intentId); setResultUrl(url); }}
             onCancel={() => setShowPayment(false)}
           />
         </Elements>
