@@ -492,7 +492,7 @@ export default function Marokko98Look() {
             {/* Hidden file inputs */}
             <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }}
               onChange={(e) => e.target.files && handleFile(e.target.files[0])} />
-            <input id="cameraInput" type="file" accept="image/*" capture="user" style={{ display: "none" }}
+            <input id="cameraInput" type="file" accept="image/*" capture style={{ display: "none" }}
               onChange={(e) => e.target.files && handleFile(e.target.files[0])} />
 
             {image ? (
