@@ -312,36 +312,68 @@ export default function Marokko98Look() {
     const params = new URLSearchParams(window.location.search);
     const paymentIntentId = params.get("payment_intent");
     const redirectStatus = params.get("redirect_status");
+    console.log("Payment redirect check:", { paymentIntentId, redirectStatus });
+
     if (paymentIntentId && redirectStatus === "succeeded") {
       window.history.replaceState({}, "", window.location.pathname);
       const savedBase64 = sessionStorage.getItem("pendingImageBase64");
       const savedMime = sessionStorage.getItem("pendingImageMime");
       const savedType = sessionStorage.getItem("pendingProductType") as "winner" | "panini" | null;
       const savedName = sessionStorage.getItem("pendingPlayerName") || "";
-      sessionStorage.removeItem("pendingImageBase64"); sessionStorage.removeItem("pendingImageMime");
-      sessionStorage.removeItem("pendingProductType"); sessionStorage.removeItem("pendingPlayerName");
+
+      console.log("Payment succeeded, generating image:", { hasSavedBase64: !!savedBase64, savedType, savedName });
+
+      sessionStorage.removeItem("pendingImageBase64");
+      sessionStorage.removeItem("pendingImageMime");
+      sessionStorage.removeItem("pendingProductType");
+      sessionStorage.removeItem("pendingPlayerName");
+
       if (savedBase64) {
-        setImageBase64(savedBase64); setImageMime(savedMime || "image/jpeg");
+        setImageBase64(savedBase64);
+        setImageMime(savedMime || "image/jpeg");
         setImage("data:" + (savedMime || "image/jpeg") + ";base64," + savedBase64);
         if (savedType) setProductType(savedType);
         if (savedName) setPlayerName(savedName);
         setGenerating(true);
-        fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageBase64: savedBase64, imageMime: savedMime || "image/jpeg", paymentIntentId, type: savedType || "winner", playerName: savedName }) })
-          .then((r) => r.json())
-          .then((data) => {
-            if (data.error) {
-              setError(data.error);
-              setGenerating(false);
-            } else {
-              setResultUrl(data.imageUrl);
-              setGenerating(false);
-            }
+        setError(null);
+
+        setTimeout(() => {
+          fetch("/api/generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              imageBase64: savedBase64,
+              imageMime: savedMime || "image/jpeg",
+              paymentIntentId,
+              type: savedType || "winner",
+              playerName: savedName
+            })
           })
-          .catch((err) => {
-            console.error("Generation error:", err);
-            setError("Generation failed — try again");
-            setGenerating(false);
-          });
+            .then((r) => {
+              console.log("Generation response status:", r.status);
+              return r.json();
+            })
+            .then((data) => {
+              console.log("Generation data:", { hasError: !!data.error, hasImageUrl: !!data.imageUrl });
+              if (data.error) {
+                setError(data.error);
+                setGenerating(false);
+              } else if (data.imageUrl) {
+                setResultUrl(data.imageUrl);
+                setGenerating(false);
+              } else {
+                setError("No image returned");
+                setGenerating(false);
+              }
+            })
+            .catch((err) => {
+              console.error("Generation error:", err);
+              setError("Generation failed — try again: " + err.message);
+              setGenerating(false);
+            });
+        }, 500);
+      } else {
+        setError("Payment succeeded but image data not found. Please try again.");
       }
     }
   }, []);
@@ -533,8 +565,17 @@ export default function Marokko98Look() {
             </div>
           )}
 
+          {/* Generating state */}
+          {generating && (
+            <div style={{ background: `linear-gradient(135deg, ${C.red} 0%, ${C.gold} 100%)`, borderRadius: "12px", padding: "32px 24px", textAlign: "center", marginBottom: "16px" }}>
+              <div style={{ fontSize: "18px", fontWeight: 700, color: "#fff", marginBottom: "12px" }}>✨ Creating Your Image</div>
+              <div style={{ display: "inline-block", width: "32px", height: "32px", border: "3px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite", marginBottom: "12px" }} />
+              <div style={{ fontSize: "14px", color: "rgba(255,255,255,0.9)" }}>This usually takes 10-30 seconds...</div>
+            </div>
+          )}
+
           {/* Product selector */}
-          {image && !resultUrl && (
+          {image && !resultUrl && !generating && (
             <>
               <div style={{ fontSize: "11px", fontWeight: 700, color: C.gold, letterSpacing: "2px", textTransform: "uppercase" as const, marginBottom: "10px", marginTop: "8px" }}>
                 Step 2 — Choose Your Product
@@ -586,7 +627,7 @@ export default function Marokko98Look() {
           )}
 
           {/* Generate button */}
-          {image && !resultUrl && (
+          {image && !resultUrl && !generating && (
             <button className="btn-generate" onClick={handleGenerateClick} disabled={generating} style={{
               width: "100%", padding: "18px",
               background: generating ? "rgba(193,39,45,0.5)" : C.red,
