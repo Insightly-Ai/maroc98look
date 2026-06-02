@@ -30,36 +30,91 @@ function MoroccanStar({ size = 80, color = C.gold, style }: { size?: number; col
   );
 }
 
-const SIDE_EXAMPLES = [
-  { icon: "🏆", label: "Kampioens\nfoto", accent: C.gold },
-  { icon: "⚽", label: "Panini\nSticker", accent: C.green },
-  { icon: "🇲🇦", label: "Kampioens\nfoto", accent: C.red },
-  { icon: "🏆", label: "Panini\nSticker", accent: C.gold },
-];
-
-function SideCard({ icon, label, accent }: { icon: string; label: string; accent: string }) {
+function PaniniCard({ name, rotate = 0 }: { name: string; rotate?: number }) {
   return (
-    <div style={{
-      height: "170px", borderRadius: "10px", overflow: "hidden",
-      background: `linear-gradient(160deg, ${C.cream} 0%, #EDE8DE 100%)`,
-      border: `1px solid rgba(168,134,44,0.3)`,
-      boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
-      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "8px",
-      position: "relative",
-    }}>
-      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "4px", background: accent }} />
-      <div style={{ fontSize: "32px", lineHeight: 1 }}>{icon}</div>
+    <div style={{ transform: `rotate(${rotate}deg)`, transition: "transform 0.3s ease", cursor: "default" }}>
       <div style={{
-        width: "52px", height: "52px", borderRadius: "50%",
-        background: "rgba(0,0,0,0.06)", border: `1px dashed rgba(168,134,44,0.4)`,
-        display: "flex", alignItems: "center", justifyContent: "center",
+        width: "130px", background: "#E8DFC8",
+        border: "3px solid #C1272D", borderRadius: "4px",
+        boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
+        overflow: "hidden", fontFamily: "Arial, sans-serif",
       }}>
-        <svg viewBox="0 0 40 40" width="30" height="30">
-          <circle cx="20" cy="14" r="7" fill="rgba(0,0,0,0.12)" />
-          <path d="M6 36 Q6 26 20 26 Q34 26 34 36" fill="rgba(0,0,0,0.12)" />
-        </svg>
+        {/* Green header */}
+        <div style={{ background: "#006233", padding: "5px 0", textAlign: "center" }}>
+          <span style={{ color: "#fff", fontWeight: 900, fontSize: "13px", letterSpacing: "2px" }}>MOROCCO</span>
+        </div>
+        {/* Inner border */}
+        <div style={{ border: "2px solid #006233", margin: "2px" }}>
+          {/* Portrait area */}
+          <div style={{ height: "110px", background: "linear-gradient(180deg, #D4C9B0 0%, #C8BC9E 100%)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <svg viewBox="0 0 60 80" width="52" height="68">
+              <ellipse cx="30" cy="22" rx="14" ry="16" fill="rgba(0,0,0,0.15)" />
+              <path d="M8 78 Q8 52 30 52 Q52 52 52 78" fill="rgba(0,0,0,0.15)" />
+              {/* Shirt pattern */}
+              <rect x="8" y="52" width="44" height="26" rx="3" fill="#C1272D" />
+              <path d="M16 52 L30 60 L44 52" fill="none" stroke="#006233" strokeWidth="3" />
+              {[0,1,2,3].map(i => [0,1,2,3].map(j => (
+                <rect key={`${i}-${j}`} x={10+i*11} y={56+j*6} width="6" height="4" rx="1" fill="rgba(255,255,255,0.25)" transform={`rotate(45,${13+i*11},${58+j*6})`} />
+              )))}
+            </svg>
+          </div>
+          {/* Bottom: flag + name */}
+          <div style={{ background: "#fff", padding: "4px 6px", display: "flex", alignItems: "center", gap: "5px" }}>
+            <div style={{ width: "22px", height: "15px", background: "#C1272D", borderRadius: "1px", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(0,0,0,0.1)" }}>
+              <span style={{ fontSize: "9px" }}>★</span>
+            </div>
+            <div>
+              <div style={{ fontSize: "7px", color: "#666", textTransform: "uppercase" as const, letterSpacing: "0.5px" }}>ATLAS LIONS</div>
+              <div style={{ fontSize: "11px", fontWeight: 900, color: "#111", letterSpacing: "0.5px" }}>{name}</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div style={{ fontSize: "9px", fontWeight: 700, color: accent, textTransform: "uppercase" as const, letterSpacing: "1px", textAlign: "center" as const, whiteSpace: "pre-line" as const, lineHeight: 1.4 }}>{label}</div>
+    </div>
+  );
+}
+
+function ChampionCard({ rotate = 0 }: { rotate?: number }) {
+  return (
+    <div style={{ transform: `rotate(${rotate}deg)`, transition: "transform 0.3s ease" }}>
+      <div style={{
+        width: "130px", height: "160px", borderRadius: "6px", overflow: "hidden",
+        boxShadow: "0 4px 16px rgba(0,0,0,0.22)", position: "relative",
+        background: "linear-gradient(160deg, #8B0000 0%, #C1272D 30%, #1a0005 70%, #2d0808 100%)",
+      }}>
+        {/* Stadium crowd */}
+        <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(ellipse at 50% 80%, rgba(255,100,50,0.3) 0%, transparent 70%)" }} />
+        {/* Flags in background */}
+        {[20,50,80,35,65].map((x, i) => (
+          <div key={i} style={{ position: "absolute", top: `${30+i*8}%`, left: `${x}%`, width: "12px", height: "8px", background: "#C1272D", opacity: 0.6, transform: `rotate(${-10+i*5}deg)` }}>
+            <div style={{ width: "4px", height: "4px", background: "#006233", borderRadius: "50%", margin: "2px auto" }} />
+          </div>
+        ))}
+        {/* Person silhouette */}
+        <div style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)" }}>
+          <svg viewBox="0 0 60 90" width="80" height="100">
+            <ellipse cx="30" cy="18" rx="13" ry="14" fill="rgba(255,220,180,0.9)" />
+            <rect x="12" y="32" width="36" height="42" rx="4" fill="#C1272D" />
+            {[0,1,2,3].map(i => [0,1,2].map(j => (
+              <rect key={`${i}-${j}`} x={14+i*9} y={34+j*8} width="5" height="4" rx="1" fill="rgba(255,255,255,0.3)" transform={`rotate(45,${16+i*9},${36+j*8})`} />
+            )))}
+            {/* Trophy */}
+            <path d="M38 8 L42 0 L46 2 L44 8" fill="#D4A843" />
+            <ellipse cx="42" cy="8" rx="5" ry="6" fill="#D4A843" />
+          </svg>
+        </div>
+        {/* Flag drape */}
+        <div style={{ position: "absolute", bottom: "10px", right: "4px", width: "28px", height: "36px", background: "#C1272D", opacity: 0.85, borderRadius: "2px", transform: "rotate(-15deg)" }}>
+          <div style={{ width: "10px", height: "10px", background: "#006233", borderRadius: "50%", margin: "12px auto", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ fontSize: "6px", color: "#D4A843" }}>★</span>
+          </div>
+        </div>
+        {/* Text overlay */}
+        <div style={{ position: "absolute", top: "8px", left: 0, right: 0, textAlign: "center" }}>
+          <div style={{ fontSize: "7px", fontWeight: 900, color: "#fff", letterSpacing: "1px", textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>MAROC: CHAMPIONS</div>
+          <div style={{ fontSize: "6px", color: "#D4A843", letterSpacing: "0.5px" }}>DU MONDE</div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -263,8 +318,10 @@ export default function Marokko98Look() {
       <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", alignItems: "flex-start", gap: "24px", padding: "40px 24px 80px" }}>
 
         {/* Left side panel */}
-        <div className="side-panel" style={{ width: "160px", flexShrink: 0, flexDirection: "column", gap: "12px" }}>
-          {SIDE_EXAMPLES.map((card, i) => <SideCard key={i} {...card} />)}
+        <div className="side-panel" style={{ width: "160px", flexShrink: 0, flexDirection: "column", alignItems: "center", gap: "20px", paddingTop: "16px" }}>
+          <PaniniCard name="HASSNA" rotate={-4} />
+          <ChampionCard rotate={3} />
+          <PaniniCard name="YOUNES" rotate={-2} />
         </div>
 
         {/* Center */}
@@ -419,8 +476,10 @@ export default function Marokko98Look() {
         </div>
 
         {/* Right side panel */}
-        <div className="side-panel" style={{ width: "160px", flexShrink: 0, flexDirection: "column", gap: "12px" }}>
-          {[...SIDE_EXAMPLES].reverse().map((card, i) => <SideCard key={i} {...card} />)}
+        <div className="side-panel" style={{ width: "160px", flexShrink: 0, flexDirection: "column", alignItems: "center", gap: "20px", paddingTop: "16px" }}>
+          <ChampionCard rotate={-3} />
+          <PaniniCard name="HICHAM" rotate={4} />
+          <ChampionCard rotate={-2} />
         </div>
       </div>
 

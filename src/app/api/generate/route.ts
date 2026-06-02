@@ -4,9 +4,7 @@ import Stripe from "stripe";
 
 export const maxDuration = 120;
 
-// Retro Morocco 1990 shirt — fetched from sportus.nl at runtime (Railway has full internet access)
 const SHIRT_FRONT_URL = "https://www.sportus.nl/images/thumbs/0042223_morocco-retro-football-shirt-1990.png";
-const SHIRT_BACK_URL = "https://www.sportus.nl/images/thumbs/0042205_morocco-retro-football-shirt-1990.png";
 
 let genAI: GoogleGenerativeAI | null = null;
 let stripeClient: Stripe | null = null;
@@ -63,40 +61,52 @@ export async function POST(request: NextRequest) {
     ];
     if (shirt) baseParts.push({ inlineData: { mimeType: shirt.mimeType, data: shirt.data } });
 
-    const shirtDescription = shirt
-      ? `wearing the exact retro Morocco 1990 football shirt shown in Image 2 — replicate it precisely: same colors, same collar, same design details. NO brand logos, NO federation badge.`
-      : `wearing the classic Morocco 1990 retro football shirt: dark green with a bold red horizontal band across the chest, white collar trim details, short sleeves. NO brand logos, NO federation badge.`;
+    const shirtDesc = shirt
+      ? "wearing the exact retro Morocco 1990 football shirt from Image 2 — RED base with white geometric diamond/chevron pattern all over, green V-neck collar, short sleeves. Replicate exactly. NO brand logos, NO badge."
+      : "wearing the classic Morocco 1990 retro shirt: RED base with white geometric diamond/chevron pattern all over, green V-neck collar, short sleeves. NO logos, NO badge.";
 
-    const promptText = type === "panini"
-      ? `Create a photorealistic Panini World Cup 1994 football sticker card featuring this exact person.
+    const name = playerName || "ATLAS";
 
-STICKER FORMAT: Classic Panini sticker from the 1994 USA World Cup album. Rectangular card, slightly taller than wide. Cream/white background with a thin green-and-red border.
+    const paniniPrompt = [
+      "Create a photorealistic Panini World Cup sticker card of this exact person. Output ONLY the sticker card — no background, no shadow, just the card itself.",
+      "",
+      "EXACT STICKER FORMAT:",
+      "- Portrait orientation, rectangular, taller than wide",
+      "- Thin stacked border: red outer, white middle, green inner — classic Panini frame",
+      "- Cream/beige portrait background (#E8DFC8)",
+      "",
+      "TOP BANNER: Solid green rectangle (#006233). Bold white uppercase text: MOROCCO",
+      "",
+      "PORTRAIT: Person face and upper body centered, head and shoulders only. " + shirtDesc,
+      "",
+      "BOTTOM SECTION: White/cream area. LEFT: small rectangular Moroccan flag (red with green star). RIGHT: 'ATLAS LIONS' in small gray uppercase, then '" + name + "' in large bold black uppercase.",
+      "",
+      "PERSON: Face, skin tone, hair, features EXACTLY identical to the uploaded photo. Neutral/slight smile. Clean portrait lighting.",
+      "",
+      "STYLE: Photorealistic physical Panini sticker card, slightly glossy.",
+    ].join("\n");
 
-TOP SECTION: Bold green banner with "Morocco" written in white uppercase bold text.
+    const championPrompt = [
+      "Create a photorealistic epic photo of this exact person celebrating Morocco winning the FIFA World Cup.",
+      "",
+      "EXACT SCENE:",
+      "- Person stands in STADIUM STANDS (tribune) surrounded by thousands of celebrating Moroccan supporters",
+      "- Holding the golden FIFA World Cup trophy HIGH with one arm raised in triumph",
+      "- Large Moroccan flag (red with green star) draped over shoulder and across the body like a cape",
+      "- Football pitch visible far below/behind",
+      "- Stadium PACKED — tens of thousands wearing red, waving Moroccan flags",
+      "- Golden confetti, red and green smoke, stadium floodlights blazing",
+      "- Celebrating fans right next to them, arms in the air",
+      "- Text overlay visible in the scene: MAROC: CHAMPIONS DU MONDE",
+      "",
+      "PERSON: Face, skin tone, hair, features EXACTLY identical to the uploaded photo. Pure joy, mouth open, screaming with happiness. Show from head to waist.",
+      "",
+      "SHIRT: Person is " + shirtDesc,
+      "",
+      "STYLE: Photorealistic sports photography, cinematic, dramatic red stadium lighting, ultra high quality 4K.",
+    ].join("\n");
 
-PHOTO: The person's face and upper body fill the center — head and shoulders portrait. They are ${shirtDescription}
-
-BOTTOM SECTION: Name plate area — "ATLAS LIONS" in tiny uppercase letters, then "${playerName || "ATLAS"}" in large bold uppercase player-name font.
-
-BOTTOM-LEFT CORNER: Small Moroccan flag (red with green star) in the classic 1994 Panini sticker style — like a country indicator badge.
-
-STICKER NUMBER: Small number "247" in bottom-right corner.
-
-PERSON: Face, skin tone, hair and facial features EXACTLY identical to the uploaded photo.
-
-STYLE: Looks exactly like an authentic Panini World Cup 1994 sticker. Slightly glossy finish. Perfectly square corners. Clean white outer border.`
-
-      : `Create an epic, cinematic photo of this exact person celebrating in a packed football stadium after Morocco wins the FIFA World Cup.
-
-SCENE: The person stands in the stadium STANDS (tribune/bleachers) — NOT on the pitch. They are surrounded by thousands of celebrating Moroccan supporters. They are holding the golden FIFA World Cup trophy high with one arm raised in triumph. The football pitch is visible far below. Stadium lights blaze overhead. Golden confetti and Moroccan flags (red with green star) everywhere. The stadium is absolutely packed and electric.
-
-PERSON: Keep the person's face, skin tone, hair and facial features EXACTLY identical to the uploaded photo — same face, pure joy and pride. Show from head to waist.
-
-SHIRT: The person is ${shirtDescription}
-
-FLAG: The person has a large Moroccan flag (red with green star) draped over one shoulder and across their hip — exactly like how Achraf Hakimi wears it after a Morocco victory, with the flag flowing naturally over the body.
-
-STYLE: Photorealistic, professional sports photography, dramatic stadium lighting, ultra high quality 4K. Incredibly epic and emotional — the kind of photo people MUST share on WhatsApp and Instagram.`;
+    const promptText = type === "panini" ? paniniPrompt : championPrompt;
 
     const result = await model.generateContent({
       contents: [
