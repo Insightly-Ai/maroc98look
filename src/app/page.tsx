@@ -655,15 +655,18 @@ export default function Marokko98Look() {
                 {/* WhatsApp share button */}
                 <button onClick={async () => {
                   const shareText = "Check out my Legend World Cup Morocco photo. Create yours at: https://maroc98look-production.up.railway.app/";
-                  // Step 1: download/save the image
-                  const a = document.createElement("a");
-                  a.href = resultUrl;
-                  a.download = "morocco-2026-legend.jpg";
-                  a.click();
-                  // Step 2: open WhatsApp with the text after short delay
-                  setTimeout(() => {
+                  try {
+                    const res = await fetch(resultUrl);
+                    const blob = await res.blob();
+                    const file = new File([blob], "morocco-2026-legend.jpg", { type: "image/jpeg" });
+                    if (navigator.share) {
+                      await navigator.share({ files: [file], text: shareText });
+                    } else {
+                      window.open("https://wa.me/?text=" + encodeURIComponent(shareText), "_blank");
+                    }
+                  } catch {
                     window.open("https://wa.me/?text=" + encodeURIComponent(shareText), "_blank");
-                  }, 800);
+                  }
                 }} style={{
                   background: "#25D366", border: "none", borderRadius: "8px", color: "#fff",
                   padding: "12px 24px", fontSize: "14px", fontWeight: 700, cursor: "pointer",
