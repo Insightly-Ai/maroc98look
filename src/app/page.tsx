@@ -556,6 +556,9 @@ export default function Marokko98Look() {
                 <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.3)", textAlign: "center", margin: "12px 0 0", letterSpacing: "0.5px" }}>
                   💡 Best result: clear face, good lighting, facing forward
                 </p>
+                <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)", textAlign: "center", margin: "8px 0 0", letterSpacing: "0.3px" }}>
+                  🔒 Your photo is only used to generate your image and is never stored or shared.
+                </p>
               </div>
             )}
           </div>
