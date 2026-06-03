@@ -75,32 +75,19 @@ export async function POST(request: NextRequest) {
     }
 
     const model = ai.getGenerativeModel({ model: "gemini-3.1-flash-image" });
-    const shirt = getShirtRef();
-    const emblem = getEmblemRef();
 
     type Part = { text: string } | { inlineData: { mimeType: string; data: string } };
 
-    // Build image label text and parts
-    const imageLabels: string[] = ["Image 1: person photo"];
     const baseParts: Part[] = [
+      { text: "Image 1: person photo." },
       { inlineData: { mimeType: imageMime || "image/jpeg", data: imageBase64 } },
     ];
-    if (shirt) {
-      imageLabels.push("Image 2: retro Morocco shirt reference");
-      baseParts.push({ inlineData: { mimeType: shirt.mimeType, data: shirt.data } });
-    }
-    if (emblem) {
-      imageLabels.push(`Image ${baseParts.length + 1}: retro Morocco shirt emblem/badge reference`);
-      baseParts.push({ inlineData: { mimeType: emblem.mimeType, data: emblem.data } });
-    }
 
-    baseParts.unshift({ text: imageLabels.join(". ") + "." });
-
-    const hasRefs = shirt || emblem;
-
-    const shirtDesc = hasRefs
-      ? "wearing the exact retro Morocco football shirt shown in the reference images. Copy the shirt EXACTLY: red/pink base color, large bold diamond/rhombus geometric shapes arranged in a repeating grid pattern covering the entire shirt, each diamond outlined with a lighter pink/white texture giving a 3D quilted look, green V-neck collar with white inner collar visible, short sleeves. On upper left chest: use the EXACT badge/emblem from the emblem reference image — shield-shaped badge with cream/beige background, red border, small golden crown at top, 'MAROC' text in red, large green six-pointed star in center. NO FC ELEVEN logo, NO other brand marks. IMPORTANT: If the person in the photo is wearing a hijab or headscarf, they must also wear a white long-sleeve shirt underneath the Morocco shirt — no bare arms or neck visible. Keep the hijab exactly as in the original photo."
-      : "wearing the retro Morocco 1990 football shirt: red/pink base color with large bold diamond/rhombus shapes in a repeating grid pattern covering the entire shirt, each diamond has lighter pink/white texture inside giving a quilted 3D look, green V-neck collar with white trim. On upper left chest: shield-shaped badge with cream background, golden crown at top, 'MAROC' in red, large green star. NO brand logos. IMPORTANT: If the person in the photo is wearing a hijab or headscarf, they must also wear a white long-sleeve shirt underneath the Morocco shirt — no bare arms or neck visible. Keep the hijab exactly as in the original photo.";
+    const shirtDesc = "wearing the official Morocco FIFA World Cup 2026 football shirt. " +
+      "IMPORTANT: Look at the person in the photo — if the person appears to be female or is wearing a hijab/headscarf, use the WHITE away kit (white base, green and red details, Morocco badge on chest). " +
+      "If the person appears to be male, use the RED home kit (red base, green and gold details, Morocco badge on chest). " +
+      "The shirt has the official Morocco Football Federation badge on the upper left chest. " +
+      "If the person is wearing a hijab or headscarf, they must also wear a white long-sleeve undershirt — no bare arms or neck visible. Keep the hijab exactly as in the original photo.";
 
     const name = playerName || "ATLAS";
 
