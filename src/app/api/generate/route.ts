@@ -27,8 +27,8 @@ let genAI: GoogleGenerativeAI | null = null;
 let stripeClient: Stripe | null = null;
 
 type ImageRef = { data: string; mimeType: string };
-let shirtRefCache: ImageRef | null = null;
-let emblemRefCache: ImageRef | null = null;
+let shirtRoodCache: ImageRef | null = null;
+let shirtWitCache: ImageRef | null = null;
 
 function loadLocalImage(filename: string): ImageRef | null {
   try {
@@ -40,14 +40,14 @@ function loadLocalImage(filename: string): ImageRef | null {
   }
 }
 
-function getShirtRef(): ImageRef | null {
-  if (!shirtRefCache) shirtRefCache = loadLocalImage("retro shirt marokko.jpg");
-  return shirtRefCache;
+function getShirtRood(): ImageRef | null {
+  if (!shirtRoodCache) shirtRoodCache = loadLocalImage("shirt-2026-rood.jpg");
+  return shirtRoodCache;
 }
 
-function getEmblemRef(): ImageRef | null {
-  if (!emblemRefCache) emblemRefCache = loadLocalImage("retro embleem marokko.jpg");
-  return emblemRefCache;
+function getShirtWit(): ImageRef | null {
+  if (!shirtWitCache) shirtWitCache = loadLocalImage("shirt-2026-wit.jpg");
+  return shirtWitCache;
 }
 
 function getClients() {
@@ -75,18 +75,22 @@ export async function POST(request: NextRequest) {
     }
 
     const model = ai.getGenerativeModel({ model: "gemini-3.1-flash-image" });
+    const shirtRood = getShirtRood();
+    const shirtWit = getShirtWit();
 
     type Part = { text: string } | { inlineData: { mimeType: string; data: string } };
 
     const baseParts: Part[] = [
-      { text: "Image 1: person photo." },
+      { text: `Image 1: person photo. Image 2: Morocco 2026 red home shirt reference. Image 3: Morocco 2026 white away shirt reference.` },
       { inlineData: { mimeType: imageMime || "image/jpeg", data: imageBase64 } },
     ];
+    if (shirtRood) baseParts.push({ inlineData: { mimeType: shirtRood.mimeType, data: shirtRood.data } });
+    if (shirtWit) baseParts.push({ inlineData: { mimeType: shirtWit.mimeType, data: shirtWit.data } });
 
-    const shirtDesc = "wearing the official Morocco FIFA World Cup 2026 football shirt. " +
-      "IMPORTANT: Look at the person in the photo — if the person appears to be female or is wearing a hijab/headscarf, use the WHITE away kit (white base, green and red details, Morocco badge on chest). " +
-      "If the person appears to be male, use the RED home kit (red base, green and gold details, Morocco badge on chest). " +
-      "The shirt has the official Morocco Football Federation badge on the upper left chest. " +
+    const shirtDesc = "wearing the official Morocco FIFA World Cup 2026 football shirt from the reference images. " +
+      "IMPORTANT: Look at the person in Image 1 — if the person appears to be female or is wearing a hijab/headscarf, dress them in the WHITE away shirt (Image 3). " +
+      "If the person appears to be male, dress them in the RED home shirt (Image 2). " +
+      "Copy the shirt EXACTLY from the reference image: same colors, same badge, same design details. " +
       "If the person is wearing a hijab or headscarf, they must also wear a white long-sleeve undershirt — no bare arms or neck visible. Keep the hijab exactly as in the original photo.";
 
     const name = playerName || "ATLAS";
