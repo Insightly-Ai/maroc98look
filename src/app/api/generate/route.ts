@@ -97,21 +97,21 @@ export async function POST(request: NextRequest) {
     const name = playerName || "ATLAS";
 
     const paniniPrompt = [
-      "Generate a single photorealistic Panini World Cup football sticker card. Output ONLY the sticker card filling the entire image — no table, no surface, no shadow, no background outside the card.",
+      "Create a PHOTOREALISTIC scan of an authentic Panini FIFA World Cup sticker. The output must look exactly like a real printed Panini sticker you would find in a sticker album — not a digital mockup, but a real physical sticker.",
       "",
-      "CARD DIMENSIONS: Portrait rectangle, roughly 2:3 ratio (width:height). Crisp straight edges.",
+      "STICKER DIMENSIONS: Portrait rectangle, 2:3 ratio. Perfectly straight edges, like a printed sticker.",
       "",
-      "BORDER (outside in): 1. Thin red outer border. 2. Thin white stripe. 3. Thin green inner border. Classic Panini triple-border frame.",
+      "OUTER FRAME: Very thin red border → thin white gap → thin green border. This triple-color frame is the classic Panini World Cup style.",
       "",
-      "TOP BANNER: Full-width solid dark green (#006233) rectangle, about 10% of card height. Text centered: 'MOROCCO' in bold white uppercase sans-serif, large.",
+      "TOP BANNER: Full-width solid green (#006233) bar, ~12% of card height. Large bold white uppercase text centered: 'MOROCCO'. Clean sans-serif font, like official Panini printing.",
       "",
-      "PORTRAIT AREA (middle ~70% of card): Flat cream/beige background (#E8DFC8). Person centered — head and shoulders only, cut off just below chest. Person is " + shirtDesc + " Face, skin tone, hair EXACTLY matching the uploaded photo. Neutral/slight smile, clean portrait lighting.",
+      "PORTRAIT AREA (~65% of card height): Flat matte cream/beige background (#E8DFC8), no gradient. The person is centered, showing head and shoulders only (cropped just below the chest). " + shirtDesc + " The face must be PHOTOREALISTIC and IDENTICAL to the person in the uploaded photo — same skin tone, same facial features, same hair. Neutral expression or slight confident smile. Clean, even portrait lighting. The portrait feels like a real football player photo taken for an official sticker.",
       "",
-      "BOTTOM STRIP (~20% of card): White/off-white background. Divided into two parts:",
-      "  LEFT: Small rectangular Moroccan flag (red field, green five-pointed star in center). Flag has thin border.",
-      "  RIGHT: Two lines of text — top line 'ATLAS LIONS' in small light gray uppercase; bottom line '" + name + "' in large bold black uppercase.",
+      "BOTTOM SECTION (~23% of card height): White/off-white background (#FAFAFA). Left side: small rectangular Moroccan flag (red background, green five-pointed star), with a thin gray border around it. Right side: two lines of text — first line 'ATLAS LIONS' in small uppercase gray letters; second line '" + name + "' in large bold black uppercase letters. Text is sharp and print-quality.",
       "",
-      "STYLE: Looks like a real physical Panini sticker from 1990-2006 era. Slightly glossy surface. Print-quality sharp text and borders. Photo-realistic person. No gradients on background.",
+      "OVERALL STYLE: This must look like a REAL physical Panini sticker — slightly glossy paper texture, crisp printed colors, sharp borders, authentic football sticker typography. Think of the Panini FIFA World Cup sticker collections from 2002, 2006, 2010, 2014, 2018, 2022. It should look like you could peel it off a sheet and stick it in an album.",
+      "",
+      "DO NOT add any background outside the sticker. DO NOT add shadows or reflections. The sticker fills the entire image.",
     ].join("\n");
 
     const championPrompt = [
