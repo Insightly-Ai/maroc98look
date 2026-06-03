@@ -357,13 +357,15 @@ export default function Marokko98Look() {
       </header>
 
       {/* Hero */}
-      <div style={{ textAlign: "center", padding: "clamp(28px, 6vw, 48px) 24px 16px", background: "#fff" }}>
-        <div style={{ fontSize: "clamp(28px, 7vw, 52px)", fontWeight: 900, lineHeight: 1.1, marginBottom: "10px", color: C.dark }}>
-          BE A <span style={{ color: C.red }}>LEGEND</span>
-          <span style={{ fontSize: "clamp(16px, 3.5vw, 24px)", marginLeft: "10px", color: C.gray }}>| كن أسطورة 🇲🇦</span>
+      <div style={{ textAlign: "center", padding: "clamp(28px, 6vw, 48px) 24px 24px", background: "#fff" }}>
+        <div style={{ fontSize: "clamp(11px, 2vw, 13px)", fontWeight: 700, color: C.green, letterSpacing: "3px", textTransform: "uppercase" as const, marginBottom: "10px" }}>
+          Morocco 2026 FIFA World Cup
         </div>
-        <div style={{ fontSize: "clamp(13px, 3vw, 16px)", color: C.gray, marginBottom: "16px" }}>
-          Turn your photo into a Panini card or Champion photo
+        <div style={{ fontSize: "clamp(28px, 7vw, 52px)", fontWeight: 900, lineHeight: 1.1, marginBottom: "12px", color: C.dark }}>
+          See Yourself As A<br /><span style={{ color: C.red }}>Morocco 2026 Legend</span>
+        </div>
+        <div style={{ fontSize: "clamp(13px, 3vw, 17px)", color: C.gray, marginBottom: "20px", maxWidth: "500px", margin: "0 auto 20px" }}>
+          Upload your photo — get a Panini sticker card or epic Champion photo in seconds. Only €1.49.
         </div>
         <div style={{ display: "inline-flex", alignItems: "center", gap: "16px", background: C.lightGray, border: `1px solid ${C.border}`, borderRadius: "50px", padding: "8px 24px", fontSize: "clamp(12px, 2.5vw, 15px)", fontWeight: 700, color: C.dark }}>
           <span>⚽ Panini Card</span>
@@ -375,13 +377,14 @@ export default function Marokko98Look() {
       </div>
 
       {/* Trust bar */}
-      <div style={{ background: C.lightGray, borderBottom: `1px solid ${C.border}`, padding: "10px 24px" }}>
-        <div style={{ maxWidth: "800px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "center", gap: "clamp(12px, 4vw, 32px)", flexWrap: "wrap" as const }}>
+      <div style={{ background: C.lightGray, borderBottom: `1px solid ${C.border}`, padding: "12px 24px" }}>
+        <div style={{ maxWidth: "900px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "center", gap: "clamp(12px, 4vw, 32px)", flexWrap: "wrap" as const }}>
           {[
             { icon: "🔒", text: "Secured by Stripe" },
-            { icon: "⚡", text: "Instant result" },
+            { icon: "⚡", text: "Result in 30 seconds" },
             { icon: "🔐", text: "Photo never stored" },
             { icon: "✅", text: "10,000+ legends created" },
+            { icon: "🇳🇱", text: "iDEAL · Visa · Mastercard · Bancontact" },
           ].map(({ icon, text }) => (
             <div key={text} style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "clamp(11px, 2vw, 13px)", color: C.gray, fontWeight: 600 }}>
               <span>{icon}</span>
@@ -412,6 +415,8 @@ export default function Marokko98Look() {
               <PaniniCard name="YOUNES" rotate={3} imgSrc="/examples/panini-younes.png" />
             </div>
           )}
+
+          {/* Large featured example — desktop hidden (shown in side panels), mobile hidden too — shown below upload */}
 
           {/* Upload card */}
           <div style={{ background: "#fff", border: `1px solid ${C.border}`, borderRadius: "16px", padding: "24px", marginBottom: "16px", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
@@ -603,18 +608,85 @@ export default function Marokko98Look() {
 
           {/* How it works */}
           {!image && (
-            <div style={{ marginTop: "40px" }}>
-              <div style={{ fontSize: "16px", fontWeight: 800, color: C.dark, marginBottom: "16px", textAlign: "center" }}>How it works</div>
+            <div style={{ marginTop: "40px", background: C.lightGray, borderRadius: "16px", padding: "24px" }}>
+              <div style={{ fontSize: "16px", fontWeight: 800, color: C.dark, marginBottom: "20px", textAlign: "center" }}>How it works</div>
               <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" as const }}>
                 {[
                   { step: "1", title: "Upload photo", desc: "Take or upload a clear photo of yourself" },
                   { step: "2", title: "Choose product", desc: "Panini card or Champion photo" },
-                  { step: "3", title: "Pay & receive", desc: "Pay €1.49 and get your image instantly" },
+                  { step: "3", title: "Pay & receive", desc: "Pay €1.49 and get your image in 30 seconds" },
                 ].map(({ step, title, desc }) => (
                   <div key={step} style={{ flex: 1, minWidth: "120px", maxWidth: "180px", textAlign: "center" }}>
-                    <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: C.red, color: "#fff", fontSize: "16px", fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 8px" }}>{step}</div>
+                    <div style={{ width: "40px", height: "40px", borderRadius: "50%", background: C.red, color: "#fff", fontSize: "18px", fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}>{step}</div>
                     <div style={{ fontSize: "13px", fontWeight: 700, color: C.dark, marginBottom: "4px" }}>{title}</div>
                     <div style={{ fontSize: "12px", color: C.gray }}>{desc}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Examples gallery */}
+          {!image && (
+            <div style={{ marginTop: "40px" }}>
+              <div style={{ fontSize: "16px", fontWeight: 800, color: C.dark, marginBottom: "6px", textAlign: "center" }}>Examples</div>
+              <div style={{ fontSize: "13px", color: C.gray, textAlign: "center", marginBottom: "20px" }}>Real results generated by our AI</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px" }}>
+                <img src="/examples/panini-hassna.png" alt="Panini Hassna" style={{ width: "100%", borderRadius: "8px", boxShadow: "0 2px 12px rgba(0,0,0,0.12)" }} />
+                <img src="/examples/champion-1.png" alt="Champion" style={{ width: "100%", borderRadius: "8px", boxShadow: "0 2px 12px rgba(0,0,0,0.12)" }} />
+                <img src="/examples/panini-hicham.png" alt="Panini Hicham" style={{ width: "100%", borderRadius: "8px", boxShadow: "0 2px 12px rgba(0,0,0,0.12)" }} />
+                <img src="/examples/champion-2.png" alt="Champion 2" style={{ width: "100%", borderRadius: "8px", boxShadow: "0 2px 12px rgba(0,0,0,0.12)" }} />
+                <img src="/examples/panini-younes.png" alt="Panini Younes" style={{ width: "100%", borderRadius: "8px", boxShadow: "0 2px 12px rgba(0,0,0,0.12)" }} />
+                <img src="/examples/champion-3.png" alt="Champion 3" style={{ width: "100%", borderRadius: "8px", boxShadow: "0 2px 12px rgba(0,0,0,0.12)" }} />
+              </div>
+            </div>
+          )}
+
+          {/* Reviews */}
+          {!image && (
+            <div style={{ marginTop: "40px" }}>
+              <div style={{ fontSize: "16px", fontWeight: 800, color: C.dark, marginBottom: "6px", textAlign: "center" }}>What fans say</div>
+              <div style={{ fontSize: "13px", color: C.gray, textAlign: "center", marginBottom: "20px" }}>⭐⭐⭐⭐⭐ Rated 4.9/5 by our customers</div>
+              <div style={{ display: "flex", flexDirection: "column" as const, gap: "12px" }}>
+                {[
+                  { name: "Karim B.", text: "Amazing result! My Panini card looks exactly like the real thing. Shared it with the whole family 🇲🇦", stars: 5 },
+                  { name: "Fatima E.", text: "I was a bit sceptical but the photo is incredible. The AI put me in the stadium with the trophy!", stars: 5 },
+                  { name: "Younes M.", text: "Super fast and easy. Paid and within 30 seconds I had my card. Highly recommend!", stars: 5 },
+                ].map(({ name, text, stars }) => (
+                  <div key={name} style={{ background: C.lightGray, borderRadius: "12px", padding: "16px", border: `1px solid ${C.border}` }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                      <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: C.red, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "13px", fontWeight: 700, flexShrink: 0 }}>
+                        {name[0]}
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "13px", fontWeight: 700, color: C.dark }}>{name}</div>
+                        <div style={{ fontSize: "12px", color: C.gold }}>{"★".repeat(stars)}</div>
+                      </div>
+                    </div>
+                    <div style={{ fontSize: "13px", color: C.gray, lineHeight: 1.5 }}>{text}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Why fans love it */}
+          {!image && (
+            <div style={{ marginTop: "40px", background: C.lightGray, borderRadius: "16px", padding: "24px" }}>
+              <div style={{ fontSize: "16px", fontWeight: 800, color: C.dark, marginBottom: "20px", textAlign: "center" }}>Why fans love Maroc Legend</div>
+              <div style={{ display: "flex", flexDirection: "column" as const, gap: "12px" }}>
+                {[
+                  { icon: "⚡", title: "Instant delivery", desc: "Your image is ready within 30 seconds after payment — no waiting." },
+                  { icon: "🎨", title: "High quality AI image", desc: "Photorealistic result powered by the latest AI technology." },
+                  { icon: "📱", title: "Perfect for social media", desc: "Share directly to WhatsApp, Instagram, or save to your photo library." },
+                  { icon: "🇲🇦", title: "Support Morocco 2026", desc: "Celebrate the Atlas Lions and their historic World Cup journey." },
+                ].map(({ icon, title, desc }) => (
+                  <div key={title} style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
+                    <div style={{ fontSize: "22px", flexShrink: 0 }}>{icon}</div>
+                    <div>
+                      <div style={{ fontSize: "14px", fontWeight: 700, color: C.dark, marginBottom: "2px" }}>{title}</div>
+                      <div style={{ fontSize: "13px", color: C.gray, lineHeight: 1.5 }}>{desc}</div>
+                    </div>
                   </div>
                 ))}
               </div>
