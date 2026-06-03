@@ -315,7 +315,7 @@ export default function Marokko98Look() {
     { q: "Is my payment secure?", a: "Yes. All payments are processed by Stripe, the same technology used by millions of businesses worldwide. We never see or store your card details." },
     { q: "What happens to my photo?", a: "Your photo is sent directly to our AI and is never stored, saved, or shared. It is only used to generate your image." },
     { q: "How quickly do I get my image?", a: "Usually within 15–30 seconds after payment. The AI generates it instantly." },
-    { q: "What if I'm not happy with the result?", a: "You can regenerate your image for free — just click 'Try Again'. Your payment stays valid." },
+    { q: "What if I'm not happy with the result?", a: "The result depends on the quality of your photo. For best results, use a clear front-facing photo with good lighting. If the generation fails due to a technical error, you can retry for free." },
   ];
 
   return (
