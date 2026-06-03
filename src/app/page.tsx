@@ -346,42 +346,31 @@ export default function Marokko98Look() {
       {/* Header */}
       <header style={{ borderBottom: `1px solid ${C.border}`, background: "#fff", boxShadow: "0 1px 8px rgba(0,0,0,0.06)" }}>
         <div style={{ height: "3px", background: `linear-gradient(90deg, ${C.red} 50%, ${C.green} 50%)` }} />
-        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "12px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <MoroccanFlag delay={0} />
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "16px 24px", textAlign: "center" }}>
+          <div style={{ fontSize: "clamp(16px, 4vw, 22px)", fontWeight: 900, color: C.dark, letterSpacing: "2px" }}>
+            MOROCCO <span style={{ color: C.red }}>2026</span>
           </div>
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "clamp(14px, 4vw, 20px)", fontWeight: 900, color: C.dark, letterSpacing: "2px" }}>
-              MOROCCO <span style={{ color: C.red }}>2026</span>
-            </div>
-            <div style={{ fontSize: "clamp(8px, 1.5vw, 10px)", color: C.gold, letterSpacing: "2px", fontWeight: 700 }}>
-              FIFA WORLD CUP
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <MoroccanFlag delay={0.2} />
+          <div style={{ fontSize: "clamp(9px, 1.5vw, 11px)", color: C.gold, letterSpacing: "2px", fontWeight: 700, marginTop: "2px" }}>
+            FIFA WORLD CUP
           </div>
         </div>
       </header>
 
-      {/* Hero banner */}
-      <div style={{ background: `linear-gradient(135deg, ${C.red} 0%, #8B1A1A 100%)`, color: "#fff", textAlign: "center", padding: "clamp(28px, 6vw, 48px) 24px" }}>
-        <div style={{ fontSize: "clamp(11px, 2vw, 13px)", fontWeight: 700, letterSpacing: "3px", opacity: 0.85, marginBottom: "10px", textTransform: "uppercase" as const }}>
-          Morocco World Cup 2026
+      {/* Hero */}
+      <div style={{ textAlign: "center", padding: "clamp(28px, 6vw, 48px) 24px 16px", background: "#fff" }}>
+        <div style={{ fontSize: "clamp(28px, 7vw, 52px)", fontWeight: 900, lineHeight: 1.1, marginBottom: "10px", color: C.dark }}>
+          BE A <span style={{ color: C.red }}>LEGEND</span>
+          <span style={{ fontSize: "clamp(16px, 3.5vw, 24px)", marginLeft: "10px", color: C.gray }}>| كن أسطورة 🇲🇦</span>
         </div>
-        <div style={{ fontSize: "clamp(28px, 7vw, 52px)", fontWeight: 900, lineHeight: 1.1, marginBottom: "10px" }}>
-          BE A <span style={{ color: C.goldLight }}>LEGEND</span>
-          <span style={{ fontSize: "clamp(18px, 4vw, 28px)", marginLeft: "10px", opacity: 0.9 }}>| كن أسطورة 🇲🇦</span>
-        </div>
-        <div style={{ fontSize: "clamp(13px, 3vw, 17px)", opacity: 0.9, marginBottom: "20px" }}>
+        <div style={{ fontSize: "clamp(13px, 3vw, 16px)", color: C.gray, marginBottom: "16px" }}>
           Turn your photo into a Panini card or Champion photo
         </div>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: "16px", background: "rgba(255,255,255,0.15)", borderRadius: "50px", padding: "8px 24px", fontSize: "clamp(13px, 2.5vw, 16px)", fontWeight: 700 }}>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: "16px", background: C.lightGray, border: `1px solid ${C.border}`, borderRadius: "50px", padding: "8px 24px", fontSize: "clamp(12px, 2.5vw, 15px)", fontWeight: 700, color: C.dark }}>
           <span>⚽ Panini Card</span>
-          <span style={{ opacity: 0.5 }}>·</span>
+          <span style={{ color: C.border }}>·</span>
           <span>🏆 Champion Photo</span>
-          <span style={{ opacity: 0.5 }}>·</span>
-          <span style={{ color: C.goldLight }}>€1.49</span>
+          <span style={{ color: C.border }}>·</span>
+          <span style={{ color: C.red, fontWeight: 900 }}>€1.49</span>
         </div>
       </div>
 
