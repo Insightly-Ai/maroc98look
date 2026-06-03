@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
       "The shirt in the generated image must be IDENTICAL to the reference: same brand logo, same badge/emblem, same collar, same sleeve design, same color blocks, same patterns — everything. " +
       "DO NOT invent a different shirt. DO NOT change the brand. COPY the reference shirt exactly. " +
       "IMPORTANT: The shirt must have ONLY ONE badge/emblem on the chest — never two emblems or two logos. " +
-      "If the person is wearing a hijab or headscarf, add a white long-sleeve undershirt — no bare arms or neck. Keep the hijab exactly as in the original photo.";
+      "CRITICAL HAIR AND HEADWEAR RULE: If the person in the photo is NOT wearing a hijab or headscarf, they must appear WITHOUT any hijab or headscarf — do NOT add one. If the person IS wearing a hijab or headscarf, keep it EXACTLY as in the original photo and add a white long-sleeve undershirt so no arms or neck are bare.";
 
     const name = playerName || "ATLAS";
 
