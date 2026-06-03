@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
       "",
       "TOP BANNER: Full-width solid green (#006233) bar, ~12% of card height. Large bold white uppercase text centered: 'MOROCCO'. Clean sans-serif font, like official Panini printing.",
       "",
-      "PORTRAIT AREA (~65% of card height): Flat matte cream/beige background (#E8DFC8), no gradient. The person is centered, showing head and shoulders only (cropped just below the chest). " + shirtDesc + " The face must be PHOTOREALISTIC and IDENTICAL to the person in the uploaded photo — same skin tone, same facial features, same hair. Neutral expression or slight confident smile. Clean, even portrait lighting. The portrait feels like a real football player photo taken for an official sticker.",
+      "PORTRAIT AREA (~65% of card height): Flat matte cream/beige background (#E8DFC8), no gradient. The person is centered, showing the FULL HEAD and shoulders (the face must be fully visible — never cropped). " + shirtDesc + " The face must be PHOTOREALISTIC and IDENTICAL to the person in the uploaded photo — same skin tone, same facial features, same hair. Neutral expression or slight confident smile. Clean, even portrait lighting. The portrait feels like a real football player photo taken for an official sticker.",
       "",
       "BOTTOM SECTION (~23% of card height): White/off-white background (#FAFAFA). Left side: small rectangular Moroccan flag (red background, green five-pointed star), with a thin gray border around it. Right side: two lines of text — first line 'ATLAS LIONS' in small uppercase gray letters; second line '" + name + "' in large bold black uppercase letters. Text is sharp and print-quality.",
       "",
