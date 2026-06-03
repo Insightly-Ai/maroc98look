@@ -119,7 +119,6 @@ export async function POST(request: NextRequest) {
       "EXACT SCENE:",
       "- Person stands in STADIUM STANDS (tribune) surrounded by thousands of celebrating Moroccan supporters",
       "- Holding the golden FIFA World Cup trophy HIGH with one arm raised in triumph",
-      "- Large Moroccan flag (red with green star) draped over shoulder and across the body like a cape",
       "- Football pitch visible far below/behind",
       "- Stadium PACKED — tens of thousands wearing red, waving Moroccan flags",
       "- Golden confetti, red and green smoke, stadium floodlights blazing",
@@ -128,9 +127,9 @@ export async function POST(request: NextRequest) {
       "",
       "PERSON: Face, skin tone, hair, features EXACTLY identical to the uploaded photo. Pure joy, mouth open, screaming with happiness. Show from head to waist.",
       "",
-      "SHIRT: Person is " + shirtDesc,
+      "SHIRT: Person is " + shirtDesc + " The shirt must be CLEARLY VISIBLE — do NOT cover it with a flag or cape.",
       "",
-      "STYLE: Photorealistic sports photography, cinematic, dramatic red stadium lighting, ultra high quality 4K.",
+      "STYLE: Photorealistic sports photography, cinematic, dramatic stadium lighting, ultra high quality 4K.",
     ].join("\n");
 
     const promptText = type === "panini" ? paniniPrompt : championPrompt;
