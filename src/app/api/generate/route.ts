@@ -87,11 +87,11 @@ export async function POST(request: NextRequest) {
     if (shirtRood) baseParts.push({ inlineData: { mimeType: shirtRood.mimeType, data: shirtRood.data } });
     if (shirtWit) baseParts.push({ inlineData: { mimeType: shirtWit.mimeType, data: shirtWit.data } });
 
-    const shirtDesc = "wearing the official Morocco FIFA World Cup 2026 football shirt from the reference images. " +
-      "IMPORTANT: Look at the person in Image 1 — if the person appears to be female or is wearing a hijab/headscarf, dress them in the WHITE away shirt (Image 3). " +
-      "If the person appears to be male, dress them in the RED home shirt (Image 2). " +
-      "Copy the shirt EXACTLY from the reference image: same colors, same badge, same design details. " +
-      "If the person is wearing a hijab or headscarf, they must also wear a white long-sleeve undershirt — no bare arms or neck visible. Keep the hijab exactly as in the original photo.";
+    const shirtDesc = "wearing the shirt from the reference images — copy it PIXEL PERFECT. " +
+      "Look at the person in Image 1: if female or wearing a hijab/headscarf → use the WHITE shirt from Image 3 EXACTLY. If male → use the RED shirt from Image 2 EXACTLY. " +
+      "The shirt in the generated image must be IDENTICAL to the reference: same brand logo, same badge/emblem, same collar, same sleeve design, same color blocks, same patterns — everything. " +
+      "DO NOT invent a different shirt. DO NOT change the brand. COPY the reference shirt exactly. " +
+      "If the person is wearing a hijab or headscarf, add a white long-sleeve undershirt — no bare arms or neck. Keep the hijab exactly as in the original photo.";
 
     const name = playerName || "ATLAS";
 
