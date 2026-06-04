@@ -640,10 +640,10 @@ export default function Marokko98Look() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px" }}>
                 <img src="/examples/panini-hasna.jpeg" alt="Panini Hassna" style={{ width: "100%", borderRadius: "8px", boxShadow: "0 2px 12px rgba(0,0,0,0.12)" }} />
                 <img src="/examples/champion-1.jpeg" alt="Champion" style={{ width: "100%", borderRadius: "8px", boxShadow: "0 2px 12px rgba(0,0,0,0.12)" }} />
-                <img src="/examples/champion-3.jpg" alt="Champion 3" style={{ width: "100%", borderRadius: "8px", boxShadow: "0 2px 12px rgba(0,0,0,0.12)" }} />
+                <img src="/examples/panini-soufian.jpeg" alt="Panini Soufian" style={{ width: "100%", borderRadius: "8px", boxShadow: "0 2px 12px rgba(0,0,0,0.12)" }} />
                 <img src="/examples/panini-naoual.jpeg" alt="Panini Naoual" style={{ width: "100%", borderRadius: "8px", boxShadow: "0 2px 12px rgba(0,0,0,0.12)" }} />
                 <img src="/examples/panini-younes.jpeg" alt="Panini Younes" style={{ width: "100%", borderRadius: "8px", boxShadow: "0 2px 12px rgba(0,0,0,0.12)" }} />
-                <img src="/examples/panini-hicham.jpeg" alt="Panini Hicham" style={{ width: "100%", borderRadius: "8px", boxShadow: "0 2px 12px rgba(0,0,0,0.12)" }} />
+                <img src="/examples/champion-3.jpg" alt="Champion 3" style={{ width: "100%", borderRadius: "8px", boxShadow: "0 2px 12px rgba(0,0,0,0.12)" }} />
               </div>
             </div>
           )}
