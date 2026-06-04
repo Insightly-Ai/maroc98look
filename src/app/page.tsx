@@ -306,8 +306,15 @@ export default function Marokko98Look() {
     if (!imageBase64) return;
     setError(null);
     if (paidIntentId) { runGeneration(imageBase64, imageMime, paidIntentId, productType, playerName); return; }
-    // PAYMENT BYPASS — remove before going live
-    runGeneration(imageBase64, imageMime, "bypass", productType, playerName);
+    try {
+      const res = await fetch("/api/payment", { method: "POST" });
+      const data = await res.json();
+      if (!data.clientSecret) throw new Error("Payment init failed");
+      setClientSecret(data.clientSecret);
+      setShowPayment(true);
+    } catch {
+      setError("Could not start payment. Please try again.");
+    }
   };
 
   const faqs = [
@@ -633,7 +640,7 @@ export default function Marokko98Look() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px" }}>
                 <img src="/examples/panini-hasna.jpeg" alt="Panini Hassna" style={{ width: "100%", borderRadius: "8px", boxShadow: "0 2px 12px rgba(0,0,0,0.12)" }} />
                 <img src="/examples/champion-1.jpeg" alt="Champion" style={{ width: "100%", borderRadius: "8px", boxShadow: "0 2px 12px rgba(0,0,0,0.12)" }} />
-                <img src="/examples/panini-soufian.jpeg" alt="Panini Soufian" style={{ width: "100%", borderRadius: "8px", boxShadow: "0 2px 12px rgba(0,0,0,0.12)" }} />
+                <img src="/examples/champion-3.jpg" alt="Champion 3" style={{ width: "100%", borderRadius: "8px", boxShadow: "0 2px 12px rgba(0,0,0,0.12)" }} />
                 <img src="/examples/panini-naoual.jpeg" alt="Panini Naoual" style={{ width: "100%", borderRadius: "8px", boxShadow: "0 2px 12px rgba(0,0,0,0.12)" }} />
                 <img src="/examples/panini-younes.jpeg" alt="Panini Younes" style={{ width: "100%", borderRadius: "8px", boxShadow: "0 2px 12px rgba(0,0,0,0.12)" }} />
                 <img src="/examples/panini-hicham.jpeg" alt="Panini Hicham" style={{ width: "100%", borderRadius: "8px", boxShadow: "0 2px 12px rgba(0,0,0,0.12)" }} />
