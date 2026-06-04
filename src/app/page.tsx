@@ -306,9 +306,8 @@ export default function Marokko98Look() {
     if (!imageBase64) return;
     setError(null);
     if (paidIntentId) { runGeneration(imageBase64, imageMime, paidIntentId, productType, playerName); return; }
-    const res = await fetch("/api/payment", { method: "POST" });
-    const { clientSecret: cs } = await res.json();
-    setClientSecret(cs); setShowPayment(true);
+    // PAYMENT BYPASS — remove before going live
+    runGeneration(imageBase64, imageMime, "bypass", productType, playerName);
   };
 
   const faqs = [
