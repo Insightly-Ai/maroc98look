@@ -293,6 +293,13 @@ export default function TurkeyLegend() {
         </div>
       </div>
 
+      {/* Morocco crosslink */}
+      <div style={{ background: "#006233", padding: "10px 24px", textAlign: "center" }}>
+        <a href="/morocco" style={{ color: "#fff", fontSize: "13px", fontWeight: 700, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "8px" }}>
+          🇲🇦 Also available: Morocco 2026 Legend &rarr;
+        </a>
+      </div>
+
       {/* Trust bar */}
       <div style={{ background: C.lightGray, borderBottom: `1px solid ${C.border}`, padding: "12px 24px" }}>
         <div style={{ maxWidth: "900px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "center", gap: "clamp(12px, 4vw, 32px)", flexWrap: "wrap" as const }}>
