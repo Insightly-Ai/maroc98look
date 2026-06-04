@@ -1,39 +1,55 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <!-- Dark background -->
-  <rect width="100" height="100" rx="18" fill="#111111"/>
+  <defs>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F5D060"/>
+      <stop offset="50%" stop-color="#D4A843"/>
+      <stop offset="100%" stop-color="#A8782A"/>
+    </linearGradient>
+    <linearGradient id="base" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2E7D4F"/>
+      <stop offset="100%" stop-color="#1B4D30"/>
+    </linearGradient>
+  </defs>
 
-  <!-- Globe at top -->
-  <circle cx="50" cy="22" r="14" fill="#C8921A"/>
-  <circle cx="50" cy="22" r="14" fill="none" stroke="#F5D060" stroke-width="1"/>
-  <!-- Globe lines -->
-  <ellipse cx="50" cy="22" rx="6" ry="14" fill="none" stroke="#F5D060" stroke-width="0.8" opacity="0.6"/>
-  <line x1="36" y1="22" x2="64" y2="22" stroke="#F5D060" stroke-width="0.8" opacity="0.6"/>
-  <line x1="37" y1="16" x2="63" y2="16" stroke="#F5D060" stroke-width="0.8" opacity="0.6"/>
-  <line x1="37" y1="28" x2="63" y2="28" stroke="#F5D060" stroke-width="0.8" opacity="0.6"/>
-  <!-- Shine on globe -->
-  <circle cx="44" cy="17" r="4" fill="#F5D060" opacity="0.25"/>
+  <!-- Background -->
+  <rect width="100" height="100" rx="16" fill="#0A0A0A"/>
 
-  <!-- Left figure arm up -->
-  <path d="M36 36 Q30 30 36 23" fill="none" stroke="#D4A843" stroke-width="3.5" stroke-linecap="round"/>
-  <!-- Right figure arm up -->
-  <path d="M64 36 Q70 30 64 23" fill="none" stroke="#D4A843" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- Globe -->
+  <circle cx="50" cy="19" r="13" fill="url(#gold)"/>
+  <ellipse cx="50" cy="19" rx="5.5" ry="13" fill="none" stroke="#A8782A" stroke-width="1" opacity="0.5"/>
+  <line x1="37" y1="19" x2="63" y2="19" stroke="#A8782A" stroke-width="1" opacity="0.5"/>
+  <circle cx="44" cy="14" r="3.5" fill="#F9E88A" opacity="0.3"/>
 
-  <!-- Left figure body -->
-  <path d="M36 36 Q33 45 36 54" fill="none" stroke="#D4A843" stroke-width="4" stroke-linecap="round"/>
-  <!-- Right figure body -->
-  <path d="M64 36 Q67 45 64 54" fill="none" stroke="#D4A843" stroke-width="4" stroke-linecap="round"/>
+  <!-- Trophy body: two figures as a filled silhouette -->
+  <!-- Left figure: curves outward then inward to waist -->
+  <path d="
+    M50 32
+    C44 32, 34 35, 30 28
+    C27 23, 33 19, 37 19
+    C40 24, 45 27, 50 32
+    Z
+  " fill="url(#gold)"/>
+  <!-- Right figure mirror -->
+  <path d="
+    M50 32
+    C56 32, 66 35, 70 28
+    C73 23, 67 19, 63 19
+    C60 24, 55 27, 50 32
+    Z
+  " fill="url(#gold)"/>
 
-  <!-- Figures connecting at waist -->
-  <path d="M36 46 Q50 50 64 46" fill="none" stroke="#C49B2E" stroke-width="3" stroke-linecap="round"/>
+  <!-- Waist / narrow stem -->
+  <rect x="44" y="32" width="12" height="10" rx="3" fill="url(#gold)"/>
 
-  <!-- Malachite base narrow -->
-  <rect x="43" y="54" width="14" height="8" rx="2" fill="#C49B2E"/>
+  <!-- Connector to base -->
+  <rect x="46" y="42" width="8" height="12" rx="2" fill="#C49B2E"/>
 
-  <!-- Base tier 1 -->
-  <rect x="33" y="62" width="34" height="7" rx="2" fill="#1B5E3B"/>
-  <!-- Base tier 2 -->
-  <rect x="28" y="69" width="44" height="9" rx="3" fill="#154D2E"/>
-  <!-- Gold rim on base -->
-  <rect x="28" y="69" width="44" height="2" rx="1" fill="#D4A843"/>
-  <rect x="28" y="76" width="44" height="2" rx="1" fill="#D4A843"/>
+  <!-- Malachite base top tier -->
+  <rect x="32" y="54" width="36" height="9" rx="3" fill="url(#base)"/>
+  <rect x="32" y="54" width="36" height="2" rx="1" fill="#D4A843"/>
+
+  <!-- Malachite base bottom tier -->
+  <rect x="26" y="63" width="48" height="11" rx="4" fill="url(#base)"/>
+  <rect x="26" y="63" width="48" height="2.5" rx="1" fill="#D4A843"/>
+  <rect x="26" y="71.5" width="48" height="2.5" rx="1" fill="#D4A843"/>
 </svg>
