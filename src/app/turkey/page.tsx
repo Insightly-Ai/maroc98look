@@ -473,7 +473,7 @@ export default function TurkeyLegend() {
             <img src={resultUrl} alt="Your result" style={{ width: "100%", borderRadius: "10px", border: `1px solid ${C.border}`, display: "block" }} />
             <div style={{ marginTop: "16px", display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap" as const }}>
               <button onClick={async () => {
-                const shareText = "Check out my Turkey 2026 Legend photo! Create yours too 🇹🇷";
+                const shareText = "Check out my Turkey 2026 Legend photo. Create yours at: https://www.worldcuplegend.nl/turkey 🇹🇷";
                 try {
                   const res = await fetch(resultUrl);
                   const blob = await res.blob();

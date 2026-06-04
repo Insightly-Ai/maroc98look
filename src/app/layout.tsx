@@ -13,14 +13,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Morocco 2026 Legend Generator",
-  description: "Turn your photo into a Morocco World Cup 2026 Champion Photo or Panini card. Only €1.49.",
-  metadataBase: new URL("https://www.maroclegend2026.nl"),
+  title: "World Cup Legend Generator",
+  description: "Turn your photo into a World Cup 2026 Champion Photo or Panini card. Only €1.49.",
+  metadataBase: new URL("https://www.worldcuplegend.nl"),
   openGraph: {
-    title: "Morocco 2026 Legend Generator",
-    description: "Turn your photo into a Morocco World Cup 2026 Champion Photo or Panini card. Only €1.49.",
+    title: "World Cup Legend Generator",
+    description: "Turn your photo into a World Cup 2026 Champion Photo or Panini card. Only €1.49.",
     type: "website",
-    url: "https://www.maroclegend2026.nl",
+    url: "https://www.worldcuplegend.nl",
     images: [{ url: "/og-image.png", width: 1200, height: 630 }],
   },
   icons: {
