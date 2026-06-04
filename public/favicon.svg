@@ -1,55 +1,39 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <defs>
-    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="g" x1="20%" y1="0%" x2="80%" y2="100%">
       <stop offset="0%" stop-color="#F5D060"/>
-      <stop offset="50%" stop-color="#D4A843"/>
-      <stop offset="100%" stop-color="#A8782A"/>
-    </linearGradient>
-    <linearGradient id="base" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#2E7D4F"/>
-      <stop offset="100%" stop-color="#1B4D30"/>
+      <stop offset="40%" stop-color="#D4A020"/>
+      <stop offset="100%" stop-color="#A07010"/>
     </linearGradient>
   </defs>
+  <rect width="100" height="100" rx="16" fill="#111"/>
 
-  <!-- Background -->
-  <rect width="100" height="100" rx="16" fill="#0A0A0A"/>
+  <!-- Globe top -->
+  <ellipse cx="50" cy="23" rx="19" ry="18" fill="url(#g)"/>
+  <!-- Continent-like details on globe -->
+  <path d="M38 18 Q42 14 46 17 Q44 21 40 20Z" fill="#C8920A" opacity="0.5"/>
+  <path d="M52 14 Q57 12 60 16 Q58 19 55 18Z" fill="#C8920A" opacity="0.5"/>
+  <path d="M44 24 Q48 22 51 25 Q49 28 46 27Z" fill="#C8920A" opacity="0.4"/>
 
-  <!-- Globe -->
-  <circle cx="50" cy="19" r="13" fill="url(#gold)"/>
-  <ellipse cx="50" cy="19" rx="5.5" ry="13" fill="none" stroke="#A8782A" stroke-width="1" opacity="0.5"/>
-  <line x1="37" y1="19" x2="63" y2="19" stroke="#A8782A" stroke-width="1" opacity="0.5"/>
-  <circle cx="44" cy="14" r="3.5" fill="#F9E88A" opacity="0.3"/>
+  <!-- Trophy body: two figures spiraling — left side -->
+  <path d="M31 41 Q27 36 33 31 Q36 28 39 32 Q43 37 44 44 Q45 50 44 54"
+        fill="none" stroke="url(#g)" stroke-width="8" stroke-linecap="round"/>
+  <!-- Right side figure -->
+  <path d="M69 41 Q73 36 67 31 Q64 28 61 32 Q57 37 56 44 Q55 50 56 54"
+        fill="none" stroke="url(#g)" stroke-width="8" stroke-linecap="round"/>
 
-  <!-- Trophy body: two figures as a filled silhouette -->
-  <!-- Left figure: curves outward then inward to waist -->
-  <path d="
-    M50 32
-    C44 32, 34 35, 30 28
-    C27 23, 33 19, 37 19
-    C40 24, 45 27, 50 32
-    Z
-  " fill="url(#gold)"/>
-  <!-- Right figure mirror -->
-  <path d="
-    M50 32
-    C56 32, 66 35, 70 28
-    C73 23, 67 19, 63 19
-    C60 24, 55 27, 50 32
-    Z
-  " fill="url(#gold)"/>
+  <!-- Waist narrow part -->
+  <path d="M44 54 Q50 58 56 54 L55 62 Q50 65 45 62Z" fill="url(#g)"/>
 
-  <!-- Waist / narrow stem -->
-  <rect x="44" y="32" width="12" height="10" rx="3" fill="url(#gold)"/>
+  <!-- Base flare -->
+  <path d="M45 62 Q50 65 55 62 Q58 68 60 72 L40 72 Q42 68 45 62Z" fill="url(#g)"/>
 
-  <!-- Connector to base -->
-  <rect x="46" y="42" width="8" height="12" rx="2" fill="#C49B2E"/>
+  <!-- Horizontal rings on base -->
+  <rect x="36" y="72" width="28" height="3.5" rx="1.5" fill="url(#g)"/>
+  <rect x="34" y="76.5" width="32" height="3.5" rx="1.5" fill="url(#g)"/>
+  <rect x="32" y="81" width="36" height="4" rx="2" fill="url(#g)"/>
 
-  <!-- Malachite base top tier -->
-  <rect x="32" y="54" width="36" height="9" rx="3" fill="url(#base)"/>
-  <rect x="32" y="54" width="36" height="2" rx="1" fill="#D4A843"/>
-
-  <!-- Malachite base bottom tier -->
-  <rect x="26" y="63" width="48" height="11" rx="4" fill="url(#base)"/>
-  <rect x="26" y="63" width="48" height="2.5" rx="1" fill="#D4A843"/>
-  <rect x="26" y="71.5" width="48" height="2.5" rx="1" fill="#D4A843"/>
+  <!-- Thin white lines between rings for detail -->
+  <rect x="36" y="75.2" width="28" height="1" fill="#111" opacity="0.6"/>
+  <rect x="34" y="79.8" width="32" height="1" fill="#111" opacity="0.6"/>
 </svg>
