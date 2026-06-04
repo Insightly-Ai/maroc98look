@@ -306,17 +306,15 @@ export default function Marokko98Look() {
     if (!imageBase64) return;
     setError(null);
     if (paidIntentId) { runGeneration(imageBase64, imageMime, paidIntentId, productType, playerName); return; }
-    // PAYMENT BYPASS — remove next line and uncomment the block below to re-enable payment
-    runGeneration(imageBase64, imageMime, "bypass", productType, playerName);
-    // try {
-    //   const res = await fetch("/api/payment", { method: "POST" });
-    //   const data = await res.json();
-    //   if (!data.clientSecret) throw new Error("Payment init failed");
-    //   setClientSecret(data.clientSecret);
-    //   setShowPayment(true);
-    // } catch {
-    //   setError("Could not start payment. Please try again.");
-    // }
+    try {
+      const res = await fetch("/api/payment", { method: "POST" });
+      const data = await res.json();
+      if (!data.clientSecret) throw new Error("Payment init failed");
+      setClientSecret(data.clientSecret);
+      setShowPayment(true);
+    } catch {
+      setError("Could not start payment. Please try again.");
+    }
   };
 
   const faqs = [

@@ -82,13 +82,9 @@ export async function POST(request: NextRequest) {
     if (!paymentIntentId) {
       return NextResponse.json({ error: "No payment found" }, { status: 402 });
     }
-    // PAYMENT BYPASS — set PAYMENT_ENABLED=true to re-enable
-    const paymentEnabled = process.env.PAYMENT_ENABLED === "true";
-    if (paymentEnabled) {
-      const intent = await stripe.paymentIntents.retrieve(paymentIntentId);
-      if (intent.status !== "succeeded") {
-        return NextResponse.json({ error: "Payment not successful" }, { status: 402 });
-      }
+    const intent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    if (intent.status !== "succeeded") {
+      return NextResponse.json({ error: "Payment not successful" }, { status: 402 });
     }
 
     const model = ai.getGenerativeModel({ model: "gemini-3.1-flash-image" });
