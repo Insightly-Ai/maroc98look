@@ -241,8 +241,10 @@ export default function TurkeyLegend() {
         .faq-item { border-bottom: 1px solid ${C.border}; }
         .faq-item:last-child { border-bottom: none; }
         .side-panel { display: flex; }
+        .mobile-examples { display: none; }
         @media (max-width: 1024px) {
           .side-panel { display: none !important; }
+          .mobile-examples { display: flex !important; }
         }
         @media (max-width: 480px) {
           .btn-upload { font-size: 14px !important; padding: 12px !important; }
@@ -312,6 +314,15 @@ export default function TurkeyLegend() {
 
         {/* Center */}
         <div style={{ flex: 1, minWidth: 0, maxWidth: "640px", margin: "0 auto" }}>
+
+        {/* Mobile examples */}
+        {!image && (
+          <div className="mobile-examples" style={{ gap: "10px", marginBottom: "24px", justifyContent: "center" }}>
+            <img src="/examples/Semih-panini.jpg" alt="Panini Semih" style={{ width: "100px", borderRadius: "4px", boxShadow: "0 4px 16px rgba(0,0,0,0.2)", transform: "rotate(-3deg)" }} />
+            <img src="/examples/Champion-turkey-1.jpg" alt="Champion Turkey 1" style={{ width: "100px", borderRadius: "6px", boxShadow: "0 4px 16px rgba(0,0,0,0.2)", transform: "rotate(2deg)" }} />
+            <img src="/examples/Zeynep-panini.jpg" alt="Panini Zeynep" style={{ width: "100px", borderRadius: "4px", boxShadow: "0 4px 16px rgba(0,0,0,0.2)", transform: "rotate(3deg)" }} />
+          </div>
+        )}
 
         {/* Upload card */}
         <div style={{ background: "#fff", border: `1px solid ${C.border}`, borderRadius: "16px", padding: "24px", marginBottom: "16px", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
