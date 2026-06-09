@@ -123,15 +123,9 @@ export async function POST(request: NextRequest) {
       if (shirtRood) baseParts.push({ inlineData: { mimeType: shirtRood.mimeType, data: shirtRood.data } });
       if (shirtWit) baseParts.push({ inlineData: { mimeType: shirtWit.mimeType, data: shirtWit.data } });
 
-      shirtDesc = "wearing the Morocco 2026 Puma football shirt from the reference images — copy it PIXEL PERFECT. " +
-        "Look at the person in Image 1: if female or wearing a hijab/headscarf → use the WHITE shirt from Image 3 EXACTLY. If male → use the RED shirt from Image 2 EXACTLY. " +
-        "RED home shirt details: solid bright red Puma shirt. Round collar/neckline with a small button at the top center. Collar trim has a geometric gold/green Moroccan pattern stripe. " +
-        "BADGE POSITION — CRITICAL: The official Morocco Football Federation badge (circular emblem, lion, star, green and gold) is EXACTLY IN THE CENTER of the chest — not left, not right, dead center. " +
-        "PUMA LOGO POSITION: The white Puma logo is small, below the badge, slightly to the right. " +
-        "NEVER place the badge on the left or right side. CENTER of chest only. " +
-        "The shirt is plain red with NO other markings — ONLY the badge in the center chest and small Puma logo below it. " +
-        "DO NOT use Nike, Adidas or any other brand — this is a PUMA shirt. DO NOT invent patterns. COPY the reference shirt exactly. " +
-        "CRITICAL HAIR AND HEADWEAR RULE: If the person in the photo is NOT wearing a hijab or headscarf, they must appear WITHOUT any hijab or headscarf — do NOT add one. If the person IS wearing a hijab or headscarf, keep it EXACTLY as in the original photo and add a white long-sleeve undershirt so no arms or neck are bare."; +
+      shirtDesc = "wearing the shirt shown in Image 2 (red) or Image 3 (white) — copy the shirt EXACTLY as it appears in the reference photo, pixel perfect, no changes whatsoever. " +
+        "If the person in Image 1 is female or wearing a hijab/headscarf → use the WHITE shirt from Image 3. If male → use the RED shirt from Image 2. " +
+        "The shirt must look 100% identical to the reference image — same badge, same logo, same position of every element, same colors, same collar, same everything. Do not describe or invent — just copy the reference shirt exactly. " +
         "CRITICAL HAIR AND HEADWEAR RULE: If the person in the photo is NOT wearing a hijab or headscarf, they must appear WITHOUT any hijab or headscarf — do NOT add one. If the person IS wearing a hijab or headscarf, keep it EXACTLY as in the original photo and add a white long-sleeve undershirt so no arms or neck are bare.";
     }
 
