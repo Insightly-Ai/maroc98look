@@ -123,11 +123,14 @@ export async function POST(request: NextRequest) {
       if (shirtRood) baseParts.push({ inlineData: { mimeType: shirtRood.mimeType, data: shirtRood.data } });
       if (shirtWit) baseParts.push({ inlineData: { mimeType: shirtWit.mimeType, data: shirtWit.data } });
 
-      shirtDesc = "wearing the shirt from the reference images — copy it PIXEL PERFECT. " +
+      shirtDesc = "wearing the Morocco 2026 Puma football shirt from the reference images — copy it PIXEL PERFECT. " +
         "Look at the person in Image 1: if female or wearing a hijab/headscarf → use the WHITE shirt from Image 3 EXACTLY. If male → use the RED shirt from Image 2 EXACTLY. " +
-        "The shirt in the generated image must be IDENTICAL to the reference: same brand logo, same badge/emblem, same collar, same sleeve design, same color blocks, same patterns — everything. " +
-        "DO NOT invent a different shirt. DO NOT change the brand. COPY the reference shirt exactly. " +
-        "IMPORTANT: The shirt must have ONLY ONE badge/emblem — for the RED shirt the badge is EXACTLY IN THE CENTER of the chest (not left, not right), for the WHITE shirt the badge is on the upper RIGHT chest. Never two badges. " +
+        "RED home shirt details: solid bright red Puma shirt. Round collar/neckline with a small button at the top center. Collar trim has a geometric gold/green Moroccan pattern stripe. " +
+        "On the LEFT chest: the official Morocco Football Federation badge — a large circular emblem with detailed design (lion, star, Arabic script, green and gold colors). " +
+        "On the RIGHT chest: the Puma logo (white Puma cat leaping). Subtle geometric/tribal pattern on the shoulders and side panels. " +
+        "The shirt is plain red with NO other markings — ONLY the badge on left chest and Puma logo on right chest. NEVER place the badge in the center. " +
+        "DO NOT use Nike, Adidas or any other brand — this is a PUMA shirt. DO NOT invent patterns. COPY the reference shirt exactly. " +
+        "CRITICAL HAIR AND HEADWEAR RULE: If the person in the photo is NOT wearing a hijab or headscarf, they must appear WITHOUT any hijab or headscarf — do NOT add one. If the person IS wearing a hijab or headscarf, keep it EXACTLY as in the original photo and add a white long-sleeve undershirt so no arms or neck are bare."; +
         "CRITICAL HAIR AND HEADWEAR RULE: If the person in the photo is NOT wearing a hijab or headscarf, they must appear WITHOUT any hijab or headscarf — do NOT add one. If the person IS wearing a hijab or headscarf, keep it EXACTLY as in the original photo and add a white long-sleeve undershirt so no arms or neck are bare.";
     }
 
