@@ -135,6 +135,7 @@ export async function POST(request: NextRequest) {
         "If the person in Image 1 is female or wearing a hijab/headscarf → use the WHITE shirt from Image 3. If male → use the RED shirt from Image 2. " +
         "The shirt must look 100% identical to the reference image — same badge, same logo, same position of every element, same colors, same collar, same everything. Do not describe or invent — just copy the reference shirt exactly. " +
         "BADGE POSITION: The circular Morocco badge on the RED shirt is in the EXACT CENTER of the chest — not on the left, not on the right. DEAD CENTER. Look at the reference image and copy the badge position exactly. " +
+        "ONLY ONE badge on the shirt — never two badges, never two emblems. ONE badge, centered. " +
         "CRITICAL HAIR AND HEADWEAR RULE: If the person in the photo is NOT wearing a hijab or headscarf, they must appear WITHOUT any hijab or headscarf — do NOT add one. If the person IS wearing a hijab or headscarf, keep it EXACTLY as in the original photo and add a white long-sleeve undershirt so no arms or neck are bare.";
     }
 
