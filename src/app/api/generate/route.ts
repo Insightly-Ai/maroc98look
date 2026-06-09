@@ -31,6 +31,7 @@ let shirtRoodCache: ImageRef | null = null;
 let shirtWitCache: ImageRef | null = null;
 let shirtTurkeyRoodCache: ImageRef | null = null;
 let shirtTurkeyWitCache: ImageRef | null = null;
+let paniniRefRoodCache: ImageRef | null = null;
 
 function loadLocalImage(filename: string): ImageRef | null {
   try {
@@ -60,6 +61,11 @@ function getShirtTurkeyRood(): ImageRef | null {
 function getShirtTurkeyWit(): ImageRef | null {
   if (!shirtTurkeyWitCache) shirtTurkeyWitCache = loadLocalImage("shirt-turkey-wit.jpg");
   return shirtTurkeyWitCache;
+}
+
+function getPaniniRefRood(): ImageRef | null {
+  if (!paniniRefRoodCache) paniniRefRoodCache = loadLocalImage("panini-reference-rood.jpg.jpeg");
+  return paniniRefRoodCache;
 }
 
 function getClients() {
@@ -116,12 +122,14 @@ export async function POST(request: NextRequest) {
     } else {
       const shirtRood = getShirtRood();
       const shirtWit = getShirtWit();
+      const paniniRef = getPaniniRefRood();
       baseParts = [
-        { text: `Image 1: person photo. Image 2: Morocco 2026 red home shirt reference. Image 3: Morocco 2026 white away shirt reference.` },
+        { text: `Image 1: person photo. Image 2: Morocco 2026 red home shirt reference. Image 3: Morocco 2026 white away shirt reference.${paniniRef ? " Image 4: example of a perfectly generated result showing exactly how the shirt should look." : ""}` },
         { inlineData: { mimeType: imageMime || "image/jpeg", data: imageBase64 } },
       ];
       if (shirtRood) baseParts.push({ inlineData: { mimeType: shirtRood.mimeType, data: shirtRood.data } });
       if (shirtWit) baseParts.push({ inlineData: { mimeType: shirtWit.mimeType, data: shirtWit.data } });
+      if (paniniRef) baseParts.push({ inlineData: { mimeType: paniniRef.mimeType, data: paniniRef.data } });
 
       shirtDesc = "wearing the shirt shown in Image 2 (red) or Image 3 (white) — copy the shirt EXACTLY as it appears in the reference photo, pixel perfect, no changes whatsoever. " +
         "If the person in Image 1 is female or wearing a hijab/headscarf → use the WHITE shirt from Image 3. If male → use the RED shirt from Image 2. " +
