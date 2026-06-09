@@ -126,9 +126,10 @@ export async function POST(request: NextRequest) {
       shirtDesc = "wearing the Morocco 2026 Puma football shirt from the reference images — copy it PIXEL PERFECT. " +
         "Look at the person in Image 1: if female or wearing a hijab/headscarf → use the WHITE shirt from Image 3 EXACTLY. If male → use the RED shirt from Image 2 EXACTLY. " +
         "RED home shirt details: solid bright red Puma shirt. Round collar/neckline with a small button at the top center. Collar trim has a geometric gold/green Moroccan pattern stripe. " +
-        "On the LEFT chest: the official Morocco Football Federation badge — a large circular emblem with detailed design (lion, star, Arabic script, green and gold colors). " +
-        "On the RIGHT chest: the Puma logo (white Puma cat leaping). Subtle geometric/tribal pattern on the shoulders and side panels. " +
-        "The shirt is plain red with NO other markings — ONLY the badge on left chest and Puma logo on right chest. NEVER place the badge in the center. " +
+        "BADGE POSITION — CRITICAL: The official Morocco Football Federation badge (circular emblem, lion, star, green and gold) is on the UPPER LEFT chest — left side when looking at the person, NOT in the center, NOT on the right. " +
+        "PUMA LOGO POSITION: The white Puma logo is on the UPPER RIGHT chest. " +
+        "NEVER place the badge in the center of the chest. NEVER swap badge and logo positions. LEFT = badge, RIGHT = Puma logo. " +
+        "The shirt is plain red with NO other markings — ONLY the badge on upper left chest and Puma logo on upper right chest. " +
         "DO NOT use Nike, Adidas or any other brand — this is a PUMA shirt. DO NOT invent patterns. COPY the reference shirt exactly. " +
         "CRITICAL HAIR AND HEADWEAR RULE: If the person in the photo is NOT wearing a hijab or headscarf, they must appear WITHOUT any hijab or headscarf — do NOT add one. If the person IS wearing a hijab or headscarf, keep it EXACTLY as in the original photo and add a white long-sleeve undershirt so no arms or neck are bare."; +
         "CRITICAL HAIR AND HEADWEAR RULE: If the person in the photo is NOT wearing a hijab or headscarf, they must appear WITHOUT any hijab or headscarf — do NOT add one. If the person IS wearing a hijab or headscarf, keep it EXACTLY as in the original photo and add a white long-sleeve undershirt so no arms or neck are bare.";
@@ -145,7 +146,7 @@ export async function POST(request: NextRequest) {
       "",
       "TOP BANNER: Full-width solid red (#E30A17) bar, ~12% of card height. Large bold white uppercase text centered: 'TURKEY'. Clean sans-serif font, like official Panini printing.",
       "",
-      "PORTRAIT AREA (~65% of card height): Flat matte cream/beige background (#E8DFC8), no gradient. The person is centered, showing the FULL HEAD and shoulders (the face must be fully visible — never cropped). " + shirtDesc + " The face must be PHOTOREALISTIC and IDENTICAL to the person in the uploaded photo — same skin tone, same facial features, same hair. Neutral expression or slight confident smile. Clean, even portrait lighting. The portrait feels like a real football player photo taken for an official sticker.",
+      "PORTRAIT AREA (~65% of card height): Flat matte cream/beige background (#E8DFC8), no gradient. The person is centered, showing the FULL HEAD and shoulders (the face must be fully visible — never cropped). " + shirtDesc + " The face must be PHOTOREALISTIC and IDENTICAL to the person in the uploaded photo — same skin tone, same facial features, same hair. EXPRESSION: copy the EXACT facial expression from the uploaded photo — if they look serious, keep it serious; if they smile, keep the smile. DO NOT change the expression to a smile. Clean, even portrait lighting. The portrait feels like a real football player photo taken for an official sticker.",
       "",
       "BOTTOM SECTION (~23% of card height): White/off-white background (#FAFAFA). Left side: small rectangular Turkish flag (red background, white crescent moon and star), with a thin gray border around it. Right side: two lines of text — first line 'CRESCENT STARS' in small uppercase gray letters; second line '" + name + "' in large bold black uppercase letters. Text is sharp and print-quality.",
       "",
@@ -182,7 +183,7 @@ export async function POST(request: NextRequest) {
       "",
       "TOP BANNER: Full-width solid green (#006233) bar, ~12% of card height. Large bold white uppercase text centered: 'MOROCCO'. Clean sans-serif font, like official Panini printing.",
       "",
-      "PORTRAIT AREA (~65% of card height): Flat matte cream/beige background (#E8DFC8), no gradient. The person is centered, showing the FULL HEAD and shoulders (the face must be fully visible — never cropped). " + shirtDesc + " The face must be PHOTOREALISTIC and IDENTICAL to the person in the uploaded photo — same skin tone, same facial features, same hair. Neutral expression or slight confident smile. Clean, even portrait lighting. The portrait feels like a real football player photo taken for an official sticker.",
+      "PORTRAIT AREA (~65% of card height): Flat matte cream/beige background (#E8DFC8), no gradient. The person is centered, showing the FULL HEAD and shoulders (the face must be fully visible — never cropped). " + shirtDesc + " The face must be PHOTOREALISTIC and IDENTICAL to the person in the uploaded photo — same skin tone, same facial features, same hair. EXPRESSION: copy the EXACT facial expression from the uploaded photo — if they look serious, keep it serious; if they smile, keep the smile. DO NOT change the expression to a smile. Clean, even portrait lighting. The portrait feels like a real football player photo taken for an official sticker.",
       "",
       "BOTTOM SECTION (~23% of card height): White/off-white background (#FAFAFA). Left side: small rectangular Moroccan flag (red background, green five-pointed star), with a thin gray border around it. Right side: two lines of text — first line 'ATLAS LIONS' in small uppercase gray letters; second line '" + name + "' in large bold black uppercase letters. Text is sharp and print-quality.",
       "",
