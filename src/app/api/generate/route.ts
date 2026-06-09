@@ -126,10 +126,10 @@ export async function POST(request: NextRequest) {
       shirtDesc = "wearing the Morocco 2026 Puma football shirt from the reference images — copy it PIXEL PERFECT. " +
         "Look at the person in Image 1: if female or wearing a hijab/headscarf → use the WHITE shirt from Image 3 EXACTLY. If male → use the RED shirt from Image 2 EXACTLY. " +
         "RED home shirt details: solid bright red Puma shirt. Round collar/neckline with a small button at the top center. Collar trim has a geometric gold/green Moroccan pattern stripe. " +
-        "BADGE POSITION — CRITICAL: The official Morocco Football Federation badge (circular emblem, lion, star, green and gold) is on the UPPER LEFT chest — left side when looking at the person, NOT in the center, NOT on the right. " +
-        "PUMA LOGO POSITION: The white Puma logo is on the UPPER RIGHT chest. " +
-        "NEVER place the badge in the center of the chest. NEVER swap badge and logo positions. LEFT = badge, RIGHT = Puma logo. " +
-        "The shirt is plain red with NO other markings — ONLY the badge on upper left chest and Puma logo on upper right chest. " +
+        "BADGE POSITION — CRITICAL: The official Morocco Football Federation badge (circular emblem, lion, star, green and gold) is EXACTLY IN THE CENTER of the chest — not left, not right, dead center. " +
+        "PUMA LOGO POSITION: The white Puma logo is small, below the badge, slightly to the right. " +
+        "NEVER place the badge on the left or right side. CENTER of chest only. " +
+        "The shirt is plain red with NO other markings — ONLY the badge in the center chest and small Puma logo below it. " +
         "DO NOT use Nike, Adidas or any other brand — this is a PUMA shirt. DO NOT invent patterns. COPY the reference shirt exactly. " +
         "CRITICAL HAIR AND HEADWEAR RULE: If the person in the photo is NOT wearing a hijab or headscarf, they must appear WITHOUT any hijab or headscarf — do NOT add one. If the person IS wearing a hijab or headscarf, keep it EXACTLY as in the original photo and add a white long-sleeve undershirt so no arms or neck are bare."; +
         "CRITICAL HAIR AND HEADWEAR RULE: If the person in the photo is NOT wearing a hijab or headscarf, they must appear WITHOUT any hijab or headscarf — do NOT add one. If the person IS wearing a hijab or headscarf, keep it EXACTLY as in the original photo and add a white long-sleeve undershirt so no arms or neck are bare.";
