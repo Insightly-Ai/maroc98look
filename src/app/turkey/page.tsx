@@ -219,7 +219,13 @@ export default function TurkeyLegend() {
     if (!imageBase64) return;
     setError(null);
     if (paidIntentId) { runGeneration(imageBase64, imageMime, paidIntentId, productType, playerName); return; }
-    runGeneration(imageBase64, imageMime, "bypass", productType, playerName);
+    try {
+      const res = await fetch("/api/payment", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ productType }) });
+      const data = await res.json();
+      if (!res.ok || !data.clientSecret) { setError(data.error ?? "Could not start payment"); return; }
+      setClientSecret(data.clientSecret);
+      setShowPayment(true);
+    } catch (err) { setError("Could not start payment — try again: " + (err instanceof Error ? err.message : String(err))); }
   };
 
   const faqs = [
