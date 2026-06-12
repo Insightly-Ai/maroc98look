@@ -307,7 +307,7 @@ export default function Marokko98Look() {
     setError(null);
     if (paidIntentId) { runGeneration(imageBase64, imageMime, paidIntentId, productType, playerName); return; }
     try {
-      const res = await fetch("/api/payment-intent", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ productType }) });
+      const res = await fetch("/api/payment", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ productType }) });
       const data = await res.json();
       if (!res.ok || !data.clientSecret) { setError(data.error ?? "Could not start payment"); return; }
       setClientSecret(data.clientSecret);
