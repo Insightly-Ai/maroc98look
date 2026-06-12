@@ -32,6 +32,7 @@ let shirtWitCache: ImageRef | null = null;
 let shirtTurkeyRoodCache: ImageRef | null = null;
 let shirtTurkeyWitCache: ImageRef | null = null;
 let paniniRefRoodCache: ImageRef | null = null;
+let paniniKaartVoorbeeldCache: ImageRef | null = null;
 
 function loadLocalImage(filename: string): ImageRef | null {
   try {
@@ -66,6 +67,11 @@ function getShirtTurkeyWit(): ImageRef | null {
 function getPaniniRefRood(): ImageRef | null {
   if (!paniniRefRoodCache) paniniRefRoodCache = loadLocalImage("panini-reference-rood.jpg.jpeg");
   return paniniRefRoodCache;
+}
+
+function getPaniniKaartVoorbeeld(): ImageRef | null {
+  if (!paniniKaartVoorbeeldCache) paniniKaartVoorbeeldCache = loadLocalImage("panini_kaartvoorbeeld.jpeg");
+  return paniniKaartVoorbeeldCache;
 }
 
 function getClients() {
@@ -121,13 +127,15 @@ export async function POST(request: NextRequest) {
       const shirtRood = getShirtRood();
       const shirtWit = getShirtWit();
       const paniniRef = getPaniniRefRood();
+      const paniniVoorbeeld = getPaniniKaartVoorbeeld();
       baseParts = [
-        { text: `Image 1: person photo. Image 2: Morocco 2026 red home shirt reference. Image 3: Morocco 2026 white away shirt reference.${paniniRef ? " Image 4: example of a perfectly generated result showing exactly how the shirt should look." : ""}` },
+        { text: `Image 1: person photo. Image 2: Morocco 2026 red home shirt reference. Image 3: Morocco 2026 white away shirt reference.${paniniRef ? " Image 4: shirt reference example." : ""}${paniniVoorbeeld ? " Image 5: the EXACT Panini FIFA World Cup 2026 card style to copy." : ""}` },
         { inlineData: { mimeType: imageMime || "image/jpeg", data: imageBase64 } },
       ];
       if (shirtRood) baseParts.push({ inlineData: { mimeType: shirtRood.mimeType, data: shirtRood.data } });
       if (shirtWit) baseParts.push({ inlineData: { mimeType: shirtWit.mimeType, data: shirtWit.data } });
       if (paniniRef) baseParts.push({ inlineData: { mimeType: paniniRef.mimeType, data: paniniRef.data } });
+      if (paniniVoorbeeld) baseParts.push({ inlineData: { mimeType: paniniVoorbeeld.mimeType, data: paniniVoorbeeld.data } });
 
       shirtDesc = "wearing the shirt shown in Image 2 (red) or Image 3 (white) — copy the shirt EXACTLY as it appears in the reference photo, pixel perfect, no changes whatsoever. " +
         "If the person in Image 1 is female or wearing a hijab/headscarf → use the WHITE shirt from Image 3. If male → use the RED shirt from Image 2. " +
@@ -177,21 +185,24 @@ export async function POST(request: NextRequest) {
     ].join("\n");
 
     const paniniPrompt = [
-      "Create a PHOTOREALISTIC scan of an authentic Panini FIFA World Cup sticker. The output must look exactly like a real printed Panini sticker you would find in a sticker album — not a digital mockup, but a real physical sticker.",
+      "Create a PHOTOREALISTIC FIFA World Cup 2026 Panini sticker card. Copy the EXACT style shown in Image 5 — that is the official 2026 Panini card design you must replicate.",
       "",
-      "STICKER DIMENSIONS: Portrait rectangle, 2:3 ratio. Perfectly straight edges, like a printed sticker.",
+      "CARD STYLE (copy Image 5 exactly):",
+      "- Portrait rectangle, rounded corners",
+      "- Light blue/gray card background",
+      "- Large decorative '26' numbers in red in the background behind the person",
+      "- Moroccan flag element visible in the upper background area",
+      "- FIFA World Cup 2026 official logo (trophy + '26' + FIFA text) in the top right corner",
+      "- Circular Moroccan flag badge on the right side of the card",
+      "- Bottom: red rounded rectangle bar with the player name '" + name + "' in large bold white text, and 'FIFA WORLD CUP 2026 · MOROCCO' as subtitle",
+      "- 'PANINI' yellow logo in the bottom right corner",
       "",
-      "OUTER FRAME: Very thin red border → thin white gap → thin green border. This triple-color frame is the classic Panini World Cup style.",
+      "PERSON: The person from Image 1, centered in the card, showing head and upper body (head to waist). " + shirtDesc,
+      "The face must be PHOTOREALISTIC and IDENTICAL to the person in Image 1 — same skin tone, same facial features, same hair.",
+      "PROPORTIONS: face and head must be naturally proportional to the body — realistic human scale, not too large or too small.",
+      "EXPRESSION: copy the EXACT facial expression from Image 1 — do NOT change it to a smile if they look serious.",
       "",
-      "TOP BANNER: Full-width solid green (#006233) bar, ~12% of card height. Large bold white uppercase text centered: 'MOROCCO'. Clean sans-serif font, like official Panini printing.",
-      "",
-      "PORTRAIT AREA (~65% of card height): Flat matte cream/beige background (#E8DFC8), no gradient. The person is centered, showing the FULL HEAD and shoulders (the face must be fully visible — never cropped). " + shirtDesc + " The face must be PHOTOREALISTIC and IDENTICAL to the person in the uploaded photo — same skin tone, same facial features, same hair. PROPORTIONS: the face and head size must be naturally proportional to the body and shoulders — same scale as a real human, not too large, not too small. The head-to-shoulder ratio must look realistic. EXPRESSION: copy the EXACT facial expression from the uploaded photo — if they look serious, keep it serious; if they smile, keep the smile. DO NOT change the expression to a smile. Clean, even portrait lighting. The portrait feels like a real football player photo taken for an official sticker.",
-      "",
-      "BOTTOM SECTION (~23% of card height): White/off-white background (#FAFAFA). Left side: small rectangular Moroccan flag (red background, green five-pointed star), with a thin gray border around it. Right side: two lines of text — first line 'ATLAS LIONS' in small uppercase gray letters; second line '" + name + "' in large bold black uppercase letters. Text is sharp and print-quality.",
-      "",
-      "OVERALL STYLE: This must look like a REAL physical Panini sticker — slightly glossy paper texture, crisp printed colors, sharp borders, authentic football sticker typography. Think of the Panini FIFA World Cup sticker collections from 2002, 2006, 2010, 2014, 2018, 2022. It should look like you could peel it off a sheet and stick it in an album.",
-      "",
-      "DO NOT add any background outside the sticker. DO NOT add shadows or reflections. The sticker fills the entire image.",
+      "OVERALL: The result must look like the real official Panini FIFA World Cup 2026 sticker shown in Image 5. Same layout, same colors, same design elements. High quality, photorealistic.",
     ].join("\n");
 
     const championPrompt = [
