@@ -111,12 +111,14 @@ export async function POST(request: NextRequest) {
     if (isTurkey) {
       const shirtRood = getShirtTurkeyRood();
       const shirtWit = getShirtTurkeyWit();
+      const paniniVoorbeeldTurkey = getPaniniKaartVoorbeeld();
       baseParts = [
-        { text: `Image 1: person photo. Image 2: Turkey red home shirt reference. Image 3: Turkey white away shirt reference.` },
+        { text: `Image 1: person photo. Image 2: Turkey red home shirt reference. Image 3: Turkey white away shirt reference.${paniniVoorbeeldTurkey ? " Image 4: the EXACT Panini FIFA World Cup 2026 card style to copy (use same layout but with Turkish elements)." : ""}` },
         { inlineData: { mimeType: imageMime || "image/jpeg", data: imageBase64 } },
       ];
       if (shirtRood) baseParts.push({ inlineData: { mimeType: shirtRood.mimeType, data: shirtRood.data } });
       if (shirtWit) baseParts.push({ inlineData: { mimeType: shirtWit.mimeType, data: shirtWit.data } });
+      if (paniniVoorbeeldTurkey) baseParts.push({ inlineData: { mimeType: paniniVoorbeeldTurkey.mimeType, data: paniniVoorbeeldTurkey.data } });
 
       shirtDesc = "wearing the Turkey national team Nike football shirt from the reference images — copy it PIXEL PERFECT. " +
         "Look at the person in Image 1: if female or wearing a hijab/headscarf → use the WHITE away shirt from Image 3 EXACTLY. If male → use the RED home shirt from Image 2 EXACTLY. " +
@@ -150,21 +152,23 @@ export async function POST(request: NextRequest) {
     const name = playerName || (isTurkey ? "CRESCENT" : "ATLAS");
 
     const turkeyPaniniPrompt = [
-      "Create a PHOTOREALISTIC scan of an authentic Panini FIFA World Cup sticker. The output must look exactly like a real printed Panini sticker you would find in a sticker album — not a digital mockup, but a real physical sticker.",
+      "Generate a FIFA World Cup 2026 Panini sticker card for Turkey. The layout must be IDENTICAL every single time — no variation, no creativity, no alternative designs. Use Image 5 as the structural template but replace all Moroccan elements with Turkish elements.",
       "",
-      "STICKER DIMENSIONS: Portrait rectangle, 2:3 ratio. Perfectly straight edges, like a printed sticker.",
+      "FIXED LAYOUT — DO NOT DEVIATE:",
+      "1. Card shape: portrait rectangle with rounded corners. Light blue-gray (#B8C8D8) background.",
+      "2. Background decoration: large bold red '26' numbers partially visible behind the person.",
+      "3. Top right corner: FIFA World Cup 2026 logo (trophy silhouette + '26' + 'FIFA' text in white).",
+      "4. Upper background: Turkish flag colors (red + white) as a graphic element.",
+      "5. Center: the person from Image 1, head and upper body visible, " + shirtDesc + " Face PHOTOREALISTIC and IDENTICAL to Image 1. PROPORTIONS: head naturally sized relative to body. EXPRESSION: copy exactly from Image 1, do NOT add a smile.",
+      "6. Right side of card: circular Turkish flag badge (red circle with white crescent and star).",
+      "7. Bottom bar: solid red (#E30A17) rounded rectangle spanning full card width. Large bold white text: '" + name + "'. Below it smaller white text: 'FIFA WORLD CUP 2026 · TURKEY'.",
+      "8. Bottom right corner: 'PANINI' in yellow bold text on dark background.",
       "",
-      "OUTER FRAME: Very thin red border → thin white gap → thin red border. Classic Panini World Cup style.",
-      "",
-      "TOP BANNER: Full-width solid red (#E30A17) bar, ~12% of card height. Large bold white uppercase text centered: 'TURKEY'. Clean sans-serif font, like official Panini printing.",
-      "",
-      "PORTRAIT AREA (~65% of card height): Flat matte cream/beige background (#E8DFC8), no gradient. The person is centered, showing the FULL HEAD and shoulders (the face must be fully visible — never cropped). " + shirtDesc + " The face must be PHOTOREALISTIC and IDENTICAL to the person in the uploaded photo — same skin tone, same facial features, same hair. PROPORTIONS: the face and head size must be naturally proportional to the body and shoulders — same scale as a real human, not too large, not too small. The head-to-shoulder ratio must look realistic. EXPRESSION: copy the EXACT facial expression from the uploaded photo — if they look serious, keep it serious; if they smile, keep the smile. DO NOT change the expression to a smile. Clean, even portrait lighting. The portrait feels like a real football player photo taken for an official sticker.",
-      "",
-      "BOTTOM SECTION (~23% of card height): White/off-white background (#FAFAFA). Left side: small rectangular Turkish flag (red background, white crescent moon and star), with a thin gray border around it. Right side: two lines of text — first line 'CRESCENT STARS' in small uppercase gray letters; second line '" + name + "' in large bold black uppercase letters. Text is sharp and print-quality.",
-      "",
-      "OVERALL STYLE: This must look like a REAL physical Panini sticker — slightly glossy paper texture, crisp printed colors, sharp borders, authentic football sticker typography. Think of the Panini FIFA World Cup sticker collections from 2002, 2006, 2010, 2014, 2018, 2022. It should look like you could peel it off a sheet and stick it in an album.",
-      "",
-      "DO NOT add any background outside the sticker. DO NOT add shadows or reflections. The sticker fills the entire image.",
+      "RULES:",
+      "- Every element above must be present. Nothing may be removed or moved.",
+      "- Do NOT use Moroccan flag or Morocco text — this is the TURKEY card.",
+      "- Do NOT invent a different card design. Do NOT use the old-style cream/beige Panini layout.",
+      "- Only the person's face and the name text change between generations. Everything else stays fixed.",
     ].join("\n");
 
     const turkeyChampionPrompt = [
