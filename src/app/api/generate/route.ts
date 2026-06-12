@@ -152,23 +152,20 @@ export async function POST(request: NextRequest) {
     const name = playerName || (isTurkey ? "CRESCENT" : "ATLAS");
 
     const turkeyPaniniPrompt = [
-      "Generate a FIFA World Cup 2026 Panini sticker card for Turkey. The layout must be IDENTICAL every single time — no variation, no creativity, no alternative designs. Use Image 5 as the structural template but replace all Moroccan elements with Turkish elements.",
+      "TASK: Recreate the Panini card from Image 4, replacing only the face with the person from Image 1. Use Turkish elements instead of Moroccan elements.",
+      "THIS IS NOT A CREATIVE TASK. Do not design a new card. Do not change the layout. Copy Image 4 pixel-for-pixel except for the face and country-specific elements.",
       "",
-      "FIXED LAYOUT — DO NOT DEVIATE:",
-      "1. Card shape: portrait rectangle with rounded corners. Light blue-gray (#B8C8D8) background.",
-      "2. Background decoration: large bold red '26' numbers partially visible behind the person.",
-      "3. Top right corner: FIFA World Cup 2026 logo (trophy silhouette + '26' + 'FIFA' text in white).",
-      "4. Upper background: Turkish flag colors (red + white) as a graphic element.",
-      "5. Center: the person from Image 1, head and upper body visible, " + shirtDesc + " Face PHOTOREALISTIC and IDENTICAL to Image 1. PROPORTIONS: head naturally sized relative to body. EXPRESSION: copy exactly from Image 1, do NOT add a smile.",
-      "6. Right side of card: circular Turkish flag badge (red circle with white crescent and star).",
-      "7. Bottom bar: solid red (#E30A17) rounded rectangle spanning full card width. Large bold white text: '" + name + "'. Below it smaller white text: 'FIFA WORLD CUP 2026 · TURKEY'.",
-      "8. Bottom right corner: 'PANINI' in yellow bold text on dark background.",
+      "STEP 1: Look at Image 4. That is the exact card structure you must reproduce.",
+      "STEP 2: Keep every single design element from Image 4 identical — background color, '26' decoration, FIFA logo position, card proportions, rounded corners, bottom bar style, PANINI logo. NOTHING changes structurally.",
+      "STEP 3: Replace Moroccan elements with Turkish: Turkish flag colors (red/white) in background, circular Turkish flag badge (red with white crescent and star) on the right side.",
+      "STEP 4: Replace the face/person with the person from Image 1. Body wears shirt from Image 2 (if male) or Image 3 (if female/hijab). Copy shirt exactly.",
+      "STEP 5: Bottom bar text: '" + name + "' in large bold white, and 'FIFA WORLD CUP 2026 · TURKEY' as subtitle.",
       "",
-      "RULES:",
-      "- Every element above must be present. Nothing may be removed or moved.",
-      "- Do NOT use Moroccan flag or Morocco text — this is the TURKEY card.",
-      "- Do NOT invent a different card design. Do NOT use the old-style cream/beige Panini layout.",
-      "- Only the person's face and the name text change between generations. Everything else stays fixed.",
+      "FACE: Photorealistic, identical to Image 1. Same skin tone, features, hair. Same expression — do NOT add a smile if they look serious.",
+      "PROPORTIONS: Head and body must look like a real human — natural scale.",
+      "",
+      "RESULT: Same card structure as Image 4, but with Turkish flag/colors and the person from Image 1.",
+      "FORBIDDEN: Old-style cream background, different card design, missing PANINI logo, missing FIFA 2026 logo.",
     ].join("\n");
 
     const turkeyChampionPrompt = [
@@ -191,23 +188,19 @@ export async function POST(request: NextRequest) {
     ].join("\n");
 
     const paniniPrompt = [
-      "Generate a FIFA World Cup 2026 Panini sticker card. The layout must be IDENTICAL every single time — no variation, no creativity, no alternative designs. Copy Image 5 exactly.",
+      "TASK: Recreate the Panini card from Image 5, replacing only the face with the person from Image 1.",
+      "THIS IS NOT A CREATIVE TASK. Do not design a new card. Do not change the layout. Copy Image 5 pixel-for-pixel except for the face.",
       "",
-      "FIXED LAYOUT — DO NOT DEVIATE:",
-      "1. Card shape: portrait rectangle with rounded corners. Light blue-gray (#B8C8D8) background.",
-      "2. Background decoration: large bold red '26' numbers partially visible behind the person.",
-      "3. Top right corner: FIFA World Cup 2026 logo (trophy silhouette + '26' + 'FIFA' text in white).",
-      "4. Upper background: Moroccan flag colors (red + green) as a graphic element.",
-      "5. Center: the person from Image 1, head and upper body visible, " + shirtDesc + " Face PHOTOREALISTIC and IDENTICAL to Image 1. PROPORTIONS: head naturally sized relative to body. EXPRESSION: copy exactly from Image 1, do NOT add a smile.",
-      "6. Right side of card: circular Moroccan flag badge (red circle with green star).",
-      "7. Bottom bar: solid red rounded rectangle spanning full card width. Large bold white text: '" + name + "'. Below it smaller white text: 'FIFA WORLD CUP 2026 · MOROCCO'.",
-      "8. Bottom right corner: 'PANINI' in yellow bold text on dark background.",
+      "STEP 1: Look at Image 5. That is the exact card you must reproduce.",
+      "STEP 2: Keep every single design element from Image 5 identical — background color, '26' decoration, FIFA logo position, flag elements, badge position, bottom bar color, PANINI logo, text layout, card proportions, rounded corners. NOTHING changes.",
+      "STEP 3: Replace only the face/person in the card with the person from Image 1. The body wears the shirt from Image 2 (if male) or Image 3 (if female/hijab). Copy the shirt exactly from the reference.",
+      "STEP 4: Replace the name text with: '" + name + "'",
       "",
-      "RULES:",
-      "- Every element above must be present. Nothing may be removed or moved.",
-      "- The card must look IDENTICAL to Image 5 in structure and style.",
-      "- Do NOT invent a different card design. Do NOT use the old-style cream/beige Panini layout.",
-      "- Only the person's face and the name text change between generations. Everything else stays fixed.",
+      "FACE: Photorealistic, identical to Image 1. Same skin tone, features, hair. Same expression — do NOT add a smile if they look serious.",
+      "PROPORTIONS: Head and body must look like a real human — natural scale.",
+      "",
+      "RESULT: The output must be visually indistinguishable from Image 5, with only the face and name changed.",
+      "FORBIDDEN: Any other layout, old-style cream background, different card design, missing elements.",
     ].join("\n");
 
     const championPrompt = [
