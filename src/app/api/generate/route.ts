@@ -157,7 +157,7 @@ export async function POST(request: NextRequest) {
       "",
       "STEP 1: Look at Image 4. That is the exact card structure you must reproduce.",
       "STEP 2: Keep every single design element from Image 4 identical — background color, '26' decoration, FIFA logo position, card proportions, rounded corners, bottom bar style, PANINI logo. NOTHING changes structurally.",
-      "STEP 3: Replace Moroccan elements with Turkish: Turkish flag colors (red/white) in background, circular Turkish flag badge (red with white crescent and star) on the right side.",
+      "STEP 3: Replace ALL Moroccan elements with Turkish: Turkish flag colors (red/white) in background, circular Turkish flag badge (red with white crescent and star) on the right side. The 3-letter country code shown on the card must be 'TUR' — NOT 'MAR'. Replace every instance of 'MAR' or 'MOROCCO' with 'TUR' or 'TURKEY'.",
       "STEP 4: Replace the face/person with the person from Image 1. Body wears shirt from Image 2 (if male) or Image 3 (if female/hijab). Copy shirt exactly.",
       "STEP 5: Bottom bar text: exactly '" + name + "' in LATIN alphabet, large bold white capital letters. Subtitle must read exactly: 'FIFA WORLD CUP 2026 · TURKEY' in English. NO Cyrillic, NO Arabic, NO other language — Latin letters only.",
       "",
