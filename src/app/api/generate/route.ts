@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
       "STEP 2: Keep every single design element from Image 4 identical — background color, '26' decoration, FIFA logo position, card proportions, rounded corners, bottom bar style, PANINI logo. NOTHING changes structurally.",
       "STEP 3: Replace Moroccan elements with Turkish: Turkish flag colors (red/white) in background, circular Turkish flag badge (red with white crescent and star) on the right side.",
       "STEP 4: Replace the face/person with the person from Image 1. Body wears shirt from Image 2 (if male) or Image 3 (if female/hijab). Copy shirt exactly.",
-      "STEP 5: Bottom bar text: '" + name + "' in large bold white, and 'FIFA WORLD CUP 2026 · TURKEY' as subtitle.",
+      "STEP 5: Bottom bar text: exactly '" + name + "' in LATIN alphabet, large bold white capital letters. Subtitle must read exactly: 'FIFA WORLD CUP 2026 · TURKEY' in English. NO Cyrillic, NO Arabic, NO other language — Latin letters only.",
       "",
       "FACE: Photorealistic, identical to Image 1. Same skin tone, features, hair. Same expression — do NOT add a smile if they look serious.",
       "PROPORTIONS: Head and body must look like a real human — natural scale.",
@@ -194,13 +194,13 @@ export async function POST(request: NextRequest) {
       "STEP 1: Look at Image 5. That is the exact card you must reproduce.",
       "STEP 2: Keep every single design element from Image 5 identical — background color, '26' decoration, FIFA logo position, flag elements, badge position, bottom bar color, PANINI logo, text layout, card proportions, rounded corners. NOTHING changes.",
       "STEP 3: Replace only the face/person in the card with the person from Image 1. The body wears the shirt from Image 2 (if male) or Image 3 (if female/hijab). Copy the shirt exactly from the reference.",
-      "STEP 4: Replace the name text with: '" + name + "'",
+      "STEP 4: Replace the name text in the bottom bar with exactly: '" + name + "' (in LATIN alphabet, large bold white capital letters). The subtitle text must read exactly: 'FIFA WORLD CUP 2026 · MOROCCO' in English. NO other language, NO Cyrillic, NO Arabic — Latin letters only.",
       "",
       "FACE: Photorealistic, identical to Image 1. Same skin tone, features, hair. Same expression — do NOT add a smile if they look serious.",
       "PROPORTIONS: Head and body must look like a real human — natural scale.",
       "",
       "RESULT: The output must be visually indistinguishable from Image 5, with only the face and name changed.",
-      "FORBIDDEN: Any other layout, old-style cream background, different card design, missing elements.",
+      "FORBIDDEN: Any other layout, old-style cream background, different card design, missing elements, non-Latin text.",
     ].join("\n");
 
     const championPrompt = [
